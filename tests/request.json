@@ -1,11 +1,11 @@
 {
-  "name": "control_parallel_lives_vs_storm_crow",
+  "name": "control_sol_ring_vs_storm_crow",
   "deckA": "SiskoFinal",
-  "cardA": "Parallel Lives",
-  "deckB": "SiskoCtrl",
+  "cardA": "Sol Ring",
+  "deckB": "SiskoCtrlSol",
   "cardB": "Storm Crow",
   "band": 0,
   "minutes": 40,
   "shards": 20,
-  "run": 4
+  "run": 5
 }
