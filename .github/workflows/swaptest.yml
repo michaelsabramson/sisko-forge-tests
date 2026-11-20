@@ -1,0 +1,77 @@
+name: swap-test
+on:
+  push:
+    paths: ['tests/request.json']
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: swaptest
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.m.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: echo "shards=$(jq -c '[range(0; (.shards // 20))]' tests/request.json)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - name: Fetch Forge at pinned commit
+        run: |
+          git init forge && cd forge
+          git remote add origin https://github.com/Card-Forge/forge
+          GIT_LFS_SKIP_SMUDGE=1 git fetch --depth 1 origin $(cat ../FORGE_COMMIT)
+          git -c advice.detachedHead=false checkout FETCH_HEAD
+          git apply ../forge.patch
+      - name: Build engine (core, game, ai)
+        run: |
+          cd forge
+          mvn -B -q -pl forge-ai -am install -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true
+          mvn -B -q -pl forge-ai dependency:copy-dependencies -DoutputDirectory=../lib -DincludeScope=runtime
+          cp forge-ai/target/forge-ai-*.jar ../lib/
+      - name: Compile runner
+        run: |
+          mkdir -p runner-classes
+          javac -nowarn -cp "lib/*" -d runner-classes runner/Run.java
+      - name: Package
+        run: tar czf build.tgz lib runner-classes forge/forge-gui/res
+      - uses: actions/upload-artifact@v4
+        with: { name: build, path: build.tgz, retention-days: 2 }
+  shard:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        s: ${{ fromJson(needs.build.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: actions/download-artifact@v4
+        with: { name: build }
+      - run: tar xzf build.tgz
+      - name: Play games
+        run: scripts/shard.sh ${{ matrix.s }} $(jq -r '.minutes // 40' tests/request.json)
+      - uses: actions/upload-artifact@v4
+        with: { name: out-${{ matrix.s }}, path: out/, retention-days: 7 }
+  aggregate:
+    needs: shard
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: out-*, path: out }
+      - run: python3 scripts/aggregate.py
+      - name: Commit results
+        run: |
+          git config user.name "swaptest-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add results/
+          git commit -m "Results: $(jq -r .name tests/request.json)" || exit 0
+          git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}

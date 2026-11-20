@@ -1,0 +1,10 @@
+{
+  "name": "control_parallel_lives_vs_storm_crow",
+  "deckA": "SiskoFinal",
+  "cardA": "Parallel Lives",
+  "deckB": "SiskoCtrl",
+  "cardB": "Storm Crow",
+  "band": 0,
+  "minutes": 40,
+  "shards": 20
+}
