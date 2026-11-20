@@ -1,0 +1,14 @@
+[INFO] BUILD SUCCESS
+[INFO] BUILD FAILURE
+[ERROR] Failed to execute goal on project forge-ai: Could not collect dependencies for project forge:forge-ai:jar:2.0.17-SNAPSHOT
+[ERROR] Failed to read artifact descriptor for forge:forge-core:jar:2.0.17-SNAPSHOT
+[ERROR] 	Caused by: The following artifacts could not be resolved: forge:forge:pom:${revision} (absent): Could not find artifact forge:forge:pom:${revision} in central (https://repo.maven.apache.org/maven2)
+[ERROR] Failed to read artifact descriptor for forge:forge-game:jar:2.0.17-SNAPSHOT
+[ERROR] 	Caused by: The following artifacts could not be resolved: forge:forge:pom:${revision} (absent): forge:forge:pom:${revision} was not found in https://repo.maven.apache.org/maven2 during a previous attempt. This failure was cached in the local repository and resolution is not reattempted until the update interval of central has elapsed or updates are forced
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
