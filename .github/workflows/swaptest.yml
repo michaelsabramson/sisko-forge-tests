@@ -29,9 +29,10 @@ jobs:
       - name: Build engine (core, game, ai)
         run: |
           cd forge
-          mvn -B -pl forge-ai -am install -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
-          mvn -B -pl forge-ai dependency:copy-dependencies -DoutputDirectory=../lib -DincludeScope=runtime >> ../build.log 2>&1
-          cp forge-ai/target/forge-ai-*.jar ../lib/
+          mvn -B -pl forge-ai -am package dependency:copy-dependencies -DoutputDirectory=$GITHUB_WORKSPACE/lib -DincludeScope=runtime -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
+          rm -f ../lib/forge-core-*.jar ../lib/forge-game-*.jar ../lib/forge-ai-*.jar
+          cp forge-core/target/forge-core-*.jar forge-game/target/forge-game-*.jar forge-ai/target/forge-ai-*.jar ../lib/
+          ls ../lib | head -50 >> ../build.log
       - name: Report build failure
         if: failure()
         run: |
