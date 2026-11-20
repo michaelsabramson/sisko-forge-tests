@@ -58,7 +58,10 @@ jobs:
       - name: Play games
         run: scripts/shard.sh ${{ matrix.s }} $(jq -r '.minutes // 40' tests/request.json)
       - uses: actions/upload-artifact@v4
-        with: { name: out-${{ matrix.s }}, path: out/, retention-days: 7 }
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
   aggregate:
     needs: shard
     if: always()

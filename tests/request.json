@@ -6,5 +6,6 @@
   "cardB": "Storm Crow",
   "band": 0,
   "minutes": 40,
-  "shards": 20
+  "shards": 20,
+  "run": 1
 }
