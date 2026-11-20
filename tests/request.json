@@ -1,27 +1,27 @@
 {
-  "name": "swiftfoot_boots_vs_cultivate_and_manamorphose",
+  "name": "lightning_greaves_vs_cultivate_and_manamorphose",
   "arms": [
     {
       "deck": "SiskoFinal",
       "card": "Cultivate"
     },
     {
-      "deck": "SiskoBootsCult",
-      "card": "Swiftfoot Boots"
+      "deck": "SiskoGreavesCult",
+      "card": "Lightning Greaves"
     },
     {
       "deck": "SiskoFinal",
       "card": "Manamorphose"
     },
     {
-      "deck": "SiskoBootsM",
-      "card": "Swiftfoot Boots"
+      "deck": "SiskoGreavesM",
+      "card": "Lightning Greaves"
     }
   ],
   "band": 0,
   "minutes": 160,
   "shards": 40,
-  "run": 8,
+  "run": 9,
   "compare": [
     [
       0,
