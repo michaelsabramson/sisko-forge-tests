@@ -6,7 +6,7 @@ Queue file formats (written by the web app):
   {"mode":"decks","name":..,"decks":["SiskoFinal","SiskoV2"],"minutes":160,"opponents":[..]}
 Prints the request name, or nothing if the queue is empty.
 """
-import glob, json, math, os, re, sys, time
+import glob, hashlib, json, math, os, re, sys, time
 import cache
 
 def read_deck(name):
@@ -97,6 +97,37 @@ def interleave(share):
     return out
 
 
+def package_deck(base, outs, ins):
+    d = read_deck(base)
+    for o in outs:
+        for row in d["Main"]:
+            if row[1] == o and row[0] > 0:
+                row[0] -= 1
+                break
+        else:
+            sys.exit(f"{o!r} is not in {base}")
+    d["Main"] = [r for r in d["Main"] if r[0] > 0]
+    have = {c for _, c in d["Main"] + d["Commander"]}
+    for c in ins:
+        if c in have and not re.match(r"^(Plains|Island|Swamp|Mountain|Forest|Wastes)$", c):
+            sys.exit(f"{c!r} is already in {base}")
+        for row in d["Main"]:
+            if row[1] == c:
+                row[0] += 1
+                break
+        else:
+            d["Main"].append([1, c])
+    tag = hashlib.sha1(("|".join(sorted(outs)) + ">" + "|".join(sorted(ins))).encode()).hexdigest()[:8]
+    name = f"{base}__pkg_{tag}"
+    write_deck(name, d)
+    return name
+
+
+def short(cards):
+    names = [c.split(",")[0] for c in cards]
+    return ", ".join(names[:3]) + (f" +{len(names) - 3}" if len(names) > 3 else "")
+
+
 def main():
     q = sorted(glob.glob("queue/*.json"))
     if not q:
@@ -110,8 +141,22 @@ def main():
             b = len(arms)
             arms.append({"deck": base, "card": s["out"]})
             for c in s["ins"]:
-                arms.append({"deck": swap_deck(base, s["out"], c), "card": c})
+                arms.append({"deck": swap_deck(base, s["out"], c), "card": c, "swap": {"out": [s["out"]], "in": [c]}})
                 compare.append([b, len(arms) - 1])
+    elif r.get("mode") == "package":
+        # each game forces one package card into the opening hand, rotating through the package;
+        # the baseline forces the matching card being cut, so both sides answer "when this slot shows up early"
+        base = r["base"]
+        for pk in r["packages"]:
+            if len(pk["out"]) != len(pk["in"]) or not pk["out"]:
+                sys.exit("a package must take out as many cards as it puts in")
+            b = next((i for i, a in enumerate(arms) if a["deck"] == base and a["card"] == "|".join(pk["out"])), None)
+            if b is None:
+                b = len(arms)
+                arms.append({"deck": base, "card": "|".join(pk["out"]), "label": short(pk["out"])})
+            arms.append({"deck": package_deck(base, pk["out"], pk["in"]), "card": "|".join(pk["in"]),
+                         "label": f"{short(pk['in'])} for {short(pk['out'])}", "swap": {"out": pk["out"], "in": pk["in"]}})
+            compare.append([b, len(arms) - 1])
     else:
         for d in r["decks"]:
             read_deck(d)

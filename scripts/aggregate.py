@@ -15,6 +15,7 @@ res = [[new[i][0] + a.get('prior_wins', 0), new[i][1] + a.get('prior_games', 0)]
 
 def p(i): w, n = res[i]; return w / max(1, n), n
 intro = ("Whole lists compared, nothing forced into the opening hand." if req.get('mode') == 'decks'
+         else "Package swap: each game forces one card of the package (or of the cards it replaces) into the opening hand, rotating through them." if req.get('mode') == 'package'
          else f"Swapped card forced into opening hand (band {req.get('band', 0)}).")
 reused = sum(a.get('prior_games', 0) for a in arms)
 t = [f"# {req['name']}\n\n{intro} Same opponents for every list."
@@ -22,17 +23,18 @@ t = [f"# {req['name']}\n\n{intro} Same opponents for every list."
      "| List | Card | Games | Wins | Win rate | Reused |", "|---|---|---|---|---|---|"]
 for i, a in enumerate(arms):
     pi, n = p(i)
-    t.append(f"| {a['deck']} | {a['card']} | {n} | {res[i][0]} | {100*pi:.1f}% | {a.get('prior_games', 0)} |")
+    t.append(f"| {a['deck']} | {a.get('label') or a['card']} | {n} | {res[i][0]} | {100*pi:.1f}% | {a.get('prior_games', 0)} |")
 pairs = req.get('compare') or [[0, i] for i in range(1, len(arms))]
 t.append("\nGaps (95% interval):\n")
-lab = lambda a: a['card'] or a['deck']
+lab = lambda a: a.get('label') or a['card'] or a['deck']
 for b, i in pairs:
     p0, n0 = p(b); pi, n = p(i); se = math.sqrt(p0*(1-p0)/max(1, n0) + pi*(1-pi)/max(1, n))
     t.append(f"- **{lab(arms[i])} vs {lab(arms[b])}: {100*(pi-p0):+.1f} ± {196*se:.1f} points**")
 data = {"name": req['name'], "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
-                  "reused": a.get('prior_games', 0)} for i, a in enumerate(arms)],
+                  "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
+                  **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "compare": pairs, "opponents": req.get('opponents')}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"

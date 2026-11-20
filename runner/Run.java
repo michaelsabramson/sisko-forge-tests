@@ -84,7 +84,7 @@ public class Run {
         band[0]=Integer.getInteger("forceBand",sched[g%sched.length]);
         int[][] rng={{0,6},{1,3},{4,7},{8,12},{13,20},{21,35}};
         pos[0]=rng[band[0]][0]+gr.nextInt(rng[band[0]][1]-rng[band[0]][0]+1);
-        final Map<String,String> want=new HashMap<>(); for(String kv:strat.split(";")){ String[] kvp=kv.split("=",2); want.put(kvp[0],kvp[1]); }
+        final Map<String,String> want=new HashMap<>(); for(String kv:strat.split(";")){ String[] kvp=kv.split("=",2); String[] op=kvp[1].split("\\|"); want.put(kvp[0],op[Math.floorMod(g,op.length)]); } // "A|B|C": packages rotate which card is forced
         final boolean[] done={false};
         game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void tb(forge.game.event.GameEventTurnBegan e){
           if(done[0]) return; done[0]=true;

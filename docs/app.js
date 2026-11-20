@@ -9,7 +9,7 @@ const BASE_P = 0.19;                    // typical win rate for precision estima
 const S = {
   token: lsGet('ghToken') || '', head: null, tree: [], rawCache: {}, forge: null, forgeLc: null, forgeNames: [],
   sf: {}, decks: {}, tab: 'results', deck: null, deckDirty: false, deckText: false,
-  test: { mode: 'swap', base: '', slots: [{ out: '', ins: [] }], decks: ['', ''], opps: [...OPP_DEFAULT], precision: 1.5, name: '' },
+  test: { mode: 'swap', base: '', slots: [{ out: '', ins: [] }], packages: [{ out: [], in: [] }], decks: ['', ''], opps: [...OPP_DEFAULT], precision: 1.5, name: '' },
   results: null, runs: null, runTimer: null, search: ''
 };
 
@@ -192,12 +192,12 @@ function parseResult(path, md) {
   const dm = md.match(/<!-- data (\{.*\}) -->/);
   let arms = [], gaps = [];
   if (dm) {
-    const d = JSON.parse(dm[1]); arms = d.arms.map(a => ({ deck: a.deck, card: a.card, games: a.games, wins: a.wins, reused: a.reused || 0 }));
-    const lab = a => a.card || a.deck;
+    const d = JSON.parse(dm[1]); arms = d.arms.map(a => ({ deck: a.deck, card: a.card, label: a.label, swap: a.swap, games: a.games, wins: a.wins, reused: a.reused || 0 }));
+    const lab = a => a.label || a.card || a.deck;
     for (const [b, i] of d.compare) {
       const A = arms[b], B = arms[i]; const p0 = A.wins / Math.max(1, A.games), p1 = B.wins / Math.max(1, B.games);
       const se = Math.sqrt(p0 * (1 - p0) / Math.max(1, A.games) + p1 * (1 - p1) / Math.max(1, B.games));
-      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games });
+      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games, swap: B.swap, other: B.deck });
     }
   } else {
     for (const m of md.matchAll(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([\d.]+)%\s*\|$/gm)) arms.push({ deck: m[1], card: m[2], games: +m[3], wins: +m[4] });
@@ -317,38 +317,41 @@ async function viewDeck(v, name, sub = 'tests') {
   v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
     <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
       ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
-    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['list', 'List'], ['notes', 'Notes']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
+    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
     <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
   if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
   $('#dsub').textContent = `${name} · ${S.deck.d.commander.join(' + ') || 'no commander'}`;
   const body = $('#dbody');
   if (sub === 'list') { body.innerHTML = '<div id="editor"></div>'; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
   else if (sub === 'notes') await drawNotes(body, name);
+  else if (sub === 'history') await drawHistory(body, name);
   else await drawDeckTests(body, name);
 }
 async function drawDeckTests(body, name) {
   if (!S.results) await loadResults();
   if (!S.runs) { try { await loadRuns(); } catch {} }
-  const rows = testsFor(name), act = activeFor(name);
+  const rows = testsFor(name), act = activeFor(name); S.rendered = [];
   const inList = new Set(S.deck.d.main.map(r => r.name));
   const slots = new Map();
-  for (const g of rows) { const k = g.mode === 'decks' ? '\u0000decks' : g.vs; (slots.get(k) || slots.set(k, []).get(k)).push(g); }
+  for (const g of rows) { const k = g.mode === 'decks' ? '\u0000decks' : g.mode === 'package' ? '\u0001pkg' : g.vs; (slots.get(k) || slots.set(k, []).get(k)).push(g); }
+  const hist = await loadHistory(name); const lastChange = hist.length ? hist[hist.length - 1].date : null;
   let h = act.map(a => `<div class="note" style="margin-bottom:12px"><b>${esc(a.state)}:</b> ${esc(a.label)} · <a href="#runs">Runs</a></div>`).join('');
   if (!rows.length) h += `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${encodeURIComponent(name)}">Start one</a></div>`;
   else h += `<p class="muted small" style="margin:0 0 12px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots. Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range; ranges crossing zero mean no clear difference.</p><div class="results">`;
   for (const [slot, gs] of slots) {
-    const isDecks = slot === '\u0000decks';
+    const isDecks = slot === '\u0000decks', isPkg = slot === '\u0001pkg';
     const sorted = [...gs].sort((a, b) => b.diff - a.diff);
-    const now = isDecks ? '' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
-    h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Whole-deck comparisons' : esc(slot) + ' slot'}</div>
+    const now = isDecks || isPkg ? '' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
+    h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Whole-deck comparisons' : isPkg ? 'Packages' : esc(slot) + ' slot'}</div>
         <div class="small muted">${gs.length} test${gs.length > 1 ? 's' : ''} · latest ${gs[0].date ? esc(ago(gs[0].date)) : 'date unknown'}</div></div>
-        <div class="row">${now}${isDecks || !inList.has(slot) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(slot)}">Test more here</a>`}</div></div>
+        <div class="row">${now}${isDecks || isPkg || !inList.has(slot) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(slot)}">Test more here</a>`}</div></div>
       ${forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') })))}
-      <details><summary>Details</summary><table><thead><tr><th>${isDecks ? 'Deck' : 'Card in'}</th><th class="r">Change</th><th class="r">Games</th><th>Test</th><th>When</th></tr></thead><tbody>
-      ${sorted.map(g => { const [c, t] = verdict(g); return `<tr><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small">${esc(prettyName(g.test))}</td><td class="small muted">${g.date ? esc(ago(g.date)) : '—'}</td></tr>`; }).join('')}
+      <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th class="r">Change</th><th class="r">Games</th><th>Test</th><th>When</th><th></th></tr></thead><tbody>
+      ${sorted.map(g => { const [c, t] = verdict(g); return `<tr><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small">${esc(prettyName(g.test))}</td><td class="small muted">${g.date ? esc(ago(g.date)) : '—'}${lastChange && (!g.date || g.date < lastChange) ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
       </tbody></table></details></article>`;
   }
   body.innerHTML = h + (rows.length ? '</div>' : '');
+  $$('[data-promote]', body).forEach(b => b.onclick = () => promote(name, S.rendered[+b.dataset.promote]));
 }
 function mdLite(src) {
   // headings, bullets, bold, italics, links; everything escaped first
@@ -471,6 +474,86 @@ async function saveDeck(as) {
   } catch (e) { toast('Save failed: ' + e.message, true); btn.disabled = false; btn.textContent = 'Save'; }
 }
 
+
+/* ---------- promote tested changes ---------- */
+async function loadHistory(name) {
+  const path = `decks/${name}.history.json`;
+  if (!S.tree.includes(path)) return [];
+  try { return JSON.parse(await raw(path)); } catch { return []; }
+}
+function swapFor(g) {
+  if (g.swap) return g.swap;
+  if (g.mode === 'swap' && g.vs && g.label) return { out: [g.vs], in: [g.label.replace(/ \(early\)$/, '')] };
+  return null;
+}
+function promoteBtn(g, name) {
+  if (g.peek) return '<span class="small muted" title="Wait for the full run">early</span>';
+  const d = S.deck?.d; if (!d) return '';
+  const idx = S.rendered.push(g) - 1;
+  if (g.mode === 'decks') return `<button class="sm" data-promote="${idx}" title="Replace this list with ${esc(g.label)}">Make main</button>`;
+  const sw = swapFor(g);
+  if (!sw) return '';
+  const names = d.main.map(r => r.name);
+  if (sw.in.every(c => names.includes(c)) && sw.out.every(c => !names.includes(c))) return '<span class="pill good">in the list</span>';
+  if (!sw.out.every(c => names.includes(c))) return '<span class="small muted" title="The cards this replaces are no longer in the list">n/a</span>';
+  return `<button class="sm" data-promote="${idx}">Promote</button>`;
+}
+function applySwap(d, out, ins) {
+  const m = d.main.map(r => ({ ...r }));
+  for (const o of out) { const r = m.find(x => x.name === o && x.n > 0); if (!r) throw new Error(`${o} is not in the list any more`); r.n--; }
+  for (const c of ins) { const r = m.find(x => x.name === c); if (r && !/^(Plains|Island|Swamp|Mountain|Forest|Wastes)$/.test(c)) throw new Error(`${c} is already in the list`); r ? r.n++ : m.push({ n: 1, name: c }); }
+  return { commander: d.commander, main: m.filter(r => r.n > 0) };
+}
+async function promote(name, g) {
+  if (needToken()) return;
+  await loadTree(); delete S.decks[name];
+  const cur = await loadDeck(name);
+  let next, out, ins;
+  if (g.mode === 'decks') {
+    const other = await loadDeck(g.other || g.label);
+    const cnt = d => { const c = {}; d.main.forEach(r => c[r.name] = (c[r.name] || 0) + r.n); return c; };
+    const a = cnt(cur), b = cnt(other); out = []; ins = [];
+    for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) { const df = (b[k] || 0) - (a[k] || 0); for (let i = 0; i < Math.abs(df); i++) (df > 0 ? ins : out).push(k); }
+    next = { commander: other.commander, main: other.main };
+  } else {
+    const sw = swapFor(g); out = sw.out; ins = sw.in;
+    try { next = applySwap(cur, out, ins); } catch (e) { toast(e.message, true); return; }
+  }
+  const [cls] = verdict(g); const res = `${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)} points`;
+  const what = `${ins.join(', ')} in for ${out.join(', ')}`;
+  let msg = `Promote: ${what}?\n\nTest result: ${res}${g.games ? ` over ${g.games.toLocaleString()} games` : ''}.`;
+  if (cls !== 'good') msg += `\n\nThis result doesn't show the change is better. Promote anyway?`;
+  else if (g.ci > 1.1) msg += `\n\nTip: a Careful re-test would confirm it cheaply, since both sides' games are reused.`;
+  if (!confirm(msg)) return;
+  try {
+    await putFile(`decks/${name}.dck`, toDck(name, next), `Deck Lab: promote ${what} in ${name} (${res})`);
+    const hist = await loadHistory(name);
+    hist.push({ date: new Date().toISOString(), out, in: ins, result: { diff: +g.diff.toFixed(2), ci: +g.ci.toFixed(2), games: g.games || null, test: g.test, verdict: verdict(g)[1] } });
+    await putFile(`decks/${name}.history.json`, JSON.stringify(hist, null, 2) + '\n', `Deck Lab: log change to ${name}`);
+    S.decks[name] = next; S.deck = { name, d: structuredClone(next), isNew: false };
+    toast(`Promoted: ${what}`); route();
+  } catch (e) { toast('Promote failed: ' + e.message, true); }
+}
+async function drawHistory(body, name) {
+  const hist = await loadHistory(name);
+  if (!hist.length) { body.innerHTML = '<div class="card empty">No changes promoted yet. Promote a tested card from the Tests tab (open Details and promote on any slot).</div>'; return; }
+  body.innerHTML = `<div class="stack">${hist.map((h, i) => ({ h, i })).reverse().map(({ h, i }) => `<div class="card row">
+      <div class="grow"><div><b>${h.undo ? 'Undid: ' : ''}${esc(h.in.join(', '))}</b> <span class="muted">in for</span> <b>${esc(h.out.join(', '))}</b></div>
+        <div class="small muted">${esc(new Date(h.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }))}${h.result ? ` · ${h.result.diff > 0 ? '+' : ''}${h.result.diff} ± ${h.result.ci} points (${esc(h.result.verdict || '')})${h.result.games ? ', ' + h.result.games.toLocaleString() + ' games' : ''} · ${esc(prettyName(h.result.test || ''))}` : ''}</div></div>
+      ${h.undo || hist.some(x => x.undo === i) ? '' : `<button class="sm" data-undo="${i}">Undo</button>`}</div>`).join('')}</div>`;
+  $$('[data-undo]', body).forEach(b => b.onclick = async () => {
+    if (needToken()) return; const i = +b.dataset.undo, h = hist[i];
+    if (!confirm(`Undo: put ${h.out.join(', ')} back in for ${h.in.join(', ')}?`)) return;
+    try {
+      await loadTree(); delete S.decks[name]; const cur = await loadDeck(name); const next = applySwap(cur, h.in, h.out);
+      await putFile(`decks/${name}.dck`, toDck(name, next), `Deck Lab: undo ${h.in.join(', ')} in ${name}`);
+      hist.push({ date: new Date().toISOString(), out: h.in, in: h.out, undo: i });
+      await putFile(`decks/${name}.history.json`, JSON.stringify(hist, null, 2) + '\n', `Deck Lab: log undo in ${name}`);
+      S.decks[name] = next; S.deck = { name, d: structuredClone(next), isNew: false }; toast('Undone'); route();
+    } catch (e) { toast('Undo failed: ' + e.message, true); }
+  });
+}
+
 /* ---------- new test ---------- */
 const PRECISION = [[2.0, 'Quick'], [1.5, 'Standard'], [1.0, 'Careful']];
 function estimate(arms, precision) {
@@ -483,17 +566,19 @@ async function viewTest(v) {
   if (!T.base || !mine.includes(T.base)) T.base = primary()[0] || mine[0];
   const base = T.base ? await loadDeck(T.base) : { main: [], commander: [] };
   await sfLoad(base.main.map(r => r.name));
-  const arms = T.mode === 'swap' ? T.slots.reduce((s, sl) => s + 1 + sl.ins.length, 0) : T.decks.filter(Boolean).length;
+  const pkKey = p => [...p.out].sort().join('|');
+  const arms = T.mode === 'swap' ? T.slots.reduce((s, sl) => s + 1 + sl.ins.length, 0) : T.mode === 'package' ? T.packages.length + new Set(T.packages.map(pkKey)).size : T.decks.filter(Boolean).length;
   const est = estimate(Math.max(2, arms), T.precision);
   const inDeck = new Set([...base.main.map(r => r.name), ...base.commander]);
-  const flagged = T.mode === 'swap' ? T.slots.flatMap(s => s.ins).filter(n => S.forge?.get(n) === 'A') : [];
+  const flagged = (T.mode === 'swap' ? T.slots.flatMap(s => s.ins) : T.mode === 'package' ? T.packages.flatMap(p => p.in) : []).filter(n => S.forge?.get(n) === 'A');
   const autoName = T.mode === 'swap'
     ? T.slots.filter(s => s.out && s.ins.length).map(s => s.ins.map(c => c.split(',')[0]).join(' and ') + ' for ' + s.out.split(',')[0]).join('; ')
+    : T.mode === 'package' ? T.packages.filter(p => p.in.length).map(p => 'Package: ' + p.in.map(c => c.split(',')[0]).join(', ') + ' for ' + p.out.map(c => c.split(',')[0]).join(', ')).join('; ')
     : T.decks.filter(Boolean).join(' vs ');
   const allOpp = deckNames().filter(n => !isGen(n) && !(T.mode === 'decks' ? T.decks : [T.base]).includes(n));
   const oppList = [...OPP_DEFAULT.filter(n => allOpp.includes(n)), ...allOpp.filter(n => !OPP_DEFAULT.includes(n)).sort()];
   v.innerHTML = `<a href="#deck/${encodeURIComponent(T.base)}" class="back small">← ${esc(deckTitle(T.base))}</a><div class="pagehead" style="margin-top:6px"><div><h1>New test</h1><p class="muted">Each version plays thousands of 4-player pods against the same opponents and seats, so only the change differs.</p></div>
-      <div class="seg"><button data-mode="swap" class="${T.mode === 'swap' ? 'on' : ''}">Swap cards</button><button data-mode="decks" class="${T.mode === 'decks' ? 'on' : ''}">Compare whole decks</button></div></div>
+      <div class="seg"><button data-mode="swap" class="${T.mode === 'swap' ? 'on' : ''}">Swap cards</button><button data-mode="package" class="${T.mode === 'package' ? 'on' : ''}">Package</button><button data-mode="decks" class="${T.mode === 'decks' ? 'on' : ''}">Compare whole decks</button></div></div>
     <div class="card stack">
     ${T.mode === 'swap' ? `
       <label class="fld"><span>Base deck</span><select id="tbase">${mine.map(n => `<option ${n === T.base ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
@@ -506,6 +591,17 @@ async function viewTest(v) {
         <div class="row">${s.ins.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)} ${flagPill(c)}<button data-delin="${i}:${j}" aria-label="Remove">×</button></span>`).join('') || '<span class="muted small">No cards yet.</span>'}</div>
       </div>`).join('')}
       <div><button class="sm" id="addSlot">+ Test another slot</button> <span class="muted small">Each slot also runs the original card as its baseline.</span></div>`
+    : T.mode === 'package' ? `
+      <label class="fld"><span>Base deck</span><select id="tbase">${mine.map(n => `<option ${n === T.base ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
+      ${T.packages.map((pk, i) => `<div class="slot stack">
+        <div class="row"><b>Package ${i + 1}</b><span class="small ${pk.out.length === pk.in.length ? 'muted' : ''}" style="${pk.out.length === pk.in.length ? '' : 'color:var(--bad)'}">${pk.out.length} out · ${pk.in.length} in</span><span class="grow"></span>${T.packages.length > 1 ? `<button class="sm ghost danger" data-delpk="${i}">Remove</button>` : ''}</div>
+        <div class="grid2">
+          <div class="fld"><span>Take out</span><div class="ac"><input data-pkout="${i}" placeholder="Cards in ${esc(T.base)}…"></div>
+            <div class="row" style="margin-top:8px">${pk.out.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)}<button data-delpo="${i}:${j}" aria-label="Remove">×</button></span>`).join('')}</div></div>
+          <div class="fld"><span>Put in</span><div class="ac"><input data-pkin="${i}" placeholder="Search Forge's card list…"></div>
+            <div class="row" style="margin-top:8px">${pk.in.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)} ${flagPill(c)}<button data-delpi="${i}:${j}" aria-label="Remove">×</button></span>`).join('')}</div></div>
+        </div></div>`).join('')}
+      <div><button class="sm" id="addPk">+ Another package</button> <span class="muted small">Each package is its own version. Each game forces one package card into the opening hand, rotating through them; the baseline forces the matching card being cut. Order the two lists so cards pair up (first out ↔ first in).</span></div>`
     : `<div class="grid2">${T.decks.map((dn, i) => `<label class="fld"><span>${i ? 'Challenger ' + i : 'Baseline'}</span><select data-dk="${i}"><option value="">${i > 1 ? '(none)' : 'Choose…'}</option>${mine.map(n => `<option ${n === dn ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>`).join('')}</div>
       ${T.decks.length < 4 ? '<div><button class="sm" id="addDk">+ Add a deck</button></div>' : ''}
       <p class="small muted">Nothing is forced into the opening hand here, so differences need more games to show up than a single-card swap.</p>`}
@@ -530,6 +626,15 @@ async function viewTest(v) {
     $$('[data-delin]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delin.split(':').map(Number); T.slots[i].ins.splice(j, 1); viewTest(v); });
     $$('[data-delslot]').forEach(b => b.onclick = () => { T.slots.splice(+b.dataset.delslot, 1); viewTest(v); });
     $('#addSlot').onclick = () => { T.slots.push({ out: '', ins: [] }); viewTest(v); };
+  } else if (T.mode === 'package') {
+    $('#tbase').onchange = e => { T.base = e.target.value; T.packages = [{ out: [], in: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(T.base)); viewTest(v); };
+    const deckCards = new Set(base.main.map(r => r.name));
+    $$('[data-pkout]').forEach(inp => attachAuto(inp, n => { const pk = T.packages[+inp.dataset.pkout]; if (!pk.out.includes(n)) pk.out.push(n); viewTest(v).then(() => $(`[data-pkout="${inp.dataset.pkout}"]`)?.focus()); }, n => deckCards.has(n) && !T.packages[+inp.dataset.pkout].out.includes(n)));
+    $$('[data-pkin]').forEach(inp => attachAuto(inp, n => { const pk = T.packages[+inp.dataset.pkin]; if (inDeck.has(n)) { toast(`${n} is already in ${T.base}`, true); return; } if (!pk.in.includes(n)) pk.in.push(n); sfLoad([n]); viewTest(v).then(() => $(`[data-pkin="${inp.dataset.pkin}"]`)?.focus()); }, n => !inDeck.has(n)));
+    $$('[data-delpo]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delpo.split(':').map(Number); T.packages[i].out.splice(j, 1); viewTest(v); });
+    $$('[data-delpi]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delpi.split(':').map(Number); T.packages[i].in.splice(j, 1); viewTest(v); });
+    $$('[data-delpk]').forEach(b => b.onclick = () => { T.packages.splice(+b.dataset.delpk, 1); viewTest(v); });
+    $('#addPk').onclick = () => { T.packages.push({ out: [], in: [] }); viewTest(v); };
   } else {
     $$('[data-dk]').forEach(s => s.onchange = () => { T.decks[+s.dataset.dk] = s.value; viewTest(v); });
     $('#addDk') && ($('#addDk').onclick = () => { T.decks.push(''); viewTest(v); });
@@ -549,12 +654,17 @@ async function queueTest(autoName) {
     if (T.slots.some(s => (s.out && !s.ins.length) || (!s.out && s.ins.length))) return err('Every slot needs a card out and at least one card in.');
     if (new Set(slots.map(s => s.out)).size !== slots.length) return err('Each slot must take out a different card.');
     req = { mode: 'swap', base: T.base, slots: slots.map(s => ({ out: s.out, ins: s.ins })) };
+  } else if (T.mode === 'package') {
+    const pks = T.packages.filter(p => p.out.length || p.in.length);
+    if (!pks.length) return err('Add cards to take out and put in.');
+    if (pks.some(p => !p.out.length || p.out.length !== p.in.length)) return err('Each package must take out as many cards as it puts in.');
+    req = { mode: 'package', base: T.base, packages: pks.map(p => ({ out: p.out, in: p.in })) };
   } else {
     const ds = T.decks.filter(Boolean);
     if (ds.length < 2 || new Set(ds).size !== ds.length) return err('Choose at least two different decks.');
     req = { mode: 'decks', decks: ds };
   }
-  const arms = req.mode === 'swap' ? req.slots.reduce((s, x) => s + 1 + x.ins.length, 0) : req.decks.length;
+  const arms = req.mode === 'swap' ? req.slots.reduce((s, x) => s + 1 + x.ins.length, 0) : req.mode === 'package' ? req.packages.length + new Set(req.packages.map(p => [...p.out].sort().join('|'))).size : req.decks.length;
   if (arms > 8) return err('Keep it to 8 versions or fewer per test (split it into two tests).');
   if (T.opps.length < 3) return err('Pick at least 3 opponents.');
   if (needToken()) return;
@@ -565,7 +675,7 @@ async function queueTest(autoName) {
   const b = $('#queueBtn'); b.disabled = true; b.innerHTML = '<span class="spin"></span> Queuing';
   try {
     await putFile(file, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue ${name}`);
-    T.slots = [{ out: '', ins: [] }]; T.name = '';
+    T.slots = [{ out: '', ins: [] }]; T.packages = [{ out: [], in: [] }]; T.name = '';
     toast('Queued. It starts as soon as the runners are free.'); S.runs = null; location.hash = '#runs';
   } catch (e) { toast('Could not queue: ' + e.message, true); b.disabled = false; b.textContent = 'Queue test'; }
 }
@@ -584,10 +694,11 @@ async function loadRuns() {
 function reqSummary(q) {
   if (!q) return '';
   if (q.mode === 'decks' || (!q.slots && q.decks)) return (q.decks || []).join(' vs ');
+  if (q.packages) return q.packages.map(p => `${p.in.join(', ')} in for ${p.out.join(', ')}`).join(' · ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');
   if (q.arms && q.compare) {
-    const by = new Map(); for (const [b, i] of q.compare) { const k = q.arms[i].card || q.arms[i].deck; (by.get(k) || by.set(k, []).get(k)).push(q.arms[b].card || q.arms[b].deck); }
-    return [...by].map(([c, outs]) => q.mode === 'decks' ? `${c} vs ${outs.join(', ')}` : `${c} in for ${outs.join(', ')}`).join(' · ');
+    const by = new Map(); for (const [b, i] of q.compare) { const k = q.arms[i].label || q.arms[i].card || q.arms[i].deck; (by.get(k) || by.set(k, []).get(k)).push(q.arms[b].label || q.arms[b].card || q.arms[b].deck); }
+    return [...by].map(([c, outs]) => q.mode === 'decks' ? `${c} vs ${outs.join(', ')}` : q.mode === 'package' ? c : `${c} in for ${outs.join(', ')}`).join(' · ');
   }
   if (q.arms) return q.arms.map(a => a.card || a.deck).filter((x, i, A) => A.indexOf(x) === i).join(' · ');
   return '';
