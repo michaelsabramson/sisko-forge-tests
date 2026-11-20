@@ -1,0 +1,38 @@
+{
+ "2477d9081f8dc1ed15da": {
+  "card": "Cultivate",
+  "deck": "SiskoFinal",
+  "games": 6662,
+  "runs": [
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
+  ],
+  "wins": 1380
+ },
+ "290a23d10951cb03e81d": {
+  "card": "Caesar, Legion's Emperor",
+  "deck": "SiskoCaesarCult",
+  "games": 6716,
+  "runs": [
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
+  ],
+  "wins": 1293
+ },
+ "30ad59ce74635792f80e": {
+  "card": "Caesar, Legion's Emperor",
+  "deck": "SiskoCaesarM",
+  "games": 6647,
+  "runs": [
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
+  ],
+  "wins": 1268
+ },
+ "dcfdf9a35beaff69178d": {
+  "card": "Manamorphose",
+  "deck": "SiskoFinal",
+  "games": 6737,
+  "runs": [
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
+  ],
+  "wins": 1113
+ }
+}
