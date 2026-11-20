@@ -25,6 +25,8 @@ jobs:
           gh api "repos/${{ github.repository }}/contents/tests/request.json?ref=$sha" -H "Accept: application/vnd.github.raw" > tests/request.json
           cat tests/request.json
       - run: python3 scripts/aggregate.py
+        env:
+          PEEK: '1'
       - name: Commit peek
         run: |
           n=$(jq -r .name tests/request.json)

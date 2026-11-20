@@ -192,7 +192,7 @@ function parseResult(path, md) {
   const dm = md.match(/<!-- data (\{.*\}) -->/);
   let arms = [], gaps = [];
   if (dm) {
-    const d = JSON.parse(dm[1]); arms = d.arms.map(a => ({ deck: a.deck, card: a.card, games: a.games, wins: a.wins }));
+    const d = JSON.parse(dm[1]); arms = d.arms.map(a => ({ deck: a.deck, card: a.card, games: a.games, wins: a.wins, reused: a.reused || 0 }));
     const lab = a => a.card || a.deck;
     for (const [b, i] of d.compare) {
       const A = arms[b], B = arms[i]; const p0 = A.wins / Math.max(1, A.games), p1 = B.wins / Math.max(1, B.games);
@@ -275,7 +275,7 @@ function drawResults() {
         <div class="row">${r.peek ? '<span class="pill gold">Early read · run still going</span>' : ''}${best.map((b, i) => b[0] ? `<span class="pill ${b[0]}">${esc(r.gaps[i].label.split(',')[0])}: ${b[1]}</span>` : '').join('')}</div></div>
       ${r.gaps.length ? forestSVG(r.gaps) : ''}
       <details><summary>Details</summary><p class="small muted">${esc(r.intro)}</p><table><thead><tr><th>List</th><th>Card tested</th><th class="r">Games</th><th class="r">Win rate</th></tr></thead><tbody>
-      ${r.arms.map(a => `<tr><td>${esc(a.deck)}</td><td>${esc(a.card || '—')}</td><td class="r num">${a.games.toLocaleString()}</td><td class="r num">${(100 * a.wins / Math.max(1, a.games)).toFixed(1)}%</td></tr>`).join('')}
+      ${r.arms.map(a => `<tr><td>${esc(a.deck)}</td><td>${esc(a.card || '—')}</td><td class="r num">${a.games.toLocaleString()}${a.reused ? ` <span class="muted small">(${a.reused.toLocaleString()} reused)</span>` : ''}</td><td class="r num">${(100 * a.wins / Math.max(1, a.games)).toFixed(1)}%</td></tr>`).join('')}
       </tbody></table><p class="small muted">${r.gaps.map(g => `${esc(g.label)} vs ${esc(g.vs)}: ${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)} points`).join('<br>')}</p></details>
     </article>`;
   }).join('');
@@ -428,6 +428,7 @@ async function viewTest(v) {
       <div class="est"><div class="stat"><b class="num">~${est.n.toLocaleString()}</b><span>games per version</span></div>
         <div class="stat"><b class="num">±${est.pm.toFixed(1)}</b><span>points, 95% range on each gap</span></div>
         <div class="stat"><b class="num">~${Math.round(est.total / 6) / 10} h</b><span>once it starts</span></div></div>
+      <p class="small muted" style="margin:0">Versions already played with this exact deck, card and opponents reuse those games, so the others get more of the run, and a test that's fully covered returns right away.</p>
       ${flagged.length ? `<div class="note">Forge's AI plays ${flagged.map(esc).join(', ')} poorly, so a loss here may mean the AI misplays it rather than the card being weak.</div>` : ''}
       <div class="row end"><span id="terr" class="small" style="color:var(--bad)"></span><button class="primary" id="queueBtn">Queue test</button></div>
     </div>`;

@@ -30,6 +30,15 @@ jobs:
           name=$(python3 scripts/dispatch.py)
           if [ -z "$name" ]; then echo "queue empty"; exit 0; fi
           git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          if [ "$(jq -r .allcached tests/request.json)" = "true" ]; then
+            # every version already has enough games from earlier runs: report straight from the cache
+            mkdir -p out && python3 scripts/aggregate.py
+            git add -A decks queue tests results
+            git commit -m "Results: $name"
+            git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}
+            gh workflow run dispatcher.yml -R ${{ github.repository }} --ref ${{ github.ref_name }}
+            exit 0
+          fi
           git add -A decks queue tests
           git commit -m "Start queued test: $name"
           git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}

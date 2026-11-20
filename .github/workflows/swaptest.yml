@@ -171,7 +171,7 @@ jobs:
         run: |
           git config user.name "swaptest-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add results/
+          git add results/ cache/ 2>/dev/null || git add results/
           git commit -m "Results: $(jq -r .name tests/request.json)" || true
           git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}
       - name: Start the next queued test

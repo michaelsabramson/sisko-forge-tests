@@ -7,6 +7,7 @@ Queue file formats (written by the web app):
 Prints the request name, or nothing if the queue is empty.
 """
 import glob, json, os, re, sys, time
+import cache
 
 def read_deck(name):
     path = f"decks/{name}.dck"
@@ -79,6 +80,17 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
+    # reuse cached games: an arm with enough cached games for its config is not replayed
+    opps = req.get("opponents") or cache.DEFAULT_OPP
+    eng, c = cache.engine_sig(), cache.load()
+    est = req["shards"] * 4 / len(arms) * req["minutes"] * 1.1
+    for a in arms:
+        a["key"] = cache.arm_key(a, opps, req["band"], eng)
+        e = c.get(a["key"], {})
+        a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
+        a["cached"] = a["prior_games"] >= 0.9 * est
+    req["allcached"] = all(a["cached"] for a in arms)
+    req["seedbase"] = 10000 + (int(time.time()) // 60 % 1_000_000) * 200   # fresh seeds every run
     with open("tests/request.json", "w", encoding="utf-8") as f:
         json.dump(req, f, indent=2)
     os.remove(src)
