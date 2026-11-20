@@ -1,13 +1,25 @@
 {
-  "name": "slot_cultivate_seven_anointed_riku",
+  "name": "slot_manamorphose_seven_anointed_riku",
   "arms": [
-    {"deck": "SiskoFinal", "card": "Cultivate"},
-    {"deck": "Sisko7Cult", "card": "Seven of Nine, Unassimilated"},
-    {"deck": "SiskoAPCult", "card": "Anointed Procession"},
-    {"deck": "SiskoRikuV", "card": "Riku of Many Paths"}
+    {
+      "deck": "SiskoFinal",
+      "card": "Manamorphose"
+    },
+    {
+      "deck": "Sisko7M",
+      "card": "Seven of Nine, Unassimilated"
+    },
+    {
+      "deck": "SiskoAPM",
+      "card": "Anointed Procession"
+    },
+    {
+      "deck": "SiskoRikuM",
+      "card": "Riku of Many Paths"
+    }
   ],
   "band": 0,
   "minutes": 160,
   "shards": 40,
-  "run": 6
+  "run": 7
 }
