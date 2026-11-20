@@ -552,10 +552,10 @@ index eeff719b..54082de4 100644
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
 diff --git a/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt b/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt
-index 0fae2788..18673684 100644
+index 0fae2788..6b26adde 100644
 --- a/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt
 +++ b/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt
-@@ -5,10 +5,12 @@ PT:2/2
+@@ -5,10 +5,13 @@ PT:2/2
  T:Mode$ Phase | Phase$ End of Turn | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigToken | TriggerDescription$ At the beginning of your end step, create a 1/1 red Officer creature token for each dilemma you've faced this turn.
  SVar:TrigToken:DB$ Token | TokenAmount$ X | TokenScript$ r_1_1_officer | TokenOwner$ You
  SVar:X:Count$YouFaceDilemmaThisTurn
@@ -569,6 +569,7 @@ index 0fae2788..18673684 100644
  DeckHints:Type$Officer
  Oracle:At the beginning of your end step, create a 1/1 red Officer creature token for each dilemma you've faced this turn.\n{2}{W}{U}{B}{R}{G}, {T}: Exile the top five cards of your library. You may cast any number of spells with mana value less than or equal to the number of Officers you control from among those cards without paying their mana costs.
 +SVar:PlayMain1:ALWAYS
++SVar:EquipMe:Once
 diff --git a/forge-gui/res/cardsfolder/c/captain_james_t_kirk.txt b/forge-gui/res/cardsfolder/c/captain_james_t_kirk.txt
 index 2424b1a6..9c04ca48 100644
 --- a/forge-gui/res/cardsfolder/c/captain_james_t_kirk.txt

@@ -1,25 +1,35 @@
 {
-  "name": "slot_manamorphose_seven_anointed_riku",
+  "name": "swiftfoot_boots_vs_cultivate_and_manamorphose",
   "arms": [
+    {
+      "deck": "SiskoFinal",
+      "card": "Cultivate"
+    },
+    {
+      "deck": "SiskoBootsCult",
+      "card": "Swiftfoot Boots"
+    },
     {
       "deck": "SiskoFinal",
       "card": "Manamorphose"
     },
     {
-      "deck": "Sisko7M",
-      "card": "Seven of Nine, Unassimilated"
-    },
-    {
-      "deck": "SiskoAPM",
-      "card": "Anointed Procession"
-    },
-    {
-      "deck": "SiskoRikuM",
-      "card": "Riku of Many Paths"
+      "deck": "SiskoBootsM",
+      "card": "Swiftfoot Boots"
     }
   ],
   "band": 0,
   "minutes": 160,
   "shards": 40,
-  "run": 7
+  "run": 8,
+  "compare": [
+    [
+      0,
+      1
+    ],
+    [
+      2,
+      3
+    ]
+  ]
 }
