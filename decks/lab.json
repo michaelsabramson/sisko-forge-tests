@@ -1,7 +1,12 @@
 {
   "decks": [
-    { "name": "SiskoFinal", "title": "Sisko · Bracket 3" },
-    { "name": "SiskoEnch", "title": "Sisko · Enchantments & copies" },
-    { "name": "SiskoB2", "title": "Sisko · Bracket 2" }
+    {
+      "name": "SiskoFinal",
+      "title": "Sisko \u00b7 Bracket 3"
+    },
+    {
+      "name": "SiskoB2",
+      "title": "Sisko \u00b7 Bracket 2"
+    }
   ]
 }
