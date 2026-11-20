@@ -356,21 +356,42 @@ async function drawDeckTests(body, name) {
   let h = act.map(a => `<div class="note" style="margin-bottom:12px"><b>${esc(a.state)}:</b> ${esc(a.label)} · <a href="#runs">Runs</a></div>`).join('');
   if (!rows.length) h += `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${encodeURIComponent(name)}">Start one</a></div>`;
   else h += `<p class="muted small" style="margin:0 0 12px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots. Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range; ranges crossing zero mean no clear difference.</p><div class="results">`;
+  const short = c => c.split(',')[0];
+  const latestBy = (list, keyf) => { const m = new Map(); for (const g of list) { const k = keyf(g), cur = m.get(k); if (!cur || (g.date || '') > (cur.date || '')) m.set(k, g); } return m; };
   for (let [key, gs] of slots) {
     const [slot, pool] = key.split('\u0002');
     const isDecks = slot === '\u0000decks', isPkg = slot === '\u0001pkg';
     const direct = gs.filter(g => g.direct); gs = gs.filter(g => !g.direct); if (!gs.length && !direct.length) continue;
-    const latest = new Map(); for (const g of gs) { const k = g.label; const cur = latest.get(k); if (!cur || (g.date || '') > (cur.date || '')) latest.set(k, g); }
+    // which card holds this slot now: the original, or a candidate that was promoted into it
+    const candidates = new Set([...gs.map(g => g.label), ...direct.flatMap(g => [g.label, g.aswap.in[0]])]);
+    const promoted = !isDecks && !isPkg && !inList.has(slot) ? [...candidates].find(c => inList.has(c)) : null;
+    const cur = promoted || slot;
+    // "vs the current card" rows: against the original card, or (after a promotion) the head-to-heads with the promoted card
+    let vsCur;
+    if (promoted) vsCur = direct.filter(g => g.label === promoted || g.aswap.in[0] === promoted).map(g => g.label === promoted
+      ? { ...g, label: g.aswap.in[0], diff: -g.diff, swap: { out: [promoted], in: [g.aswap.in[0]] }, vs: promoted, games: g.agames }
+      : { ...g, vs: promoted, swap: { out: [promoted], in: [g.label] } });
+    else vsCur = gs;
+    const latest = latestBy(vsCur, g => g.label);
     const sorted = [...latest.values()].sort((a, b) => b.diff - a.diff);
-    const allRows = [...gs].sort((a, b) => b.diff - a.diff || (b.date || '').localeCompare(a.date || ''));
-    const now = isDecks || isPkg ? '' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
-    h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(slot) + ' slot'}</div>
-        <div class="small muted"><span class="pill ${pool === String(deckBracket(name)) ? '' : 'accent'}">vs ${esc(poolName(pool))}</span> ${gs.length + direct.length} result${gs.length + direct.length > 1 ? 's' : ''} · latest ${[...gs, ...direct][0]?.date ? esc(ago([...gs, ...direct][0].date)) : 'date unknown'}</div></div>
-        <div class="row">${now}${isDecks || isPkg || !inList.has(slot) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(slot)}&pool=${pool}">Test more here</a>`}</div></div>
-      ${sorted.length ? forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') }))) : ''}
-      ${direct.map(g => { const [c, t] = verdict(g); return `<div class="direct"><span class="small muted">Head to head in this slot</span> <b>${esc(g.label.split(',')[0])}</b> vs <b>${esc(g.aswap.in[0].split(',')[0])}</b>: <span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span> <span class="small muted">${c === 'good' ? esc(g.label.split(',')[0]) + ' is better' : c === 'bad' ? esc(g.aswap.in[0].split(',')[0]) + ' is better' : 'no clear winner yet'}${g.peek ? ' · early read' : ''}</span></div>`; }).join('')}
-      <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th class="r">Change</th><th class="r">Games</th><th>Test</th><th>When</th><th></th></tr></thead><tbody>
-      ${allRows.map(g => { const [c, t] = verdict(g); return `<tr${latest.get(g.label) === g ? '' : ' class="superseded"'}><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small">${esc(prettyName(g.test))}</td><td class="small muted">${g.date ? esc(ago(g.date)) : '—'}${lastChange && (!g.date || g.date < lastChange) ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
+    // head to head between candidates (pairs not involving the current card), oriented so the leader is named first
+    const pairs = direct.filter(g => !promoted || (g.label !== promoted && g.aswap.in[0] !== promoted)).map(g => {
+      const a = g.label, b = g.aswap.in[0];
+      return g.diff >= 0 ? { ...g, label: `${short(a)} vs ${short(b)}`, lead: a, trail: b } : { ...g, label: `${short(b)} vs ${short(a)}`, diff: -g.diff, lead: b, trail: a };
+    });
+    const h2h = [...latestBy(pairs, g => [g.lead, g.trail].sort().join('|')).values()].sort((a, b) => b.diff - a.diff);
+    const detailRows = [...(promoted ? [...vsCur, ...gs] : gs)].sort((a, b) => b.diff - a.diff || (b.date || '').localeCompare(a.date || ''));
+    const now = isDecks || isPkg ? '' : promoted ? '<span class="pill good">promoted</span>' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
+    const all = [...gs, ...direct].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(cur) + ' slot'}${promoted ? ` <span class="small muted" style="font-weight:500">(was ${esc(slot)})</span>` : ''}</div>
+        <div class="small muted"><span class="pill ${pool === String(deckBracket(name)) ? '' : 'accent'}">vs ${esc(poolName(pool))}</span> ${all.length} result${all.length > 1 ? 's' : ''} · latest ${all[0]?.date ? esc(ago(all[0].date)) : 'date unknown'}</div></div>
+        <div class="row">${now}${isDecks || isPkg || !inList.has(cur) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(cur)}&pool=${pool}">Test more here</a>`}</div></div>
+      ${isDecks || isPkg ? '' : `<div class="sect">vs the current card · ${esc(cur)}</div>`}
+      ${sorted.length ? forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') }))) : `<p class="small muted">No candidates tested against ${esc(cur)} yet.</p>`}
+      ${h2h.length ? `<div class="sect">Head to head between candidates</div>${forestSVG(h2h)}
+        <ul class="h2h">${h2h.map(g => { const [c] = verdict(g); return `<li><b>${esc(g.label)}</b>: ${c === 'good' ? `<span class="pill good">${esc(short(g.lead))} is better</span>` : '<span class="pill">no clear winner yet</span>'}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</li>`; }).join('')}</ul>` : ''}
+      <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th>For</th><th class="r">Change</th><th class="r">Games</th><th>When</th><th></th></tr></thead><tbody>
+      ${detailRows.map(g => { const [c] = verdict(g); const old = (lastChange && (!g.date || g.date < lastChange)) || (promoted && g.vs === slot); return `<tr${latest.get(g.label) === g ? '' : ' class="superseded"'}><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="small">${esc(isDecks ? '' : g.vs)}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small muted" title="${esc(prettyName(g.test))}">${g.date ? esc(ago(g.date)) : '—'}${old ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
       </tbody></table></details></article>`;
   }
   body.innerHTML = h + (rows.length ? '</div>' : '');
