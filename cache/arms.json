@@ -26,6 +26,24 @@
   ],
   "wins": 1268
  },
+ "7ae8bffa55b9490ffc19": {
+  "card": "Grand Abolisher",
+  "deck": "SiskoFinal__GrandAbolisher__for__Manamorphose",
+  "games": 4504,
+  "runs": [
+   "grand_abolisher_vs_cultivate_and_manamorphose:44815372817"
+  ],
+  "wins": 758
+ },
+ "c1be9a5d76459dcd7153": {
+  "card": "Grand Abolisher",
+  "deck": "SiskoFinal__GrandAbolisher__for__Cultivate",
+  "games": 4866,
+  "runs": [
+   "grand_abolisher_vs_cultivate_and_manamorphose:44815372817"
+  ],
+  "wins": 809
+ },
  "dcfdf9a35beaff69178d": {
   "card": "Manamorphose",
   "deck": "SiskoFinal",
