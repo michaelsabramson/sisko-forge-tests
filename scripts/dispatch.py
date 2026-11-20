@@ -143,6 +143,11 @@ def main():
             for c in s["ins"]:
                 arms.append({"deck": swap_deck(base, s["out"], c), "card": c, "swap": {"out": [s["out"]], "in": [c]}})
                 compare.append([b, len(arms) - 1])
+            # several cards for one slot: also compare them directly with each other
+            ins_idx = list(range(b + 1, len(arms)))
+            for x in range(len(ins_idx)):
+                for y in range(x + 1, len(ins_idx)):
+                    compare.append([ins_idx[x], ins_idx[y]])
     elif r.get("mode") == "package":
         # each game forces one package card into the opening hand, rotating through the package;
         # the baseline forces the matching card being cut, so both sides answer "when this slot shows up early"
