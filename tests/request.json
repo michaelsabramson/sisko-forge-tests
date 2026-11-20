@@ -1,35 +1,12 @@
 {
-  "name": "lightning_greaves_vs_cultivate_and_manamorphose",
+  "name": "greaves_and_trisk_vs_cultivate",
   "arms": [
-    {
-      "deck": "SiskoFinal",
-      "card": "Cultivate"
-    },
-    {
-      "deck": "SiskoGreavesCult",
-      "card": "Lightning Greaves"
-    },
-    {
-      "deck": "SiskoFinal",
-      "card": "Manamorphose"
-    },
-    {
-      "deck": "SiskoGreavesM",
-      "card": "Lightning Greaves"
-    }
+    {"deck": "SiskoFinal", "card": "Cultivate"},
+    {"deck": "SiskoGreavesCult", "card": "Lightning Greaves"},
+    {"deck": "SiskoTriskCult", "card": "Triskaidekaphobia"}
   ],
   "band": 0,
   "minutes": 160,
   "shards": 40,
-  "run": 9,
-  "compare": [
-    [
-      0,
-      1
-    ],
-    [
-      2,
-      3
-    ]
-  ]
+  "run": 10
 }

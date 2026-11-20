@@ -62,13 +62,101 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { name: build }
       - run: tar xzf build.tgz
-      - name: Play games
-        run: scripts/shard.sh ${{ matrix.s }} $(jq -r '.minutes // 40' tests/request.json)
+      - name: Start games
+        run: nohup setsid scripts/shard.sh ${{ matrix.s }} $(jq -r '.minutes // 40' tests/request.json) > shard.out 2>&1 &
+      - name: Checkpoint 1
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
       - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
           name: out-${{ matrix.s }}
           path: out/
           retention-days: 7
+          overwrite: true
+      - name: Checkpoint 2
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 3
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 4
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 5
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 6
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 7
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 8
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Final
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 100000
+      - name: Stop games (run cancelled)
+        if: ${{ cancelled() }}
+        run: pkill -f "Run forge" || true; sleep 3
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
   aggregate:
     needs: shard
     if: ${{ always() && needs.shard.result != 'skipped' }}
