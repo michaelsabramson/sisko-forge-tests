@@ -23,7 +23,7 @@
       ]
     },
     "3": {
-      "label": "Bracket 3 \u00b7 upgraded EDHREC decks (the pool used for every test so far)",
+      "label": "Bracket 3 \u00b7 upgraded EDHREC average decks (the pool used for every test so far)",
       "decks": [
         "Atraxa",
         "Prossh",
@@ -33,13 +33,13 @@
       ]
     },
     "4": {
-      "label": "Bracket 4 \u00b7 optimized metagame decks, 6\u201313 Game Changers each",
+      "label": "Bracket 4 \u00b7 EDHREC average decks of popular high-power commanders (5\u201310 Game Changers each)",
       "decks": [
-        "B4Sheoldred",
-        "B4Dihada",
-        "B4Hakbal",
-        "B4Baylen",
-        "B4Jodah"
+        "B4Korvold",
+        "B4Yuriko",
+        "B4Najeela",
+        "B4Urza",
+        "B4Animar"
       ]
     }
   }
