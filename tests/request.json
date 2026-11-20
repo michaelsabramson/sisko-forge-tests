@@ -1,11 +1,13 @@
 {
-  "name": "control_sol_ring_vs_storm_crow",
-  "deckA": "SiskoFinal",
-  "cardA": "Sol Ring",
-  "deckB": "SiskoCtrlSol",
-  "cardB": "Storm Crow",
+  "name": "slot_cultivate_seven_anointed_riku",
+  "arms": [
+    {"deck": "SiskoFinal", "card": "Cultivate"},
+    {"deck": "Sisko7Cult", "card": "Seven of Nine, Unassimilated"},
+    {"deck": "SiskoAPCult", "card": "Anointed Procession"},
+    {"deck": "SiskoRikuV", "card": "Riku of Many Paths"}
+  ],
   "band": 0,
-  "minutes": 40,
-  "shards": 20,
-  "run": 5
+  "minutes": 160,
+  "shards": 40,
+  "run": 6
 }
