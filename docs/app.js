@@ -9,7 +9,7 @@ const BASE_P = 0.19;                    // typical win rate for precision estima
 const S = {
   token: lsGet('ghToken') || '', head: null, tree: [], rawCache: {}, forge: null, forgeLc: null, forgeNames: [],
   sf: {}, decks: {}, tab: 'results', deck: null, deckDirty: false, deckText: false,
-  test: { mode: 'swap', base: '', slots: [{ out: '', ins: [] }], decks: ['', ''], opps: [...OPP_DEFAULT], minutes: 160, name: '' },
+  test: { mode: 'swap', base: '', slots: [{ out: '', ins: [] }], decks: ['', ''], opps: [...OPP_DEFAULT], precision: 1.5, name: '' },
   results: null, runs: null, runTimer: null, search: ''
 };
 
@@ -383,10 +383,11 @@ async function saveDeck(as) {
 }
 
 /* ---------- new test ---------- */
-function estimate(arms, minutes) {
-  const n = Math.round(SHARDS * 4 / arms * minutes * GPM);
-  const pm = 196 * Math.sqrt(2 * BASE_P * (1 - BASE_P) / n);
-  const total = minutes + 15; return { n, pm, total };
+const PRECISION = [[2.0, 'Quick'], [1.5, 'Standard'], [1.0, 'Careful']];
+function estimate(arms, precision) {
+  // worst case: nothing reused from earlier tests
+  const n = Math.ceil(2 * BASE_P * (1 - BASE_P) * (196 / precision) ** 2);
+  const total = Math.min(170, Math.ceil(arms * n / (SHARDS * 4 * GPM) * 1.12)) + 15; return { n, total };
 }
 async function viewTest(v) {
   const T = S.test; const mine = myDecks();
@@ -394,7 +395,7 @@ async function viewTest(v) {
   const base = T.base ? await loadDeck(T.base) : { main: [], commander: [] };
   await sfLoad(base.main.map(r => r.name));
   const arms = T.mode === 'swap' ? T.slots.reduce((s, sl) => s + 1 + sl.ins.length, 0) : T.decks.filter(Boolean).length;
-  const est = estimate(Math.max(2, arms), T.minutes);
+  const est = estimate(Math.max(2, arms), T.precision);
   const inDeck = new Set([...base.main.map(r => r.name), ...base.commander]);
   const flagged = T.mode === 'swap' ? T.slots.flatMap(s => s.ins).filter(n => S.forge?.get(n) === 'A') : [];
   const autoName = T.mode === 'swap'
@@ -422,13 +423,13 @@ async function viewTest(v) {
       <div class="fld"><span>Opponents (${T.opps.length} selected, each pod draws 3)</span><div class="row">${[...new Set([...OPP_DEFAULT.filter(n => oppList.includes(n)), ...T.opps])].map(n => `<label class="chk ${T.opps.includes(n) ? 'on' : ''}"><input type="checkbox" data-opp="${esc(n)}" ${T.opps.includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}
         <select id="addOpp" style="width:auto"><option value="">+ Add a deck…</option>${oppList.filter(n => !OPP_DEFAULT.includes(n) && !T.opps.includes(n)).map(n => `<option>${esc(n)}</option>`).join('')}</select></div></div>
       <div class="grid2">
-        <label class="fld"><span>Run length</span><select id="tmin">${[40, 80, 120, 160].map(m => `<option value="${m}" ${m === T.minutes ? 'selected' : ''}>${m} minutes of games</option>`).join('')}</select></label>
+        <label class="fld"><span>Precision</span><select id="tmin">${PRECISION.map(([v, l]) => `<option value="${v}" ${v === T.precision ? 'selected' : ''}>${l}: ±${v.toFixed(1)} points</option>`).join('')}</select></label>
         <label class="fld"><span>Name</span><input id="tname" placeholder="${esc(autoName || 'Test name')}" value="${esc(T.name)}"></label>
       </div>
       <div class="est"><div class="stat"><b class="num">~${est.n.toLocaleString()}</b><span>games per version</span></div>
-        <div class="stat"><b class="num">±${est.pm.toFixed(1)}</b><span>points, 95% range on each gap</span></div>
-        <div class="stat"><b class="num">~${Math.round(est.total / 6) / 10} h</b><span>once it starts</span></div></div>
-      <p class="small muted" style="margin:0">Versions already played with this exact deck, card and opponents reuse those games, so the others get more of the run, and a test that's fully covered returns right away.</p>
+        <div class="stat"><b class="num">≤ ${est.total < 60 ? est.total + ' min' : (Math.round(est.total / 6) / 10) + ' h'}</b><span>once it starts</span></div></div>
+      <p class="small muted" style="margin:0">${T.precision >= 2 ? 'Quick catches big swings (3+ points) but misses about half of 2-point improvements. Good for screening ideas.' : T.precision >= 1.5 ? 'Standard catches about 3 in 4 real 2-point improvements.' : 'Careful catches nearly every real 2-point improvement. Use it to confirm a change before you make it official.'}</p>
+      <p class="small muted" style="margin:0">Time shown assumes nothing is reused. Versions already played with this exact deck, card and opponents reuse those games, so most tests finish well under it, and a fully covered test returns in a couple of minutes.</p>
       ${flagged.length ? `<div class="note">Forge's AI plays ${flagged.map(esc).join(', ')} poorly, so a loss here may mean the AI misplays it rather than the card being weak.</div>` : ''}
       <div class="row end"><span id="terr" class="small" style="color:var(--bad)"></span><button class="primary" id="queueBtn">Queue test</button></div>
     </div>`;
@@ -446,7 +447,7 @@ async function viewTest(v) {
   }
   $$('[data-opp]').forEach(c => c.onchange = () => { const n = c.dataset.opp; T.opps = c.checked ? [...T.opps, n] : T.opps.filter(x => x !== n); viewTest(v); });
   $('#addOpp').onchange = e => { if (e.target.value) { T.opps.push(e.target.value); viewTest(v); } };
-  $('#tmin').onchange = e => { T.minutes = +e.target.value; viewTest(v); };
+  $('#tmin').onchange = e => { T.precision = +e.target.value; viewTest(v); };
   $('#tname').oninput = e => T.name = e.target.value;
   $('#queueBtn').onclick = () => queueTest(autoName);
 }
@@ -469,7 +470,7 @@ async function queueTest(autoName) {
   if (T.opps.length < 3) return err('Pick at least 3 opponents.');
   if (needToken()) return;
   const name = (T.name || autoName || 'test').trim();
-  Object.assign(req, { name, minutes: T.minutes, shards: SHARDS, opponents: T.opps, submitted: new Date().toISOString() });
+  Object.assign(req, { name, precision: T.precision, shards: SHARDS, opponents: T.opps, submitted: new Date().toISOString() });
   const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
   const file = `queue/${stamp}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)}.json`;
   const b = $('#queueBtn'); b.disabled = true; b.innerHTML = '<span class="spin"></span> Queuing';
@@ -528,7 +529,7 @@ function drawRuns() {
   };
   el.innerHTML = `<div class="stack">
     ${active.length ? `<h2>Now</h2>${active.map(card).join('')}` : '<div class="card muted">No test running.</div>'}
-    <h2 style="margin-top:22px">Queue</h2>${queue.length ? queue.map((q, i) => `<div class="card row"><div class="grow"><b>${i + 1}. ${esc(q.req?.name || q.path)}</b><div class="small muted">${esc(reqSummary(q.req))} · ${q.req?.minutes || '?'} min</div></div><button class="sm ghost danger" data-unq="${esc(q.path)}">Remove</button></div>`).join('') : '<div class="card muted small">Nothing queued. Start one from New test.</div>'}
+    <h2 style="margin-top:22px">Queue</h2>${queue.length ? queue.map((q, i) => `<div class="card row"><div class="grow"><b>${i + 1}. ${esc(q.req?.name || q.path)}</b><div class="small muted">${esc(reqSummary(q.req))} · ${q.req?.precision ? '±' + q.req.precision : (q.req?.minutes || '?') + ' min'}</div></div><button class="sm ghost danger" data-unq="${esc(q.path)}">Remove</button></div>`).join('') : '<div class="card muted small">Nothing queued. Start one from New test.</div>'}
     <h2 style="margin-top:22px">Recent</h2>${runs.filter(r => r.status === 'completed').slice(0, 5).map(card).join('') || '<div class="muted">None yet.</div>'}
   </div>`;
   $$('[data-goto]').forEach(b => b.onclick = () => { S.search = b.dataset.goto.replace(/_/g, ' '); S.results = null; go('results'); });

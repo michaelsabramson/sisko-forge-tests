@@ -6,7 +6,7 @@ Queue file formats (written by the web app):
   {"mode":"decks","name":..,"decks":["SiskoFinal","SiskoV2"],"minutes":160,"opponents":[..]}
 Prints the request name, or nothing if the queue is empty.
 """
-import glob, json, os, re, sys, time
+import glob, json, math, os, re, sys, time
 import cache
 
 def read_deck(name):
@@ -50,6 +50,53 @@ def swap_deck(base, out_card, in_card):
     write_deck(name, d)
     return name
 
+GPM = 1.1        # games per process-minute (measured on GitHub runners)
+MAX_MIN = 170    # keep inside the 200-minute job limit
+P_DEFAULT = 0.19
+
+
+def _p(a):
+    return a["prior_wins"] / a["prior_games"] if a["prior_games"] >= 1000 else P_DEFAULT
+
+
+def plan_games(arms, compare, precision):
+    """New games each arm needs so every compared gap has a 95% range of +/- precision points.
+    Baselines are brought up to the even-split total; challengers then need only what's left,
+    which is less when the baseline already has lots of games."""
+    z = (precision / 196.0) ** 2           # allowed variance of the gap
+    total = [a["prior_games"] for a in arms]
+    for b in sorted({b for b, _ in compare}):
+        pq = _p(arms[b]) * (1 - _p(arms[b]))
+        total[b] = max(total[b], math.ceil(2 * pq / z))
+    for b, i in compare:
+        pb, pi = _p(arms[b]), _p(arms[i])
+        room = z - pb * (1 - pb) / total[b]
+        want = math.ceil(pi * (1 - pi) / room) if room > 0 else 10 ** 9
+        total[i] = max(total[i], want)
+    return [max(0, t - a["prior_games"]) for t, a in zip(total, arms)]
+
+
+def allocate(need, todo, procs_total):
+    """Give each arm that still needs games a share of the game processes in proportion to its need."""
+    tot = sum(need[i] for i in todo)
+    share = {i: max(1, round(procs_total * need[i] / tot)) for i in todo}
+    while sum(share.values()) > procs_total:
+        share[max(share, key=share.get)] -= 1
+    while sum(share.values()) < procs_total:
+        share[max(todo, key=lambda i: need[i] / share[i])] += 1
+    return interleave(share)
+
+
+def interleave(share):
+    """Spread each arm's processes across runners rather than bunching them on a few."""
+    left = dict(share); out = []
+    while any(left.values()):
+        for i in sorted(left):
+            if left[i]:
+                out.append(i); left[i] -= 1
+    return out
+
+
 def main():
     q = sorted(glob.glob("queue/*.json"))
     if not q:
@@ -80,15 +127,34 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
-    # reuse cached games: an arm with enough cached games for its config is not replayed
+    # reuse cached games, then size the run: either to a precision target (points, 95% range on each gap)
+    # or, for old-style requests, to a fixed number of minutes split evenly
     opps = req.get("opponents") or cache.DEFAULT_OPP
     eng, c = cache.engine_sig(), cache.load()
-    est = req["shards"] * 4 / len(arms) * req["minutes"] * 1.1
     for a in arms:
         a["key"] = cache.arm_key(a, opps, req["band"], eng)
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
-        a["cached"] = a["prior_games"] >= 0.9 * est
+    procs_total = req["shards"] * 4
+    if r.get("precision"):
+        req["precision"] = float(r["precision"])
+        need = plan_games(arms, compare, req["precision"])
+        for a, n_new in zip(arms, need):
+            a["target_new"] = n_new
+            a["cached"] = n_new == 0
+        todo = [i for i, n_new in enumerate(need) if n_new > 0]
+        if todo:
+            req["procs"] = allocate(need, todo, procs_total)
+            per = [req["procs"].count(i) for i in range(len(arms))]
+            mins = max(need[i] / (per[i] * GPM) for i in todo)
+            req["minutes"] = max(8, min(MAX_MIN, math.ceil(mins * 1.12)))   # 12% margin for slow games
+            req["capped"] = mins * 1.12 > MAX_MIN
+        else:
+            req["minutes"] = 0
+    else:
+        est = procs_total / len(arms) * req["minutes"] * GPM
+        for a in arms:
+            a["cached"] = a["prior_games"] >= 0.9 * est
     req["allcached"] = all(a["cached"] for a in arms)
     req["seedbase"] = 10000 + (int(time.time()) // 60 % 1_000_000) * 200   # fresh seeds every run
     with open("tests/request.json", "w", encoding="utf-8") as f:

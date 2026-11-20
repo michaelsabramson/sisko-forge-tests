@@ -2,11 +2,27 @@
   "mode": "swap",
   "base": "SiskoFinal",
   "slots": [
-    {"out": "Cultivate", "ins": ["Grand Abolisher"]},
-    {"out": "Manamorphose", "ins": ["Grand Abolisher"]}
+    {
+      "out": "Cultivate",
+      "ins": [
+        "Grand Abolisher"
+      ]
+    },
+    {
+      "out": "Manamorphose",
+      "ins": [
+        "Grand Abolisher"
+      ]
+    }
   ],
   "name": "Grand Abolisher vs Cultivate and Manamorphose",
-  "minutes": 160,
   "shards": 38,
-  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"]
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "precision": 1.5
 }

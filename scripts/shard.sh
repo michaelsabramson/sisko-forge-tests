@@ -12,7 +12,8 @@ RES=forge/forge-gui/res; CP="runner-classes:lib/*"
 OPP=$(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"]) | map("decks/"+.+".dck") | join(" ")' $REQ)
 mkdir -p out
 for p in 0 1 2 3; do
-  k=$((S*4+p)); i=${RUN[$((k % N))]}
+  k=$((S*4+p))
+  if [ "$(jq '.procs|length' $REQ)" -gt "$k" ] 2>/dev/null; then i=$(jq -r ".procs[$k]" $REQ); else i=${RUN[$((k % N))]}; fi
   D=$(jq -r ".arms[$i].deck" $REQ); C=$(jq -r ".arms[$i].card" $REQ)
   timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
 done
