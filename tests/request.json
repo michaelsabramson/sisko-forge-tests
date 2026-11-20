@@ -1,12 +1,14 @@
 {
-  "name": "greaves_and_trisk_vs_cultivate",
+  "name": "caesar_vs_cultivate_and_manamorphose",
   "arms": [
     {"deck": "SiskoFinal", "card": "Cultivate"},
-    {"deck": "SiskoGreavesCult", "card": "Lightning Greaves"},
-    {"deck": "SiskoTriskCult", "card": "Triskaidekaphobia"}
+    {"deck": "SiskoCaesarCult", "card": "Caesar, Legion's Emperor"},
+    {"deck": "SiskoFinal", "card": "Manamorphose"},
+    {"deck": "SiskoCaesarM", "card": "Caesar, Legion's Emperor"}
   ],
+  "compare": [[0, 1], [2, 3]],
   "band": 0,
   "minutes": 160,
-  "shards": 40,
-  "run": 10
+  "shards": 38,
+  "run": 11
 }
