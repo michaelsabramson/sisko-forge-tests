@@ -11,3 +11,11 @@ Head-to-head card-swap tests for a Captain Benjamin Sisko Commander deck, run on
 
 Method: the swapped card is forced into the opening hand of each list; each list plays separate pods against
 the same opponents and seats for a given game index; scored on wins.
+
+## Deck Lab (web app)
+
+`docs/` is a static web app served by GitHub Pages: edit decks, queue swap tests or whole-deck comparisons,
+watch runs, and browse results. Writes go through the GitHub API with a fine-grained token stored in the browser.
+Queued tests land in `queue/`; the `dispatcher` workflow starts the oldest one whenever no `swap-test` run is active
+(`scripts/dispatch.py` builds the swapped decks and `tests/request.json`). `docs/forge-cards.txt` lists the cards Forge
+implements at `FORGE_COMMIT`, with Forge's own "AI can't play this well" flags.

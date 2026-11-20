@@ -6,7 +6,7 @@ S=$1; MIN=$2
 REQ=tests/request.json
 BAND=$(jq -r '.band // 0' $REQ); N=$(jq '.arms|length' $REQ)
 RES=forge/forge-gui/res; CP="runner-classes:lib/*"
-OPP="decks/Atraxa.dck decks/Prossh.dck decks/UrDragon.dck decks/Edgar.dck decks/Meren.dck"
+OPP=$(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"]) | map("decks/"+.+".dck") | join(" ")' $REQ)
 mkdir -p out
 for p in 0 1 2 3; do
   k=$((S*4+p)); i=$((k % N))

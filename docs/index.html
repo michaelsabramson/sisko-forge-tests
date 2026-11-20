@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deck Lab</title>
+<meta name="description" content="Build Commander decks and test card swaps with Forge simulations.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='6' y='3' width='17' height='24' rx='3' fill='%23c9a227'/%3E%3Crect x='10' y='6' width='17' height='24' rx='3' fill='%23223' stroke='%23c9a227' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo" aria-hidden="true"></span>Deck Lab</div>
+  <nav class="tabs" role="tablist">
+    <button data-tab="results" class="on">Results</button>
+    <button data-tab="decks">Decks</button>
+    <button data-tab="test">New test</button>
+    <button data-tab="runs">Runs <span id="runBadge" class="badge" hidden></span></button>
+  </nav>
+  <button id="settingsBtn" class="icon" title="GitHub access" aria-label="GitHub access">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg>
+    <span id="keyDot" class="dot"></span>
+  </button>
+</header>
+<main id="view"></main>
+<div id="preview" class="preview" hidden></div>
+<div id="toast" class="toast" hidden></div>
+
+<dialog id="settings">
+  <form method="dialog" class="dlg">
+    <h2>GitHub access</h2>
+    <p>Browsing results needs nothing. Saving decks and starting tests need a GitHub token, which is stored only in this browser.</p>
+    <ol class="steps">
+      <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a>.</li>
+      <li>Repository access: <b>Only select repositories</b> → <code>sisko-forge-tests</code>.</li>
+      <li>Permissions: <b>Contents</b> read &amp; write, <b>Actions</b> read &amp; write.</li>
+      <li>Generate, then paste it here.</li>
+    </ol>
+    <label class="fld"><span>Token</span><input id="tokenIn" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+    <div class="row end">
+      <button value="clear" class="ghost" id="tokenClear">Remove</button>
+      <button value="cancel" class="ghost">Cancel</button>
+      <button value="save" class="primary" id="tokenSave">Save</button>
+    </div>
+  </form>
+</dialog>
+<script src="app.js"></script>
+</body>
+</html>
