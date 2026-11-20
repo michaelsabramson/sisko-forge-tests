@@ -95,7 +95,7 @@ async function sfLoad(names) {
       const j = await r.json();
       for (const c of j.data || []) {
         const face = c.card_faces ? c.card_faces[0] : null;
-        const info = { type: (c.type_line || '').split(' // ')[0], cmc: c.cmc || 0, ci: c.color_identity || [], mana: c.mana_cost || face?.mana_cost || '', img: c.image_uris?.normal || face?.image_uris?.normal || '' };
+        const info = { type: (c.type_line || '').split(' // ')[0], cmc: c.cmc || 0, ci: c.color_identity || [], mana: c.mana_cost || face?.mana_cost || '', img: c.image_uris?.normal || face?.image_uris?.normal || '', art: c.image_uris?.art_crop || face?.image_uris?.art_crop || '' };
         S.sf[c.name] = info; S.sf[c.name.split(' // ')[0]] = info;
         if (face) S.sf[face.name] = info;
       }
@@ -197,7 +197,7 @@ function parseResult(path, md) {
     for (const [b, i] of d.compare) {
       const A = arms[b], B = arms[i]; const p0 = A.wins / Math.max(1, A.games), p1 = B.wins / Math.max(1, B.games);
       const se = Math.sqrt(p0 * (1 - p0) / Math.max(1, A.games) + p1 * (1 - p1) / Math.max(1, B.games));
-      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se });
+      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games });
     }
   } else {
     for (const m of md.matchAll(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([\d.]+)%\s*\|$/gm)) arms.push({ deck: m[1], card: m[2], games: +m[3], wins: +m[4] });
@@ -205,11 +205,11 @@ function parseResult(path, md) {
     for (const m of md.matchAll(/^- \*\*(.+?): ([+-]?\d+(?:\.\d+)?) ± (\d+(?:\.\d+)?) points\*\*/gm)) {
       let label = m[1], vs = baseHdr || '';
       const v = label.match(/^(.+) vs (.+)$/); if (v) { label = v[1]; vs = v[2]; }
-      gaps.push({ label, vs, diff: +m[2], ci: +m[3] });
+      gaps.push({ label, vs, diff: +m[2], ci: +m[3], base: arms[0]?.deck, mode: 'swap', games: arms.find(a => a.card === label)?.games });
     }
     for (const m of md.matchAll(/\*\*Gap \((\S+) − (\S+)\): ([+-]?\d+(?:\.\d+)?) ± (\d+(?:\.\d+)?) points\*\*/g)) {
       const card = dk => arms.find(a => a.deck === dk)?.card || dk;
-      gaps.push({ label: card(m[1]), vs: card(m[2]), diff: +m[3], ci: +m[4] });
+      gaps.push({ label: card(m[1]), vs: card(m[2]), diff: +m[3], ci: +m[4], base: arms[0]?.deck, mode: 'swap', games: arms.find(a => a.deck === m[1])?.games });
     }
   }
   const title = (md.match(/^# (.+)$/m) || [])[1] || name;
@@ -255,48 +255,137 @@ async function loadResults() {
   const out = await Promise.all(files.map(async f => { try { const r = parseResult(f, await raw(f)); r.date = dates[r.name]; return r; } catch { return null; } }));
   S.results = out.filter(r => r && r.arms.length).sort((a, b) => (b.date || '').localeCompare(a.date || '') || a.name.localeCompare(b.name));
 }
-async function viewResults(v) {
-  v.innerHTML = `<div class="pagehead"><div><h1>Results</h1><p class="muted">Win-rate change from each swap, with its 95% range. A range that crosses zero means no clear difference yet.</p></div>
-    <input id="rsearch" placeholder="Filter by card or test…" style="max-width:280px" value="${esc(S.search)}"></div><div id="rlist" class="results"><div class="empty"><span class="spin"></span> Loading results…</div></div>`;
-  $('#rsearch').addEventListener('input', e => { S.search = e.target.value; drawResults(); });
-  if (!S.results) await loadResults();
-  drawResults();
+/* ---------- deck manifest ---------- */
+async function loadLab() {
+  try { S.lab = JSON.parse(await raw('decks/lab.json')); } catch { S.lab = { decks: myDecks().map(name => ({ name })) }; }
+  S.lab.decks = S.lab.decks.filter(d => deckNames().includes(d.name));
 }
-function drawResults() {
-  const el = $('#rlist'); if (!el) return;
-  const q = S.search.trim().toLowerCase();
-  const list = S.results.filter(r => !q || r.name.includes(q.replace(/\s+/g, '_')) || r.arms.some(a => (a.card + ' ' + a.deck).toLowerCase().includes(q)));
-  if (!list.length) { el.innerHTML = '<div class="empty">No results match.</div>'; return; }
-  el.innerHTML = list.map(r => {
-    const best = r.gaps.map(verdict);
-    return `<article class="card">
-      <div class="res-head"><div><div class="res-title">${esc(prettyName(r.name))}</div>
-        <div class="muted small">${r.games.toLocaleString()} games${r.date ? ' · ' + esc(ago(r.date)) : ''}</div></div>
-        <div class="row">${r.peek ? '<span class="pill gold">Early read · run still going</span>' : ''}${best.map((b, i) => b[0] ? `<span class="pill ${b[0]}">${esc(r.gaps[i].label.split(',')[0])}: ${b[1]}</span>` : '').join('')}</div></div>
-      ${r.gaps.length ? forestSVG(r.gaps) : ''}
-      <details><summary>Details</summary><p class="small muted">${esc(r.intro)}</p><table><thead><tr><th>List</th><th>Card tested</th><th class="r">Games</th><th class="r">Win rate</th></tr></thead><tbody>
-      ${r.arms.map(a => `<tr><td>${esc(a.deck)}</td><td>${esc(a.card || '—')}</td><td class="r num">${a.games.toLocaleString()}${a.reused ? ` <span class="muted small">(${a.reused.toLocaleString()} reused)</span>` : ''}</td><td class="r num">${(100 * a.wins / Math.max(1, a.games)).toFixed(1)}%</td></tr>`).join('')}
-      </tbody></table><p class="small muted">${r.gaps.map(g => `${esc(g.label)} vs ${esc(g.vs)}: ${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)} points`).join('<br>')}</p></details>
-    </article>`;
-  }).join('');
+const primary = () => S.lab.decks.map(d => d.name);
+const deckTitle = n => S.lab.decks.find(d => d.name === n)?.title || n;
+async function addToLab(name) {
+  if (primary().includes(name)) return;
+  S.lab.decks.push({ name, title: name });
+  await putFile('decks/lab.json', JSON.stringify({ ...S.lab, decks: S.lab.decks }, null, 2) + '\n', `Deck Lab: list ${name}`);
+}
+function testsFor(name) {
+  // every gap measured against this deck, newest first; early reads are dropped once the final result exists
+  const finals = new Set(S.results.filter(r => !r.peek).map(r => r.name));
+  const rows = [];
+  for (const r of S.results) {
+    if (r.peek && finals.has(r.name.replace(/_peek$/, ''))) continue;
+    for (const g of r.gaps) if (g.base === name) rows.push({ ...g, test: r.name, date: r.date, peek: r.peek });
+  }
+  return rows.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+function activeFor(name) {
+  if (!S.runs) return [];
+  const out = [];
+  for (const r of S.runs.runs) if (r.status !== 'completed' && r.req?.arms?.[0]?.deck === name) out.push({ label: reqSummary(r.req), state: r.status === 'in_progress' ? 'Testing now' : 'Waiting to start' });
+  for (const q of S.runs.queue) if ((q.req?.base || q.req?.decks?.[0]) === name) out.push({ label: reqSummary(q.req), state: 'Queued' });
+  return out;
 }
 
-/* ---------- decks view ---------- */
-async function viewDecks(v) {
-  const mine = myDecks();
-  if (!S.deck) S.deck = { name: mine.includes('SiskoFinal') ? 'SiskoFinal' : mine[0] || '', d: null, isNew: false };
-  v.innerHTML = `<div class="decks"><aside class="decklist">
-      <button class="primary" id="newDeck" style="text-align:center;margin-bottom:6px">+ New deck</button>
-      <h3>Your decks</h3>${mine.map(n => `<button data-deck="${esc(n)}" class="${S.deck.name === n ? 'on' : ''}">${esc(n)}</button>`).join('')}
-      <h3>Opponent pool</h3>${OPP_DEFAULT.filter(n => deckNames().includes(n)).map(n => `<button data-deck="${esc(n)}" class="${S.deck.name === n ? 'on' : ''}">${esc(n)}</button>`).join('')}
-    </aside><section id="editor"></section></div>`;
-  $$('[data-deck]', v).forEach(b => b.onclick = async () => { if (S.deckDirty && !confirm('Discard unsaved changes?')) return; S.deck = { name: b.dataset.deck, d: null }; S.deckDirty = false; S.deckText = false; viewDecks(v); });
-  $('#newDeck').onclick = () => { if (S.deckDirty && !confirm('Discard unsaved changes?')) return; S.deck = { name: '', d: { commander: [], main: [] }, isNew: true }; S.deckDirty = false; S.deckText = true; viewDecks(v); };
-  const ed = $('#editor');
-  if (!S.deck.d && S.deck.name) { ed.innerHTML = '<div class="empty"><span class="spin"></span></div>'; S.deck.d = structuredClone(await loadDeck(S.deck.name)); }
-  if (!S.deck.d) { ed.innerHTML = '<div class="empty">No decks yet.</div>'; return; }
+/* ---------- home: decks ---------- */
+async function viewHome(v) {
+  const prim = primary();
+  const others = deckNames().filter(n => !prim.includes(n) && !OPP_DEFAULT.includes(n)).sort();
+  v.innerHTML = `<div class="pagehead"><div><h1>Decks</h1><p class="muted">Pick a deck to see every card tested in it, edit the list, or start a test.</p></div>
+      <button class="primary" id="newDeck">+ New deck</button></div>
+    <div class="deckgrid" id="dgrid">${prim.map(n => `<a class="dcard" href="#deck/${encodeURIComponent(n)}" data-name="${esc(n)}"><div class="art"></div><div class="body"><div class="res-title">${esc(deckTitle(n))}</div><div class="small muted">${esc(n)}</div><div class="dmeta small muted"><span class="spin"></span></div></div></a>`).join('')}</div>
+    <details class="more"><summary>Test variants and older lists (${others.length})</summary><div class="row" style="margin-top:10px">${others.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></details>
+    <details class="more"><summary>Opponent pool (${OPP_DEFAULT.length})</summary><div class="row" style="margin-top:10px">${OPP_DEFAULT.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></details>`;
+  $('#newDeck').onclick = () => { location.hash = '#new'; };
+  if (!S.results) await loadResults();
+  const decks = await Promise.all(prim.map(n => loadDeck(n).catch(() => null)));
+  await sfLoad(decks.filter(Boolean).flatMap(d => d.commander));
+  prim.forEach((n, k) => {
+    const el = $(`.dcard[data-name="${CSS.escape(n)}"]`); if (!el) return; const d = decks[k];
+    const art = d && S.sf[d.commander[0]]?.art; if (art) $('.art', el).style.backgroundImage = `url("${art}")`;
+    const rows = testsFor(n); const best = rows.filter(g => verdict(g)[0] === 'good').sort((a, b) => b.diff - a.diff)[0];
+    const act = activeFor(n);
+    $('.dmeta', el).innerHTML = `${d ? esc(d.commander.join(' + ')) + '<br>' : ''}${rows.length ? `${new Set(rows.map(r => r.label)).size} cards tested${rows[0].date ? ' · last ' + esc(ago(rows[0].date)) : ''}` : 'No tests yet'}
+      ${best ? `<div style="margin-top:6px"><span class="pill good">${esc(best.label.split(',')[0])} for ${esc(best.vs.split(',')[0])}: +${best.diff.toFixed(1)}</span></div>` : ''}
+      ${act.length ? `<div style="margin-top:6px"><span class="pill gold">${esc(act[0].state)}${act.length > 1 ? ` +${act.length - 1}` : ''}</span></div>` : ''}`;
+  });
+}
+
+/* ---------- deck page ---------- */
+async function viewDeck(v, name, sub = 'tests') {
+  if (!deckNames().includes(name)) { v.innerHTML = `<div class="note bad">No deck called ${esc(name)}.</div>`; return; }
+  if (S.deck?.name !== name || S.deck?.isNew) { S.deck = { name, d: null, isNew: false }; S.deckDirty = false; S.deckText = false; }
+  const isOpp = OPP_DEFAULT.includes(name);
+  v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
+    <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
+      ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
+    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['list', 'List'], ['notes', 'Notes']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
+    <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
+  if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
+  $('#dsub').textContent = `${name} · ${S.deck.d.commander.join(' + ') || 'no commander'}`;
+  const body = $('#dbody');
+  if (sub === 'list') { body.innerHTML = '<div id="editor"></div>'; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
+  else if (sub === 'notes') await drawNotes(body, name);
+  else await drawDeckTests(body, name);
+}
+async function drawDeckTests(body, name) {
+  if (!S.results) await loadResults();
+  if (!S.runs) { try { await loadRuns(); } catch {} }
+  const rows = testsFor(name), act = activeFor(name);
+  const inList = new Set(S.deck.d.main.map(r => r.name));
+  const slots = new Map();
+  for (const g of rows) { const k = g.mode === 'decks' ? '\u0000decks' : g.vs; (slots.get(k) || slots.set(k, []).get(k)).push(g); }
+  let h = act.map(a => `<div class="note" style="margin-bottom:12px"><b>${esc(a.state)}:</b> ${esc(a.label)} · <a href="#runs">Runs</a></div>`).join('');
+  if (!rows.length) h += `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${encodeURIComponent(name)}">Start one</a></div>`;
+  else h += `<p class="muted small" style="margin:0 0 12px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots. Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range; ranges crossing zero mean no clear difference.</p><div class="results">`;
+  for (const [slot, gs] of slots) {
+    const isDecks = slot === '\u0000decks';
+    const sorted = [...gs].sort((a, b) => b.diff - a.diff);
+    const now = isDecks ? '' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
+    h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Whole-deck comparisons' : esc(slot) + ' slot'}</div>
+        <div class="small muted">${gs.length} test${gs.length > 1 ? 's' : ''} · latest ${gs[0].date ? esc(ago(gs[0].date)) : 'date unknown'}</div></div>
+        <div class="row">${now}${isDecks || !inList.has(slot) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(slot)}">Test more here</a>`}</div></div>
+      ${forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') })))}
+      <details><summary>Details</summary><table><thead><tr><th>${isDecks ? 'Deck' : 'Card in'}</th><th class="r">Change</th><th class="r">Games</th><th>Test</th><th>When</th></tr></thead><tbody>
+      ${sorted.map(g => { const [c, t] = verdict(g); return `<tr><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small">${esc(prettyName(g.test))}</td><td class="small muted">${g.date ? esc(ago(g.date)) : '—'}</td></tr>`; }).join('')}
+      </tbody></table></details></article>`;
+  }
+  body.innerHTML = h + (rows.length ? '</div>' : '');
+}
+function mdLite(src) {
+  // headings, bullets, bold, italics, links; everything escaped first
+  const inline = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|\W)_(.+?)_(?=\W|$)/g, '$1<i>$2</i>').replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  let out = '', inList = false;
+  for (const line of src.split('\n')) {
+    const h = line.match(/^(#{1,3})\s+(.*)/), li = line.match(/^\s*[-*]\s+(.*)/);
+    if (!li && inList) { out += '</ul>'; inList = false; }
+    if (h) out += `<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`;
+    else if (li) { if (!inList) { out += '<ul>'; inList = true; } out += `<li>${inline(li[1])}</li>`; }
+    else if (line.trim()) out += `<p>${inline(line)}</p>`;
+  }
+  return out + (inList ? '</ul>' : '');
+}
+const NOTES_TEMPLATE = `## Game plan\n- \n\n## Mulligan\n- \n\n## Key cards and how to play them\n- \n\n## Hints for the simulator\n- Cards the AI should play a particular way (these need Forge AI hints before tests are fair)\n`;
+async function drawNotes(body, name, editing = false) {
+  const path = `decks/${name}.notes.md`;
+  let txt = ''; if (S.tree.includes(path)) { try { txt = await raw(path); } catch {} }
+  if (editing) {
+    body.innerHTML = `<div class="card stack"><textarea id="ntext" spellcheck="true" style="min-height:460px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">${esc(txt || NOTES_TEMPLATE)}</textarea>
+      <div class="row end"><span class="small muted grow">Markdown: ## headings, - bullets, **bold**.</span><button id="ncancel" class="ghost">Cancel</button><button id="nsave" class="primary">Save notes</button></div></div>`;
+    $('#ncancel').onclick = () => drawNotes(body, name);
+    $('#nsave').onclick = async () => {
+      if (needToken()) return; const b = $('#nsave'); b.disabled = true; b.innerHTML = '<span class="spin"></span>';
+      try { await putFile(path, $('#ntext').value.replace(/\s+$/, '') + '\n', `Deck Lab: notes for ${name}`); toast('Notes saved'); drawNotes(body, name); }
+      catch (e) { toast('Save failed: ' + e.message, true); b.disabled = false; b.textContent = 'Save notes'; }
+    };
+    return;
+  }
+  body.innerHTML = `<div class="card"><div class="row" style="justify-content:flex-end"><button id="nedit" class="sm">${txt ? 'Edit notes' : 'Write notes'}</button></div>
+    <div class="notes">${txt ? mdLite(txt) : '<p class="muted">No notes yet. Game plan, mulligan rules, how key cards should be played, and anything the simulator needs to know.</p>'}</div></div>`;
+  $('#nedit').onclick = () => drawNotes(body, name, true);
+}
+async function viewNewDeck(v) {
+  if (!S.deck?.isNew) { S.deck = { name: '', d: { commander: [], main: [] }, isNew: true }; S.deckDirty = false; S.deckText = true; }
+  v.innerHTML = `<a href="#decks" class="back small">← Decks</a><div class="pagehead" style="margin-top:6px"><div><h1>New deck</h1><p class="muted">Paste a list from Moxfield, Archidekt or anywhere, or switch to the visual view and add cards one by one.</p></div></div><div id="editor"></div>`;
   drawEditor();
-  const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); if (S.tab === 'decks') drawEditor();
 }
 function deckStats(d) {
   const count = d.commander.length + d.main.reduce((s, r) => s + r.n, 0);
@@ -321,7 +410,7 @@ function drawEditor() {
     <div class="row"><input id="dname" class="grow" style="max-width:320px;font-weight:700;font-size:17px" placeholder="DeckName (letters, digits, -)" value="${esc(S.deck.name)}" ${S.deck.isNew ? '' : 'readonly title="Use Save as to copy under a new name"'}>
       <span class="grow"></span>
       <button id="txtBtn" class="ghost">${S.deckText ? 'Visual view' : 'Edit as text'}</button>
-      ${S.deck.isNew ? '' : '<button id="saveAs">Save as…</button><button id="testIt">Test a swap</button>'}
+      ${S.deck.isNew ? '' : '<button id="saveAs">Save as…</button>'}
       <button id="saveDeck" class="primary" ${S.deckDirty || S.deck.isNew ? '' : 'disabled'}>Save</button></div>
     <div class="stats">
       <div class="stat"><b class="num">${st.count}</b><span>cards</span></div>
@@ -343,7 +432,6 @@ function drawEditor() {
   $('#txtBtn').onclick = () => { S.deckText = !S.deckText; drawEditor(); };
   $('#saveDeck').onclick = () => saveDeck(false);
   $('#saveAs') && ($('#saveAs').onclick = () => saveDeck(true));
-  $('#testIt') && ($('#testIt').onclick = () => { S.test.mode = 'swap'; S.test.base = S.deck.name; S.test.slots = [{ out: '', ins: [] }]; go('test'); });
   if (S.deck.isNew) $('#dname').oninput = e => S.deck.name = e.target.value.trim();
   if (S.deckText) {
     $('#applyText').onclick = async () => {
@@ -377,8 +465,9 @@ async function saveDeck(as) {
   const btn = $('#saveDeck'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
   try {
     await putFile(`decks/${name}.dck`, toDck(name, S.deck.d), `Deck Lab: save ${name}`);
-    S.decks[name] = structuredClone(S.deck.d); S.deck = { name, d: S.deck.d, isNew: false }; S.deckDirty = false;
-    toast(`Saved ${name}`); viewDecks($('#view'));
+    S.decks[name] = structuredClone(S.deck.d); const wasNew = S.deck.isNew || as; S.deck = { name, d: S.deck.d, isNew: false }; S.deckDirty = false;
+    if (wasNew && !OPP_DEFAULT.includes(name)) { try { await addToLab(name); } catch {} }
+    toast(`Saved ${name}`); location.hash = `#deck/${encodeURIComponent(name)}/list`; route();
   } catch (e) { toast('Save failed: ' + e.message, true); btn.disabled = false; btn.textContent = 'Save'; }
 }
 
@@ -390,8 +479,8 @@ function estimate(arms, precision) {
   const total = Math.min(170, Math.ceil(arms * n / (SHARDS * 4 * GPM) * 1.12)) + 15; return { n, total };
 }
 async function viewTest(v) {
-  const T = S.test; const mine = myDecks();
-  if (!T.base || !mine.includes(T.base)) T.base = mine.includes('SiskoFinal') ? 'SiskoFinal' : mine[0];
+  const T = S.test; const mine = [...primary(), ...myDecks().filter(n => !primary().includes(n))];
+  if (!T.base || !mine.includes(T.base)) T.base = primary()[0] || mine[0];
   const base = T.base ? await loadDeck(T.base) : { main: [], commander: [] };
   await sfLoad(base.main.map(r => r.name));
   const arms = T.mode === 'swap' ? T.slots.reduce((s, sl) => s + 1 + sl.ins.length, 0) : T.decks.filter(Boolean).length;
@@ -403,7 +492,7 @@ async function viewTest(v) {
     : T.decks.filter(Boolean).join(' vs ');
   const allOpp = deckNames().filter(n => !isGen(n) && !(T.mode === 'decks' ? T.decks : [T.base]).includes(n));
   const oppList = [...OPP_DEFAULT.filter(n => allOpp.includes(n)), ...allOpp.filter(n => !OPP_DEFAULT.includes(n)).sort()];
-  v.innerHTML = `<div class="pagehead"><div><h1>New test</h1><p class="muted">Each version plays thousands of 4-player pods against the same opponents and seats, so only the change differs.</p></div>
+  v.innerHTML = `<a href="#deck/${encodeURIComponent(T.base)}" class="back small">← ${esc(deckTitle(T.base))}</a><div class="pagehead" style="margin-top:6px"><div><h1>New test</h1><p class="muted">Each version plays thousands of 4-player pods against the same opponents and seats, so only the change differs.</p></div>
       <div class="seg"><button data-mode="swap" class="${T.mode === 'swap' ? 'on' : ''}">Swap cards</button><button data-mode="decks" class="${T.mode === 'decks' ? 'on' : ''}">Compare whole decks</button></div></div>
     <div class="card stack">
     ${T.mode === 'swap' ? `
@@ -435,7 +524,7 @@ async function viewTest(v) {
     </div>`;
   $$('[data-mode]').forEach(b => b.onclick = () => { T.mode = b.dataset.mode; if (T.mode === 'decks' && !T.decks[0]) T.decks = [T.base, '']; viewTest(v); });
   if (T.mode === 'swap') {
-    $('#tbase').onchange = e => { T.base = e.target.value; T.slots = [{ out: '', ins: [] }]; viewTest(v); };
+    $('#tbase').onchange = e => { T.base = e.target.value; T.slots = [{ out: '', ins: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(T.base)); viewTest(v); };
     $$('[data-out]').forEach(s => s.onchange = () => { T.slots[+s.dataset.out].out = s.value; viewTest(v); });
     $$('[data-in]').forEach(inp => attachAuto(inp, n => { const sl = T.slots[+inp.dataset.in]; if (inDeck.has(n)) { toast(`${n} is already in ${T.base}`, true); return; } if (!sl.ins.includes(n)) sl.ins.push(n); sfLoad([n]); viewTest(v).then(() => $(`[data-in="${inp.dataset.in}"]`)?.focus()); }, n => !inDeck.has(n)));
     $$('[data-delin]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delin.split(':').map(Number); T.slots[i].ins.splice(j, 1); viewTest(v); });
@@ -477,7 +566,7 @@ async function queueTest(autoName) {
   try {
     await putFile(file, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue ${name}`);
     T.slots = [{ out: '', ins: [] }]; T.name = '';
-    toast('Queued. It starts as soon as the runners are free.'); S.runs = null; go('runs');
+    toast('Queued. It starts as soon as the runners are free.'); S.runs = null; location.hash = '#runs';
   } catch (e) { toast('Could not queue: ' + e.message, true); b.disabled = false; b.textContent = 'Queue test'; }
 }
 
@@ -488,7 +577,7 @@ async function loadRuns() {
     let req = null; try { req = JSON.parse(await raw('tests/request.json', w.head_sha)); } catch {}
     return { id: w.id, status: w.status, conclusion: w.conclusion, started: w.run_started_at || w.created_at, updated: w.updated_at, url: w.html_url, req };
   }));
-  const qfiles = S.tree.filter(p => /^queue\/.+\.json$/.test(p)).sort();
+  const qfiles = S.tree.filter(p => /^queue\/[^/]+\.json$/.test(p)).sort();
   const queue = await Promise.all(qfiles.map(async p => { try { return { path: p, req: JSON.parse(await raw(p)) }; } catch { return { path: p, req: null }; } }));
   S.runs = { runs, queue, at: Date.now() };
 }
@@ -496,6 +585,10 @@ function reqSummary(q) {
   if (!q) return '';
   if (q.mode === 'decks' || (!q.slots && q.decks)) return (q.decks || []).join(' vs ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');
+  if (q.arms && q.compare) {
+    const by = new Map(); for (const [b, i] of q.compare) { const k = q.arms[i].card || q.arms[i].deck; (by.get(k) || by.set(k, []).get(k)).push(q.arms[b].card || q.arms[b].deck); }
+    return [...by].map(([c, outs]) => q.mode === 'decks' ? `${c} vs ${outs.join(', ')}` : `${c} in for ${outs.join(', ')}`).join(' · ');
+  }
   if (q.arms) return q.arms.map(a => a.card || a.deck).filter((x, i, A) => A.indexOf(x) === i).join(' · ');
   return '';
 }
@@ -522,7 +615,7 @@ function drawRuns() {
     return `<div class="card"><div class="res-head"><div><div class="res-title">${esc(prettyName(resName || 'unknown test'))}</div><div class="small muted">${esc(reqSummary(q))}</div></div>${st}</div>
       ${r.status !== 'completed' ? `<div class="prog"><div style="width:${pct}%"></div></div><div class="small muted">${running ? `Results around ${fmtTime(eta)}` : 'Starts when the current run finishes'}${hasPeek ? ' · early read available' : ''}</div>` : `<div class="small muted" style="margin-top:6px">Finished ${esc(ago(r.updated))}</div>`}
       <div class="row" style="margin-top:10px">
-        ${(hasRes || hasPeek) ? `<button class="sm" data-goto="${esc(resName)}">View ${hasRes ? 'results' : 'early read'}</button>` : ''}
+        ${(hasRes || hasPeek) ? `<button class="sm" data-goto="${esc(resName)}" data-base="${esc(q.arms?.[0]?.deck || '')}">View ${hasRes ? 'results' : 'early read'}</button>` : ''}
         ${running && el > 25 ? `<button class="sm" data-peek="${r.id}">Get early read</button>` : ''}
         ${r.status !== 'completed' ? `<button class="sm ghost danger" data-cancel="${r.id}">Cancel</button>` : ''}
         <a class="small" href="${esc(r.url)}" target="_blank" rel="noopener" style="margin-left:auto">GitHub run ↗</a></div></div>`;
@@ -532,29 +625,43 @@ function drawRuns() {
     <h2 style="margin-top:22px">Queue</h2>${queue.length ? queue.map((q, i) => `<div class="card row"><div class="grow"><b>${i + 1}. ${esc(q.req?.name || q.path)}</b><div class="small muted">${esc(reqSummary(q.req))} · ${q.req?.precision ? '±' + q.req.precision : (q.req?.minutes || '?') + ' min'}</div></div><button class="sm ghost danger" data-unq="${esc(q.path)}">Remove</button></div>`).join('') : '<div class="card muted small">Nothing queued. Start one from New test.</div>'}
     <h2 style="margin-top:22px">Recent</h2>${runs.filter(r => r.status === 'completed').slice(0, 5).map(card).join('') || '<div class="muted">None yet.</div>'}
   </div>`;
-  $$('[data-goto]').forEach(b => b.onclick = () => { S.search = b.dataset.goto.replace(/_/g, ' '); S.results = null; go('results'); });
+  $$('[data-goto]').forEach(b => b.onclick = () => { S.results = null; location.hash = '#deck/' + encodeURIComponent(b.dataset.base || primary()[0]); });
   $$('[data-peek]').forEach(b => b.onclick = async () => { if (needToken()) return; b.disabled = true; try { await dispatch('peek.yml', { run_id: b.dataset.peek }); toast('Early read requested. It lands in Results in about 5 minutes.'); } catch (e) { toast(e.message, true); b.disabled = false; } });
   $$('[data-cancel]').forEach(b => b.onclick = async () => { if (needToken() || !confirm('Cancel this run? Games played so far are still tallied.')) return; try { await api(`/repos/${REPO}/actions/runs/${b.dataset.cancel}/cancel`, { method: 'POST' }); toast('Cancelling…'); } catch (e) { toast(e.message, true); } });
   $$('[data-unq]').forEach(b => b.onclick = async () => { if (needToken() || !confirm('Remove this queued test?')) return; try { await deleteFile(b.dataset.unq, 'Deck Lab: remove queued test'); S.runs.queue = S.runs.queue.filter(q => q.path !== b.dataset.unq); drawRuns(); } catch (e) { toast(e.message, true); } });
 }
 
 /* ---------- shell ---------- */
-async function go(tab) {
-  S.tab = tab; lsSet('tab', tab); if (location.hash.slice(1) !== tab) history.replaceState(null, '', '#' + tab);
-  $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
-  const v = $('#view'); $('#preview').hidden = true;
+function parseRoute() {
+  const [path, qs] = location.hash.slice(1).split('?'); const parts = path.split('/').map(decodeURIComponent);
+  return { page: parts[0] || 'decks', arg: parts[1], sub: parts[2], q: new URLSearchParams(qs || '') };
+}
+async function route() {
+  const r = parseRoute(); const page = ['decks', 'deck', 'test', 'runs', 'new'].includes(r.page) ? r.page : 'decks';
+  if (S.deckDirty && !(page === 'deck' && r.arg === S.deck?.name && r.sub === 'list') && !(page === 'new' && S.deck?.isNew)) {
+    if (!confirm('Discard unsaved deck changes?')) { history.back(); return; }
+    S.deckDirty = false; if (S.deck?.isNew) S.deck = null; else if (S.deck) S.deck.d = null;
+  }
+  S.tab = page === 'runs' ? 'runs' : 'decks';
+  $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === S.tab));
+  const v = $('#view'); $('#preview').hidden = true; scrollTo(0, 0);
   try {
-    if (tab === 'results') await viewResults(v);
-    else if (tab === 'decks') await viewDecks(v);
-    else if (tab === 'test') await viewTest(v);
-    else if (tab === 'runs') await viewRuns(v);
+    if (page === 'runs') await viewRuns(v);
+    else if (page === 'deck') await viewDeck(v, r.arg, r.sub || 'tests');
+    else if (page === 'new') await viewNewDeck(v);
+    else if (page === 'test') {
+      if (r.arg && r.arg !== S.test.base) { S.test.base = r.arg; S.test.slots = [{ out: '', ins: [] }]; }
+      if (r.q.get('out')) { S.test.mode = 'swap'; S.test.slots = [{ out: r.q.get('out'), ins: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(S.test.base)); }
+      await viewTest(v);
+    } else await viewHome(v);
   } catch (e) { v.innerHTML = `<div class="note bad">Something went wrong: ${esc(e.message)}</div>`; console.error(e); }
 }
+function go(tab) { location.hash = '#' + tab; }
 function openSettings() { $('#tokenIn').value = S.token; $('#settings').showModal(); }
 function setToken(t) { S.token = t; lsSet('ghToken', t || null); $('#keyDot').classList.toggle('ok', !!t); }
 async function boot() {
   $('#keyDot').classList.toggle('ok', !!S.token);
-  $$('.tabs button').forEach(b => b.onclick = () => { if (S.tab === 'decks' && S.deckDirty && b.dataset.tab !== 'decks' && !confirm('Discard unsaved deck changes?')) return; go(b.dataset.tab); });
+  $$('.tabs button').forEach(b => b.onclick = () => { location.hash = '#' + b.dataset.tab; });
   $('#settingsBtn').onclick = openSettings;
   $('#settings').addEventListener('close', async () => {
     const v = $('#settings').returnValue;
@@ -566,13 +673,12 @@ async function boot() {
       catch (e) { toast('Token check failed: ' + e.message, true); }
     }
   });
-  window.addEventListener('hashchange', () => { const t = location.hash.slice(1); if (t !== S.tab && ['results', 'decks', 'test', 'runs'].includes(t)) go(t); });
+  window.addEventListener('hashchange', route);
   window.addEventListener('beforeunload', e => { if (S.deckDirty) { e.preventDefault(); e.returnValue = ''; } });
   $('#view').innerHTML = '<div class="empty"><span class="spin"></span> Loading…</div>';
-  try { await Promise.all([loadTree(), loadForge()]); }
+  try { await Promise.all([loadTree(), loadForge()]); await loadLab(); }
   catch (e) { $('#view').innerHTML = `<div class="note bad">Couldn't reach GitHub: ${esc(e.message)}</div>`; return; }
-  const want = location.hash.slice(1) || lsGet('tab') || 'results';
-  go(['results', 'decks', 'test', 'runs'].includes(want) ? want : 'results');
+  route();
   // runs badge on load
   loadRuns().then(() => { const n = S.runs.runs.filter(r => r.status !== 'completed').length + S.runs.queue.length; const b = $('#runBadge'); b.hidden = !n; b.textContent = n; }).catch(() => {});
 }
