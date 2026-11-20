@@ -35,6 +35,15 @@
   ],
   "wins": 758
  },
+ "b46f406457e099b109e3": {
+  "card": "Riku of Many Paths",
+  "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
+  "games": 5098,
+  "runs": [
+   "riku_vs_caesar_in_the_manamorphose_slot:44824332606"
+  ],
+  "wins": 992
+ },
  "c1be9a5d76459dcd7153": {
   "card": "Grand Abolisher",
   "deck": "SiskoFinal__GrandAbolisher__for__Cultivate",
