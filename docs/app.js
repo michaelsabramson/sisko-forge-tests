@@ -386,16 +386,25 @@ async function drawDeckTests(body, name) {
     h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(cur) + ' slot'}${promoted ? ` <span class="small muted" style="font-weight:500">(was ${esc(slot)})</span>` : ''}</div>
         <div class="small muted"><span class="pill ${pool === String(deckBracket(name)) ? '' : 'accent'}">vs ${esc(poolName(pool))}</span> ${all.length} result${all.length > 1 ? 's' : ''} · latest ${all[0]?.date ? esc(ago(all[0].date)) : 'date unknown'}</div></div>
         <div class="row">${now}${isDecks || isPkg || !inList.has(cur) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(cur)}&pool=${pool}">Test more here</a>`}</div></div>
-      ${isDecks || isPkg ? '' : `<div class="sect">vs the current card · ${esc(cur)}</div>`}
-      ${sorted.length ? forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') }))) : `<p class="small muted">No candidates tested against ${esc(cur)} yet.</p>`}
-      ${h2h.length ? `<div class="sect">Head to head between candidates</div>${forestSVG(h2h)}
-        <ul class="h2h">${h2h.map(g => { const [c] = verdict(g); return `<li><b>${esc(g.label)}</b>: ${c === 'good' ? `<span class="pill good">${esc(short(g.lead))} is better</span>` : '<span class="pill">no clear winner yet</span>'}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</li>`; }).join('')}</ul>` : ''}
+      ${h2h.length ? `<div class="seg panes" style="margin-top:12px"><button class="on" data-pane="cur">vs ${esc(short(cur))}</button><button data-pane="cvc">Challenger vs challenger <span class="muted">${h2h.length}</span></button></div>` : ''}
+      <div class="pane" data-pane-body="cur">
+      ${sorted.length ? forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') }))) : `<p class="small muted">No challengers tested against ${esc(cur)} yet.</p>`}
       <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th>For</th><th class="r">Change</th><th class="r">Games</th><th>When</th><th></th></tr></thead><tbody>
       ${detailRows.map(g => { const [c] = verdict(g); const old = (lastChange && (!g.date || g.date < lastChange)) || (promoted && g.vs === slot); return `<tr${latest.get(g.label) === g ? '' : ' class="superseded"'}><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="small">${esc(isDecks ? '' : g.vs)}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small muted" title="${esc(prettyName(g.test))}">${g.date ? esc(ago(g.date)) : '—'}${old ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
-      </tbody></table></details></article>`;
+      </tbody></table></details></div>
+      ${h2h.length ? `<div class="pane" data-pane-body="cvc" hidden>
+        <p class="small muted" style="margin:10px 0 0">Challengers tested directly against each other in this slot. The leader of each pair is named first.</p>
+        ${forestSVG(h2h)}
+        <ul class="h2h">${h2h.map(g => { const [c] = verdict(g); return `<li><b>${esc(g.label)}</b>: ${c === 'good' ? `<span class="pill good">${esc(short(g.lead))} is better</span>` : '<span class="pill">no clear winner yet</span>'} <span class="small muted">${g.games && g.agames ? (g.games + g.agames).toLocaleString() + ' games · ' : ''}${g.date ? esc(ago(g.date)) : ''}</span>${g.peek ? ' <span class="pill gold">early read</span>' : ''}</li>`; }).join('')}</ul>
+      </div>` : ''}</article>`;
   }
   body.innerHTML = h + (rows.length ? '</div>' : '');
   $$('[data-promote]', body).forEach(b => b.onclick = () => promote(name, S.rendered[+b.dataset.promote]));
+  $$('[data-pane]', body).forEach(b => b.onclick = () => {
+    const card = b.closest('article');
+    $$('[data-pane]', card).forEach(x => x.classList.toggle('on', x === b));
+    $$('[data-pane-body]', card).forEach(p => p.hidden = p.dataset.paneBody !== b.dataset.pane);
+  });
 }
 function mdLite(src) {
   // headings, bullets, bold, italics, links; everything escaped first
