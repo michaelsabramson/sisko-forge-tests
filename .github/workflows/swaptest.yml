@@ -18,7 +18,7 @@ jobs:
       - id: m
         run: echo "shards=$(jq -c '[range(0; (.shards // 20))]' tests/request.json)" >> $GITHUB_OUTPUT
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '21', cache: maven }
+        with: { distribution: temurin, java-version: '21' }
       - name: Fetch Forge at pinned commit
         run: |
           git init forge && cd forge
@@ -64,7 +64,7 @@ jobs:
           retention-days: 7
   aggregate:
     needs: shard
-    if: always()
+    if: ${{ always() && needs.shard.result != 'skipped' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
