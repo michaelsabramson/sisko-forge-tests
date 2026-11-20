@@ -148,7 +148,7 @@ async function loadDeck(name) {
   return (S.decks[name] = d);
 }
 function deckNames() { return S.tree.filter(p => /^decks\/[^/]+\.dck$/.test(p)).map(p => p.slice(6, -4)); }
-function myDecks() { return deckNames().filter(n => !isGen(n) && !OPP_DEFAULT.includes(n)).sort(); }
+function myDecks() { return deckNames().filter(n => !isGen(n) && !OPP_DEFAULT.includes(n) && !(S.lab ? poolDecks() : []).includes(n)).sort(); }
 
 /* ---------- autocomplete ---------- */
 function attachAuto(input, onPick, filter) {
@@ -192,12 +192,12 @@ function parseResult(path, md) {
   const dm = md.match(/<!-- data (\{.*\}) -->/);
   let arms = [], gaps = [];
   if (dm) {
-    const d = JSON.parse(dm[1]); arms = d.arms.map(a => ({ deck: a.deck, card: a.card, label: a.label, swap: a.swap, games: a.games, wins: a.wins, reused: a.reused || 0 }));
+    const d = JSON.parse(dm[1]); var pool = poolOf(d.opponents); arms = d.arms.map(a => ({ deck: a.deck, card: a.card, label: a.label, swap: a.swap, games: a.games, wins: a.wins, reused: a.reused || 0 }));
     const lab = a => a.label || a.card || a.deck;
     for (const [b, i] of d.compare) {
       const A = arms[b], B = arms[i]; const p0 = A.wins / Math.max(1, A.games), p1 = B.wins / Math.max(1, B.games);
       const se = Math.sqrt(p0 * (1 - p0) / Math.max(1, A.games) + p1 * (1 - p1) / Math.max(1, B.games));
-      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games, swap: B.swap, other: B.deck });
+      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games, swap: B.swap, other: B.deck, pool });
     }
   } else {
     for (const m of md.matchAll(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([\d.]+)%\s*\|$/gm)) arms.push({ deck: m[1], card: m[2], games: +m[3], wins: +m[4] });
@@ -214,6 +214,7 @@ function parseResult(path, md) {
   }
   const title = (md.match(/^# (.+)$/m) || [])[1] || name;
   const intro = (md.split('\n').find(l => l && !l.startsWith('#') && !l.startsWith('|')) || '');
+  for (const g of gaps) g.pool ||= '3';
   return { path, name, peek, title, intro, arms, gaps, games: arms.reduce((s, a) => s + a.games, 0) };
 }
 function verdict(g) {
@@ -259,12 +260,22 @@ async function loadResults() {
 async function loadLab() {
   try { S.lab = JSON.parse(await raw('decks/lab.json')); } catch { S.lab = { decks: myDecks().map(name => ({ name })) }; }
   S.lab.decks = S.lab.decks.filter(d => deckNames().includes(d.name));
+  if (!S.test.oppsTouched) S.test.opps = [...(POOLS()[3]?.decks || OPP_DEFAULT)];
 }
 const primary = () => S.lab.decks.map(d => d.name);
+const POOLS = () => S.lab.pools || { 3: { label: 'Bracket 3', decks: OPP_DEFAULT } };
+const poolDecks = () => Object.values(POOLS()).flatMap(p => p.decks);
+const deckBracket = n => S.lab.decks.find(d => d.name === n)?.bracket || 3;
+function poolOf(opps) {
+  const o = [...(opps || OPP_DEFAULT)].sort().join('|');
+  for (const [b, p] of Object.entries(POOLS())) if ([...p.decks].sort().join('|') === o) return b;
+  return 'custom';
+}
+const poolName = b => b === 'custom' ? 'custom opponents' : `bracket ${b}`;
 const deckTitle = n => S.lab.decks.find(d => d.name === n)?.title || n;
 async function addToLab(name) {
   if (primary().includes(name)) return;
-  S.lab.decks.push({ name, title: name });
+  S.lab.decks.push({ name, title: name, bracket: 3 });
   await putFile('decks/lab.json', JSON.stringify({ ...S.lab, decks: S.lab.decks }, null, 2) + '\n', `Deck Lab: list ${name}`);
 }
 function testsFor(name) {
@@ -291,12 +302,12 @@ function activeFor(name) {
 /* ---------- home: decks ---------- */
 async function viewHome(v) {
   const prim = primary();
-  const others = deckNames().filter(n => !prim.includes(n) && !OPP_DEFAULT.includes(n)).sort();
+  const others = deckNames().filter(n => !prim.includes(n) && !poolDecks().includes(n)).sort();
   v.innerHTML = `<div class="pagehead"><div><h1>Decks</h1><p class="muted">Pick a deck to see every card tested in it, edit the list, or start a test.</p></div>
       <div class="row"><a class="btn" href="#test/${encodeURIComponent(prim[0] || '')}?mode=decks">Head to head</a><button class="primary" id="newDeck">+ New deck</button></div></div>
-    <div class="deckgrid" id="dgrid">${prim.map(n => `<a class="dcard" href="#deck/${encodeURIComponent(n)}" data-name="${esc(n)}"><div class="art"></div><div class="body"><div class="res-title">${esc(deckTitle(n))}</div><div class="small muted">${esc(n)}</div><div class="dmeta small muted"><span class="spin"></span></div></div></a>`).join('')}</div>
+    <div class="deckgrid" id="dgrid">${prim.map(n => `<a class="dcard" href="#deck/${encodeURIComponent(n)}" data-name="${esc(n)}"><div class="art"></div><div class="body"><div class="res-title">${esc(deckTitle(n))}</div><div class="small muted">${esc(n)} · bracket ${deckBracket(n)}</div><div class="dmeta small muted"><span class="spin"></span></div></div></a>`).join('')}</div>
     <details class="more"><summary>Test variants and older lists (${others.length})</summary><div class="row" style="margin-top:10px">${others.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></details>
-    <details class="more"><summary>Opponent pool (${OPP_DEFAULT.length})</summary><div class="row" style="margin-top:10px">${OPP_DEFAULT.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></details>`;
+    <details class="more"><summary>Opponent pools</summary>${Object.entries(POOLS()).map(([b, p]) => `<div style="margin-top:10px"><div class="small"><b>${esc(p.label)}</b></div><div class="row" style="margin-top:6px">${p.decks.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></div>`).join('')}</details>`;
   $('#newDeck').onclick = () => { location.hash = '#new'; };
   if (!S.results) await loadResults();
   const decks = await Promise.all(prim.map(n => loadDeck(n).catch(() => null)));
@@ -316,14 +327,15 @@ async function viewHome(v) {
 async function viewDeck(v, name, sub = 'tests') {
   if (!deckNames().includes(name)) { v.innerHTML = `<div class="note bad">No deck called ${esc(name)}.</div>`; return; }
   if (S.deck?.name !== name || S.deck?.isNew) { S.deck = { name, d: null, isNew: false }; S.deckDirty = false; S.deckText = false; }
-  const isOpp = OPP_DEFAULT.includes(name);
+  const isOpp = poolDecks().includes(name) || OPP_DEFAULT.includes(name);
   v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
     <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
       ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
     <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
     <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
   if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
-  $('#dsub').textContent = `${name} · ${S.deck.d.commander.join(' + ') || 'no commander'}`;
+  $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
+  $('#dbr') && ($('#dbr').onchange = async e => { if (needToken()) { e.target.value = deckBracket(name); return; } S.lab.decks.find(d => d.name === name).bracket = +e.target.value; try { await putFile('decks/lab.json', JSON.stringify(S.lab, null, 2) + '\n', `Deck Lab: ${name} is bracket ${e.target.value}`); toast('Saved. New tests default to that bracket\'s opponents.'); } catch (err) { toast(err.message, true); } });
   const body = $('#dbody');
   if (sub === 'list') { body.innerHTML = '<div id="editor"></div>'; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
   else if (sub === 'notes') await drawNotes(body, name);
@@ -336,19 +348,20 @@ async function drawDeckTests(body, name) {
   const rows = testsFor(name), act = activeFor(name); S.rendered = [];
   const inList = new Set(S.deck.d.main.map(r => r.name));
   const slots = new Map();
-  for (const g of rows) { const k = g.mode === 'decks' ? '\u0000decks' : g.mode === 'package' ? '\u0001pkg' : g.vs; (slots.get(k) || slots.set(k, []).get(k)).push(g); }
+  for (const g of rows) { const k = (g.mode === 'decks' ? '\u0000decks' : g.mode === 'package' ? '\u0001pkg' : g.vs) + '\u0002' + g.pool; (slots.get(k) || slots.set(k, []).get(k)).push(g); }
   await Promise.all([...new Set(rows.filter(g => g.mode === 'decks').map(g => g.other))].map(n => loadDeck(n).catch(() => null)));
   const hist = await loadHistory(name); const lastChange = hist.length ? hist[hist.length - 1].date : null;
   let h = act.map(a => `<div class="note" style="margin-bottom:12px"><b>${esc(a.state)}:</b> ${esc(a.label)} · <a href="#runs">Runs</a></div>`).join('');
   if (!rows.length) h += `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${encodeURIComponent(name)}">Start one</a></div>`;
   else h += `<p class="muted small" style="margin:0 0 12px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots. Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range; ranges crossing zero mean no clear difference.</p><div class="results">`;
-  for (const [slot, gs] of slots) {
+  for (const [key, gs] of slots) {
+    const [slot, pool] = key.split('\u0002');
     const isDecks = slot === '\u0000decks', isPkg = slot === '\u0001pkg';
     const sorted = [...gs].sort((a, b) => b.diff - a.diff);
     const now = isDecks || isPkg ? '' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
     h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(slot) + ' slot'}</div>
-        <div class="small muted">${gs.length} test${gs.length > 1 ? 's' : ''} · latest ${gs[0].date ? esc(ago(gs[0].date)) : 'date unknown'}</div></div>
-        <div class="row">${now}${isDecks || isPkg || !inList.has(slot) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(slot)}">Test more here</a>`}</div></div>
+        <div class="small muted"><span class="pill ${pool === String(deckBracket(name)) ? '' : 'accent'}">vs ${esc(poolName(pool))}</span> ${gs.length} test${gs.length > 1 ? 's' : ''} · latest ${gs[0].date ? esc(ago(gs[0].date)) : 'date unknown'}</div></div>
+        <div class="row">${now}${isDecks || isPkg || !inList.has(slot) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(slot)}&pool=${pool}">Test more here</a>`}</div></div>
       ${forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') })))}
       <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th class="r">Change</th><th class="r">Games</th><th>Test</th><th>When</th><th></th></tr></thead><tbody>
       ${sorted.map(g => { const [c, t] = verdict(g); return `<tr><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small">${esc(prettyName(g.test))}</td><td class="small muted">${g.date ? esc(ago(g.date)) : '—'}${lastChange && (!g.date || g.date < lastChange) ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
@@ -568,6 +581,7 @@ function estimate(arms, precision) {
 async function viewTest(v) {
   const T = S.test; const mine = [...primary(), ...myDecks().filter(n => !primary().includes(n))];
   if (!T.base || !mine.includes(T.base)) T.base = primary()[0] || mine[0];
+  if (!T.oppsTouched && POOLS()[deckBracket(T.base)]) T.opps = [...POOLS()[deckBracket(T.base)].decks];
   const base = T.base ? await loadDeck(T.base) : { main: [], commander: [] };
   await sfLoad(base.main.map(r => r.name));
   const pkKey = p => [...p.out].sort().join('|');
@@ -611,8 +625,10 @@ async function viewTest(v) {
         <optgroup label="Other lists">${mine.filter(n => !primary().includes(n)).map(n => `<option ${n === dn ? 'selected' : ''}>${esc(n)}</option>`).join('')}</optgroup></select></label>`).join('')}</div>
       ${T.decks.length < 4 ? '<div><button class="sm" id="addDk">+ Add another deck</button></div>' : ''}
       <p class="small muted">Each deck plays its own games against the same opponent pool and seats, as built, with nothing forced into the opening hand. Works across different commanders too. Small differences between similar lists need more games to show up than a single-card swap.</p>`}
-      <div class="fld"><span>Opponents (${T.opps.length} selected, each pod draws 3)</span><div class="row">${[...new Set([...OPP_DEFAULT.filter(n => oppList.includes(n)), ...T.opps])].map(n => `<label class="chk ${T.opps.includes(n) ? 'on' : ''}"><input type="checkbox" data-opp="${esc(n)}" ${T.opps.includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}
-        <select id="addOpp" style="width:auto"><option value="">+ Add a deck…</option>${oppList.filter(n => !OPP_DEFAULT.includes(n) && !T.opps.includes(n)).map(n => `<option>${esc(n)}</option>`).join('')}</select></div></div>
+      <div class="fld"><span>Target bracket</span><div class="seg">${Object.keys(POOLS()).map(b => `<button data-pool="${b}" class="${poolOf(T.opps) === b ? 'on' : ''}">Bracket ${b}</button>`).join('')}${poolOf(T.opps) === 'custom' ? '<button class="on">Custom</button>' : ''}</div>
+        <div class="small muted" style="margin-top:6px">${esc(POOLS()[poolOf(T.opps)]?.label || 'Custom opponent mix. Results won’t line up with the standard pools.')}</div></div>
+      <div class="fld"><span>Opponents (${T.opps.length} selected, each pod draws 3)</span><div class="row">${[...new Set([...(POOLS()[poolOf(T.opps)]?.decks || []), ...T.opps])].map(n => `<label class="chk ${T.opps.includes(n) ? 'on' : ''}"><input type="checkbox" data-opp="${esc(n)}" ${T.opps.includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}
+        <select id="addOpp" style="width:auto"><option value="">+ Add a deck…</option>${[...poolDecks(), ...oppList].filter((n, i, A) => A.indexOf(n) === i && !T.opps.includes(n)).map(n => `<option>${esc(n)}</option>`).join('')}</select></div></div>
       <div class="grid2">
         <label class="fld"><span>Precision</span><select id="tmin">${PRECISION.map(([v, l]) => `<option value="${v}" ${v === T.precision ? 'selected' : ''}>${l}: ±${v.toFixed(1)} points</option>`).join('')}</select></label>
         <label class="fld"><span>Name</span><input id="tname" placeholder="${esc(autoName || 'Test name')}" value="${esc(T.name)}"></label>
@@ -645,7 +661,8 @@ async function viewTest(v) {
     $$('[data-dk]').forEach(s => s.onchange = () => { T.decks[+s.dataset.dk] = s.value; viewTest(v); });
     $('#addDk') && ($('#addDk').onclick = () => { T.decks.push(''); viewTest(v); });
   }
-  $$('[data-opp]').forEach(c => c.onchange = () => { const n = c.dataset.opp; T.opps = c.checked ? [...T.opps, n] : T.opps.filter(x => x !== n); viewTest(v); });
+  $$('[data-opp]').forEach(c => c.onchange = () => { const n = c.dataset.opp; T.opps = c.checked ? [...T.opps, n] : T.opps.filter(x => x !== n); T.oppsTouched = true; viewTest(v); });
+  $$('[data-pool]').forEach(b => b.onclick = () => { T.opps = [...POOLS()[b.dataset.pool].decks]; T.oppsTouched = true; viewTest(v); });
   $('#addOpp').onchange = e => { if (e.target.value) { T.opps.push(e.target.value); viewTest(v); } };
   $('#tmin').onchange = e => { T.precision = +e.target.value; viewTest(v); };
   $('#tname').oninput = e => T.name = e.target.value;
@@ -681,7 +698,7 @@ async function queueTest(autoName) {
   const b = $('#queueBtn'); b.disabled = true; b.innerHTML = '<span class="spin"></span> Queuing';
   try {
     await putFile(file, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue ${name}`);
-    T.slots = [{ out: '', ins: [] }]; T.packages = [{ out: [], in: [] }]; T.name = '';
+    T.slots = [{ out: '', ins: [] }]; T.packages = [{ out: [], in: [] }]; T.name = ''; T.oppsTouched = false;
     toast('Queued. It starts as soon as the runners are free.'); S.runs = null; location.hash = '#runs';
   } catch (e) { toast('Could not queue: ' + e.message, true); b.disabled = false; b.textContent = 'Queue test'; }
 }
@@ -769,6 +786,7 @@ async function route() {
     else if (page === 'test') {
       if (r.arg && r.arg !== S.test.base) { S.test.base = r.arg; S.test.slots = [{ out: '', ins: [] }]; }
       if (r.q.get('mode') === 'decks') { S.test.mode = 'decks'; if (!S.test.decks[0]) S.test.decks = [S.test.base, '']; history.replaceState(null, '', '#test/' + encodeURIComponent(S.test.base)); }
+      if (r.q.get('pool') && POOLS()[r.q.get('pool')]) { S.test.opps = [...POOLS()[r.q.get('pool')].decks]; S.test.oppsTouched = true; }
       if (r.q.get('out')) { S.test.mode = 'swap'; S.test.slots = [{ out: r.q.get('out'), ins: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(S.test.base)); }
       await viewTest(v);
     } else await viewHome(v);
