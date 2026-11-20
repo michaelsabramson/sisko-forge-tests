@@ -29,9 +29,15 @@ jobs:
       - name: Build engine (core, game, ai)
         run: |
           cd forge
-          mvn -B -q -pl forge-ai -am install -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true
-          mvn -B -q -pl forge-ai dependency:copy-dependencies -DoutputDirectory=../lib -DincludeScope=runtime
+          mvn -B -pl forge-ai -am install -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
+          mvn -B -pl forge-ai dependency:copy-dependencies -DoutputDirectory=../lib -DincludeScope=runtime >> ../build.log 2>&1
           cp forge-ai/target/forge-ai-*.jar ../lib/
+      - name: Report build failure
+        if: failure()
+        run: |
+          mkdir -p results && grep -E "ERROR|BUILD|error:" build.log | head -80 > results/build-error.log || tail -100 build.log > results/build-error.log
+          git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          git add results/build-error.log && git commit -m "Build error log" && git push origin HEAD:${{ github.ref_name }}
       - name: Compile runner
         run: |
           mkdir -p runner-classes
