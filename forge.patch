@@ -1,5 +1,5 @@
 diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
-index 2d74bcf6..8b886ec2 100644
+index 2d74bcf6..748922e4 100644
 --- a/forge-ai/src/main/java/forge/ai/AiController.java
 +++ b/forge-ai/src/main/java/forge/ai/AiController.java
 @@ -990,7 +990,10 @@ public class AiController {
@@ -14,6 +14,29 @@ index 2d74bcf6..8b886ec2 100644
          } finally {
              // in addition to engine some AI api can also switch host
              if (sa.getHostCard() != host) {
+@@ -1717,6 +1720,22 @@ public class AiController {
+         // Correctness-critical and cheap, so it also runs when the deadline fired (outside the armed region).
+         removeUnpayableAttackers(attacker, combat);
+ 
++        // test hook: with a "whenever you attack" payoff (SVar AIAttackSomething, e.g. Caesar), always send at least one expendable attacker
++        if (CardLists.filterControlledBy(combat.getAttackers(), attacker).isEmpty()
++                && CardLists.count(attacker.getCreaturesInPlay(), c -> c.hasSVar("AIAttackSomething")) > 0) {
++            Card pick = null; GameEntity pickDef = null;
++            for (Card c : attacker.getCreaturesInPlay()) {
++                if (c.hasSVar("AIAttackSomething") || c.isCommander()) continue;
++                for (GameEntity d : combat.getDefenders()) {
++                    if (d instanceof Player && CombatUtil.canAttack(c, d) && CombatUtil.getAttackCost(game, c, d) == null) {
++                        if (pick == null || ComputerUtilCard.evaluateCreature(c) < ComputerUtilCard.evaluateCreature(pick)) { pick = c; pickDef = d; }
++                        break;
++                    }
++                }
++            }
++            if (pick != null) { combat.addAttacker(pick, pickDef); }
++        }
++
+         // if invalid: just try an attack declaration that we know to be legal
+         if (!CombatUtil.validateAttackers(combat)) {
+             // only this player's attackers are replaced, so a teammate's part of a team attack stays (CR 805.10b)
 diff --git a/forge-ai/src/main/java/forge/ai/ComputerUtil.java b/forge-ai/src/main/java/forge/ai/ComputerUtil.java
 index 7802d28a..17803180 100644
 --- a/forge-ai/src/main/java/forge/ai/ComputerUtil.java
@@ -48,10 +71,31 @@ index 288f00aa..81a96dcb 100644
          return x;
      }
 diff --git a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
-index 6b36e381..4c9567fb 100644
+index 6b36e381..79cd9ce1 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
 +++ b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
-@@ -107,6 +107,13 @@ public class CharmAi extends SpellAbilityAi {
+@@ -48,6 +48,20 @@ public class CharmAi extends SpellAbilityAi {
+             // This branch is for "An Opponent chooses" Charm spells from Alliances
+             // Current just choose the first available spell, which seem generally less disastrous for the AI.
+             chosenList = choices.subList(1, choices.size());
++        } else if ("Caesar".equals(sa.getParam("AILogic"))) {
++            // test hook: always take the Soldiers; then damage on a wide board, otherwise draw
++            int tokens = forge.game.card.CardLists.count(ai.getCreaturesInPlay(), c -> c.isToken()) + 2;
++            AbilitySub tok = null, draw = null, dmg = null;
++            for (AbilitySub c : choices) {
++                if (c.getApi() == forge.game.ability.ApiType.Token) tok = c;
++                else if (c.getApi() == forge.game.ability.ApiType.Draw) draw = c;
++                else if (c.getApi() == forge.game.ability.ApiType.DealDamage) dmg = c;
++            }
++            chosenList = Lists.newArrayList();
++            if (tok != null) { tok.setActivatingPlayer(ai); chosenList.add(tok); }
++            AbilitySub second = (tokens >= 4 || ai.getLife() <= 5) ? dmg : draw;
++            if (second == null) second = dmg != null ? dmg : draw;
++            if (second != null) { second.setActivatingPlayer(ai); chosenList.add(second); }
+         } else if ("Triskaidekaphobia".equals(ComputerUtilAbility.getAbilitySourceName(sa))) {
+             chosenList = chooseTriskaidekaphobia(choices, ai);
+         } else {
+@@ -107,6 +121,13 @@ public class CharmAi extends SpellAbilityAi {
      private List<AbilitySub> chooseOptionsAi(SpellAbility sa, List<AbilitySub> choices, final Player ai, boolean isTrigger, int num, int min) {
          List<AbilitySub> chosen = Lists.newArrayList();
          AiController aic = ((PlayerControllerAi) ai.getController()).getAi();
@@ -551,6 +595,28 @@ index eeff719b..54082de4 100644
  Oracle:At the beginning of your first main phase, choose one or more —\n• Sell Contraband — Create a Treasure token. You lose 1 life.\n• Buy Information — Draw a card. You lose 2 life.\n• Hire a Mercenary — Create a 3/2 colorless Shapeshifter creature token with changeling. You lose 3 life.
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
+diff --git a/forge-gui/res/cardsfolder/c/caesar_legions_emperor.txt b/forge-gui/res/cardsfolder/c/caesar_legions_emperor.txt
+index 1a47ba4f..ee2b91aa 100644
+--- a/forge-gui/res/cardsfolder/c/caesar_legions_emperor.txt
++++ b/forge-gui/res/cardsfolder/c/caesar_legions_emperor.txt
+@@ -3,8 +3,8 @@ ManaCost:1 R W B
+ Types:Legendary Creature Human Soldier
+ PT:4/4
+ T:Mode$ AttackersDeclared | AttackingPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigImmediateTrig | TriggerDescription$ Whenever you attack, you may sacrifice another creature. When you do, ABILITY
+-SVar:TrigImmediateTrig:AB$ ImmediateTrigger | Cost$ Sac<1/Creature.Other/another creature> | Execute$ TrigCharm | TriggerDescription$ When you do, ABILITY
+-SVar:TrigCharm:DB$ Charm | Choices$ DBToken,DBDraw,DBDamage | CharmNum$ 2
++SVar:TrigImmediateTrig:AB$ ImmediateTrigger | AILogic$ Always | Cost$ Sac<1/Creature.Other/another creature> | Execute$ TrigCharm | TriggerDescription$ When you do, ABILITY
++SVar:TrigCharm:DB$ Charm | Choices$ DBToken,DBDraw,DBDamage | CharmNum$ 2 | AILogic$ Caesar
+ SVar:DBToken:DB$ Token | TokenAmount$ 2 | TokenScript$ rw_1_1_soldier_haste | TokenOwner$ You | TokenTapped$ True | TokenAttacking$ True | SpellDescription$ Create two 1/1 red and white Soldier creature tokens with haste that are tapped and attacking.
+ SVar:DBDraw:DB$ Draw | SubAbility$ DBLoseLife | SpellDescription$ You draw a card and you lose 1 life.
+ SVar:DBLoseLife:DB$ LoseLife | LifeAmount$ 1
+@@ -13,3 +13,6 @@ SVar:X:Count$Valid Creature.token+YouCtrl
+ DeckHas:Ability$Token|Sacrifice
+ DeckHints:Ability$Token
+ Oracle:Whenever you attack, you may sacrifice another creature. When you do, choose two —\n• Create two 1/1 red and white Soldier creature tokens with haste that are tapped and attacking.\n• You draw a card and you lose 1 life.\n• Caesar, Legion's Emperor deals damage equal to the number of creature tokens you control to target opponent.
++SVar:AIAttackSomething:True
++SVar:PlayMain1:ALWAYS
++SVar:AIPreference:SacCost$Creature.token
 diff --git a/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt b/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt
 index 0fae2788..6b26adde 100644
 --- a/forge-gui/res/cardsfolder/c/captain_benjamin_sisko.txt
