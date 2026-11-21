@@ -70,6 +70,29 @@ index 288f00aa..81a96dcb 100644
          root.setXManaCostPaid(x);
          return x;
      }
+diff --git a/forge-ai/src/main/java/forge/ai/ability/AttachAi.java b/forge-ai/src/main/java/forge/ai/ability/AttachAi.java
+index 60a19966..803cd2f0 100644
+--- a/forge-ai/src/main/java/forge/ai/ability/AttachAi.java
++++ b/forge-ai/src/main/java/forge/ai/ability/AttachAi.java
+@@ -1507,7 +1507,7 @@ public class AttachAi extends SpellAbilityAi {
+         if (!"Reanimate".equals(logic) && !"SpecificCard".equals(logic)) {
+             Player prefPlayer;
+             if ("Pump".equals(logic) || "Animate".equals(logic) || "Curiosity".equals(logic) || "MoveTgtAura".equals(logic)
+-                    || "MoveAllAuras".equals(logic)) {
++                    || "MoveAllAuras".equals(logic) || "ManaLand".equals(logic)) {
+                 prefPlayer = ai;
+             } else {
+                 prefPlayer = AiAttackController.choosePreferredDefenderPlayer(ai);
+@@ -1532,6 +1532,9 @@ public class AttachAi extends SpellAbilityAi {
+             c = attachAIControlPreference(sa, prefList, mandatory, attachSource);
+         } else if ("Curse".equals(logic)) {
+             c = attachAICursePreference(sa, prefList, mandatory, attachSource, ai);
++        } else if ("ManaLand".equals(logic)) {
++            // mana auras (Utopia Sprawl, Wild Growth): enchant one of our own lands, untapped first
++            c = prefList.stream().filter(Card::isLand).sorted(java.util.Comparator.comparing(Card::isTapped)).findFirst().orElse(null);
+         } else if ("Pump".equals(logic) || logic.startsWith("Move")) {
+             c = attachAIPumpPreference(ai, sa, prefList, mandatory, attachSource);
+         } else if ("Curiosity".equals(logic)) {
 diff --git a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
 index 6b36e381..79cd9ce1 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
@@ -682,15 +705,16 @@ index af737c45..eb485746 100644
  Oracle:At the beginning of your upkeep, choose one that hasn't been chosen —\n• Demonic Pact deals 4 damage to any target and you gain 4 life.\n• Target opponent discards two cards.\n• Draw two cards.\n• You lose the game.
 +SVar:PlayMain1:ALWAYS
 diff --git a/forge-gui/res/cardsfolder/d/diabolic_intent.txt b/forge-gui/res/cardsfolder/d/diabolic_intent.txt
-index 993f6e4b..ad910915 100644
+index 993f6e4b..82c00a0b 100644
 --- a/forge-gui/res/cardsfolder/d/diabolic_intent.txt
 +++ b/forge-gui/res/cardsfolder/d/diabolic_intent.txt
-@@ -2,5 +2,4 @@ Name:Diabolic Intent
+@@ -2,5 +2,5 @@ Name:Diabolic Intent
  ManaCost:1 B
  Types:Sorcery
  A:SP$ ChangeZone | Cost$ 1 B Sac<1/Creature> | Origin$ Library | Destination$ Hand | ChangeType$ Card | ChangeNum$ 1 | Mandatory$ True | SpellDescription$ Search your library for a card, put that card into your hand, then shuffle.
 -AI:RemoveDeck:All
  Oracle:As an additional cost to cast this spell, sacrifice a creature.\nSearch your library for a card, put that card into your hand, then shuffle.
++SVar:AIPreference:SacCost$Creature.token
 diff --git a/forge-gui/res/cardsfolder/d/donate.txt b/forge-gui/res/cardsfolder/d/donate.txt
 index ad0230fd..0a521065 100644
 --- a/forge-gui/res/cardsfolder/d/donate.txt
@@ -733,6 +757,20 @@ index 657c7a33..d82369ea 100644
  Oracle:Alliance — Whenever another creature you control enters, choose one that hasn't been chosen this turn —\n• Put a +1/+1 counter on Gala Greeters.\n• Create a tapped Treasure token.\n• You gain 2 life.
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
+diff --git a/forge-gui/res/cardsfolder/h/hydroblast.txt b/forge-gui/res/cardsfolder/h/hydroblast.txt
+index 2fb54990..337d97e0 100644
+--- a/forge-gui/res/cardsfolder/h/hydroblast.txt
++++ b/forge-gui/res/cardsfolder/h/hydroblast.txt
+@@ -2,7 +2,7 @@ Name:Hydroblast
+ ManaCost:U
+ Types:Instant
+ A:SP$ Charm | Choices$ DBCounter,DBDestroy
+-SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Spell.Red | SpellDescription$ Counter target spell if it's red.
+-SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Card.Red | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's red.
++SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card.Red | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Spell.Red | SpellDescription$ Counter target spell if it's red.
++SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent.Red | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Card.Red | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's red.
+ AI:RemoveDeck:Random
+ Oracle:Choose one —\n• Counter target spell if it's red.\n• Destroy target permanent if it's red.
 diff --git a/forge-gui/res/cardsfolder/i/impact_tremors.txt b/forge-gui/res/cardsfolder/i/impact_tremors.txt
 index 72b43679..77c63b23 100644
 --- a/forge-gui/res/cardsfolder/i/impact_tremors.txt
@@ -763,12 +801,15 @@ index 72151057..2952197f 100644
 -AI:RemoveDeck:All
  Oracle:Choose one —\n• Untap target permanent you control. Target player draws two cards.\n• Create a 1/1 red Officer creature token and draw two cards.
 diff --git a/forge-gui/res/cardsfolder/m/manamorphose.txt b/forge-gui/res/cardsfolder/m/manamorphose.txt
-index 4e4b0dfe..db514fdb 100644
+index 4e4b0dfe..b5658205 100644
 --- a/forge-gui/res/cardsfolder/m/manamorphose.txt
 +++ b/forge-gui/res/cardsfolder/m/manamorphose.txt
-@@ -3,5 +3,4 @@ ManaCost:1 RG
+@@ -1,7 +1,6 @@
+ Name:Manamorphose
+ ManaCost:1 RG
  Types:Instant
- A:SP$ Mana | Produced$ Combo Any | Amount$ 2 | SubAbility$ DBDraw | SpellDescription$ Add two mana in any combination of colors. Draw a card.
+-A:SP$ Mana | Produced$ Combo Any | Amount$ 2 | SubAbility$ DBDraw | SpellDescription$ Add two mana in any combination of colors. Draw a card.
++A:SP$ Mana | Produced$ Combo Any | Amount$ 2 | SubAbility$ DBDraw | AILogic$ Cantrip | SpellDescription$ Add two mana in any combination of colors. Draw a card.
  SVar:DBDraw:DB$ Draw | Defined$ You | NumCards$ 1
 -AI:RemoveDeck:All
  Oracle:Add two mana in any combination of colors.\nDraw a card.
@@ -870,6 +911,20 @@ index c6b5fc54..5a45035d 100644
  Oracle:Indestructible\nAs long as your devotion to red is less than five, Purphoros isn't a creature.\nWhenever another creature you control enters, Purphoros deals 2 damage to each opponent.\n{2}{R}: Creatures you control get +1/+0 until end of turn.
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
+diff --git a/forge-gui/res/cardsfolder/p/pyroblast.txt b/forge-gui/res/cardsfolder/p/pyroblast.txt
+index c23c78e2..b832914d 100644
+--- a/forge-gui/res/cardsfolder/p/pyroblast.txt
++++ b/forge-gui/res/cardsfolder/p/pyroblast.txt
+@@ -2,7 +2,7 @@ Name:Pyroblast
+ ManaCost:R
+ Types:Instant
+ A:SP$ Charm | Choices$ DBCounter,DBDestroy
+-SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Spell.Blue | SpellDescription$ Counter target spell if it's blue.
+-SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Card.Blue | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's blue.
++SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card.Blue | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Spell.Blue | SpellDescription$ Counter target spell if it's blue.
++SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent.Blue | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Card.Blue | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's blue.
+ AI:RemoveDeck:Random
+ Oracle:Choose one —\n• Counter target spell if it's blue.\n• Destroy target permanent if it's blue.
 diff --git a/forge-gui/res/cardsfolder/r/retreat_to_hagra.txt b/forge-gui/res/cardsfolder/r/retreat_to_hagra.txt
 index d4b8e6e3..bc861762 100644
 --- a/forge-gui/res/cardsfolder/r/retreat_to_hagra.txt
@@ -947,10 +1002,16 @@ index 76beaf4e..04f55bbf 100644
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
 diff --git a/forge-gui/res/cardsfolder/u/utopia_sprawl.txt b/forge-gui/res/cardsfolder/u/utopia_sprawl.txt
-index b1a0b4e4..68d9052b 100644
+index b1a0b4e4..be99f41c 100644
 --- a/forge-gui/res/cardsfolder/u/utopia_sprawl.txt
 +++ b/forge-gui/res/cardsfolder/u/utopia_sprawl.txt
-@@ -7,5 +7,4 @@ K:ETBReplacement:Other:ChooseColor
+@@ -2,10 +2,9 @@ Name:Utopia Sprawl
+ ManaCost:G
+ Types:Enchantment Aura
+ K:Enchant:Forest
+-SVar:AttachAILogic:Pump
++SVar:AttachAILogic:ManaLand
+ K:ETBReplacement:Other:ChooseColor
  SVar:ChooseColor:DB$ ChooseColor | Defined$ You | SpellDescription$ As CARDNAME enters, choose a color.
  T:Mode$ TapsForMana | ValidCard$ Card.AttachedBy | TriggerZones$ Battlefield | Execute$ TrigMana | Static$ True | TriggerDescription$ Whenever enchanted Forest is tapped for mana, its controller adds an additional one mana of the chosen color.
  SVar:TrigMana:DB$ Mana | Produced$ Chosen | Defined$ TriggeredCardController
