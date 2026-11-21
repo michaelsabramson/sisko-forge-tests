@@ -537,7 +537,9 @@ async function saveDeck(as) {
 async function drawAudit(body, name) {
   if (!S.results) await loadResults();
   if (!S.runs) { try { await loadRuns(); } catch {} }
-  const audits = S.results.filter(r => r.audit?.deck === name).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const finals = new Set(S.results.filter(r => !r.peek).map(r => r.name));
+  // an early read is dropped once its run's final result exists
+  const audits = S.results.filter(r => r.audit?.deck === name && !(r.peek && finals.has(r.name.replace(/_peek$/, '')))).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const a = audits[0]; const act = activeFor(name).filter(x => /audit/i.test(x.label));
   const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~2 h'], [1.5, 'Standard ±1.5 · ~3.5 h']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new audit</button></div>`;
   let h = act.map(x => `<div class="note" style="margin-bottom:12px"><b>${esc(x.state)}:</b> deck audit · <a href="#runs">Runs</a></div>`).join('');
@@ -556,7 +558,7 @@ async function drawAudit(body, name) {
   const testLink = g => `#test/${encodeURIComponent(name)}?out=${encodeURIComponent(g.label)}&pool=${a.auditPool}`;
   const N = a.arms[0]?.games || 0;
   h += `<div class="card"><div class="res-head"><div><div class="res-title">Deck audit</div>
-      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div>${runBtn}</div>
+      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${a.peek ? ' · <span class="pill gold">still running · early read, refreshes about every 15 min</span>' : a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div>${runBtn}</div>
     <p class="small muted" style="margin:10px 0 0">Each card's change in win rate when the shuffle put it in your kept opening hand or next three draws, compared with games where it didn't. Cards that matter late (finishers, answers to specific threats) can score lower than their real value, and with this many cards a few will look bad by chance. Confirm a weak slot with a swap test before cutting it.</p>
     <div class="sect">Weakest slots</div>
     <table><tbody>${weakest.map(c => { const [cls, t] = verdict(c); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card)} ${flagPill(c.card)}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)} ± ${c.ci.toFixed(1)}</span></td><td class="small muted">${cls === 'bad' ? 'clearly below average' : 'within noise'}</td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Find a replacement</a></td></tr>`; }).join('')}</tbody></table>

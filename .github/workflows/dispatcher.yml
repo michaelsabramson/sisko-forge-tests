@@ -24,6 +24,21 @@ jobs:
         run: |
           n=$(gh run list -R ${{ github.repository }} -w swaptest.yml -L 20 --json status -q '[.[]|select(.status!="completed")]|length')
           echo "active=$n" >> $GITHUB_OUTPUT; echo "active swap-test runs: $n"
+      - name: Refresh the early read of a running audit
+        if: steps.busy.outputs.active != '0' && github.event_name == 'schedule'
+        run: |
+          id=$(gh run list -R ${{ github.repository }} -w swaptest.yml -L 5 --json databaseId,status,startedAt -q '[.[]|select(.status=="in_progress")][0].databaseId')
+          [ -z "$id" ] && exit 0
+          started=$(gh run view $id -R ${{ github.repository }} --json startedAt -q .startedAt)
+          sha=$(gh api repos/${{ github.repository }}/actions/runs/$id -q .head_sha)
+          req=$(gh api "repos/${{ github.repository }}/contents/tests/request.json?ref=$sha" -H "Accept: application/vnd.github.raw")
+          mode=$(echo "$req" | jq -r .mode); mins=$(echo "$req" | jq -r '.minutes // 160')
+          age=$(( ( $(date +%s) - $(date -d "$started" +%s) ) / 60 ))
+          echo "run $id mode=$mode age=${age}m planned=${mins}m"
+          # audits only; skip the first ~30 min (too few games) and the last stretch (the final result is close)
+          if [ "$mode" = "audit" ] && [ $age -ge 30 ] && [ $age -le $((mins + 5)) ]; then
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=$id
+          fi
       - name: Start next queued test
         if: steps.busy.outputs.active == '0'
         run: |
