@@ -195,7 +195,7 @@ def main():
     while os.path.exists(f"results/{n}.md") and not r.get("result_name"):
         n, k = f"{name}_{k}", k + 1
     n = r.get("result_name") or n
-    req = {"name": n, "arms": arms, "compare": compare, "band": 0,
+    req = {"name": n, "title": r.get("name"), "arms": arms, "compare": compare, "band": 0,
            "minutes": int(r.get("minutes", 160)), "shards": int(r.get("shards", 38)),
            "mode": r.get("mode", "swap"), "queued_from": os.path.basename(src),
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}

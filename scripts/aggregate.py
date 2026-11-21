@@ -77,7 +77,7 @@ if usage:
     t.append("| Card | Games held | Cast rate | Median affordable turns before casting | Stuck |"); t.append("|---|---|---|---|---|")
     for _, nm, g, cr, med, st in rows: t.append(f"| {nm} | {g} | {100*cr:.0f}% | {med if med is not None else '-'} | {100*st:.0f}% |")
     usage_rows = [{"card": nm, "games": g, "cast": round(cr, 3), "median_wait": med, "stuck": round(st, 3)} for _, nm, g, cr, med, st in rows]
-data = {"name": req['name'], "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
+data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
                   "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
