@@ -30,6 +30,7 @@ jobs:
       - name: Commit peek
         run: |
           n=$(jq -r .name tests/request.json)
+          [ -f results/$n.md ] || { echo "no games yet"; exit 0; }
           mv results/$n.md results/${n}_peek.md
           sed -i "1s/\$/ (early read, run still going)/" results/${n}_peek.md
           git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"

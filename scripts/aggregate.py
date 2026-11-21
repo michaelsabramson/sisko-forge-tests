@@ -30,6 +30,9 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             top = None
 # totals include games reused from the cache (recorded in the request when the run was dispatched)
 res = [[new[i][0] + a.get('prior_wins', 0), new[i][1] + a.get('prior_games', 0)] for i, a in enumerate(arms)]
+if PEEK and sum(g for _, g in new) == 0:
+    # early read requested before the runners saved any games: nothing to report yet
+    print("no games saved yet; skipping early read"); sys.exit(0)
 
 def p(i): w, n = res[i]; return w / max(1, n), n
 intro = ("Whole lists compared, nothing forced into the opening hand." if req.get('mode') == 'decks'
