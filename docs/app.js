@@ -966,7 +966,7 @@ function drawRuns() {
     return `<div class="card"><div class="res-head"><div><div class="res-title">${esc(prettyName(resName || 'unknown test', q.title))}</div><div class="small muted">${esc(reqSummary(q))}</div></div>${st}</div>
       ${r.status !== 'completed' ? `<div class="prog"><div style="width:${pct}%"></div></div><div class="small muted">${running ? `Results around ${fmtTime(eta)}` : 'Starts when the current run finishes'}${hasPeek ? ' · early read available' : ''}</div>` : `<div class="small muted" style="margin-top:6px">Finished ${esc(ago(r.updated))}</div>`}
       <div class="row" style="margin-top:10px">
-        ${(hasRes || hasPeek) ? `<button class="sm" data-goto="${esc(resName)}" data-base="${esc(q.arms?.[0]?.deck || '')}">View ${hasRes ? 'results' : 'early read'}</button>` : ''}
+        ${(hasRes || hasPeek) ? `<button class="sm" data-goto="${esc(resName)}" data-base="${esc(q.arms?.[0]?.deck || '')}" data-mode="${esc(q.mode || '')}">View ${hasRes ? 'results' : 'early read'}</button>` : ''}
         ${running && el > 25 ? `<button class="sm" data-peek="${r.id}">Get early read</button>` : ''}
         ${r.status !== 'completed' ? `<button class="sm ghost danger" data-cancel="${r.id}">Cancel</button>` : ''}
         <a class="small" href="${esc(r.url)}" target="_blank" rel="noopener" style="margin-left:auto">GitHub run ↗</a></div></div>`;
@@ -977,7 +977,7 @@ function drawRuns() {
     <h2 style="margin-top:22px">Recent</h2><div class="card" style="padding:4px 12px">${runs.filter(r => r.status === 'completed').slice(0, 8).map(r => { const q = r.req || {}; const hasRes = S.tree.includes(`results/${q.name}.md`); const ok = r.conclusion === 'success' || hasRes;
       return `<div class="rrow"><div class="grow"><div class="rt">${esc(prettyName(q.name || 'unknown test', q.title))}</div><div class="small muted">${ok ? 'Done' : r.conclusion === 'cancelled' ? 'Cancelled' : 'Failed'} · ${esc(ago(r.updated))}</div></div>${hasRes ? `<button class="sm" data-goto="${esc(q.name)}" data-base="${esc(q.arms?.[0]?.deck || '')}">Results</button>` : `<a class="small" href="${esc(r.url)}" target="_blank" rel="noopener">GitHub ↗</a>`}</div>`; }).join('') || '<div class="muted small" style="padding:10px 0">None yet.</div>'}</div>
   </div>`;
-  $$('[data-goto]').forEach(b => b.onclick = () => { S.results = null; location.hash = '#deck/' + encodeURIComponent(b.dataset.base || primary()[0]); });
+  $$('[data-goto]').forEach(b => b.onclick = () => { S.results = null; location.hash = '#deck/' + encodeURIComponent(b.dataset.base || primary()[0]) + (b.dataset.mode === 'audit' ? '/audit' : ''); });
   $$('[data-peek]').forEach(b => b.onclick = async () => { if (needToken()) return; b.disabled = true; try { await dispatch('peek.yml', { run_id: b.dataset.peek }); toast('Early read requested. It lands in Results in about 5 minutes.'); } catch (e) { toast(e.message, true); b.disabled = false; } });
   $$('[data-cancel]').forEach(b => b.onclick = async () => { if (needToken() || !confirm('Cancel this run? Games played so far are still tallied.')) return; try { await api(`/repos/${REPO}/actions/runs/${b.dataset.cancel}/cancel`, { method: 'POST' }); toast('Cancelling…'); } catch (e) { toast(e.message, true); } });
   $$('[data-unq]').forEach(b => b.onclick = async () => { if (needToken() || !confirm('Remove this queued test?')) return; try { await deleteFile(b.dataset.unq, 'Deck Lab: remove queued test'); S.runs.queue = S.runs.queue.filter(q => q.path !== b.dataset.unq); drawRuns(); } catch (e) { toast(e.message, true); } });
