@@ -809,7 +809,8 @@ function reqSummary(q) {
   if (q.packages) return q.packages.map(p => `${p.in.join(', ')} in for ${p.out.join(', ')}`).join(' · ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');
   if (q.arms && q.compare) {
-    const by = new Map(); for (const [b, i] of q.compare) { const k = q.arms[i].label || q.arms[i].card || q.arms[i].deck; (by.get(k) || by.set(k, []).get(k)).push(q.arms[b].label || q.arms[b].card || q.arms[b].deck); }
+    const by = new Map(); for (const [b, i] of q.compare) { if (q.arms[b].swap) continue; // challenger-vs-challenger pairs aren't part of the summary
+      const k = q.arms[i].label || q.arms[i].card || q.arms[i].deck; (by.get(k) || by.set(k, []).get(k)).push(q.arms[b].label || q.arms[b].card || q.arms[b].deck); }
     return [...by].map(([c, outs]) => q.mode === 'decks' ? `${c} vs ${outs.join(', ')}` : q.mode === 'package' ? c : `${c} in for ${outs.join(', ')}`).join(' · ');
   }
   if (q.arms) return q.arms.map(a => a.card || a.deck).filter((x, i, A) => A.indexOf(x) === i).join(' · ');
