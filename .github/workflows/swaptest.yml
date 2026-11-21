@@ -220,7 +220,19 @@ jobs:
         if: ${{ cancelled() }}
         run: pkill -f "Run forge" || true; sleep 3
       - uses: actions/upload-artifact@v4
+        id: final_upload
         if: always()
+        continue-on-error: true   # GitHub sometimes answers 409 while replacing the previous save; retried below
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Wait before retrying the final save
+        if: ${{ always() && steps.final_upload.outcome == 'failure' }}
+        run: sleep 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && steps.final_upload.outcome == 'failure' }}
         with:
           name: out-${{ matrix.s }}
           path: out/
