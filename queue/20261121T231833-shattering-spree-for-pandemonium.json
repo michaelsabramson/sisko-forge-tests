@@ -1,0 +1,23 @@
+{
+  "mode": "swap",
+  "base": "NorinB3",
+  "slots": [
+    {
+      "out": "Pandemonium",
+      "ins": [
+        "Shattering Spree"
+      ]
+    }
+  ],
+  "name": "Shattering Spree for Pandemonium",
+  "precision": 2,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-21T23:18:33.388Z"
+}
