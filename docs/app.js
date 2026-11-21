@@ -219,7 +219,7 @@ function parseResult(path, md) {
       gaps.push({ label: card(m[1]), vs: card(m[2]), diff: +m[3], ci: +m[4], base: arms[0]?.deck, mode: 'swap', games: arms.find(a => a.deck === m[1])?.games });
     }
   }
-  const title = (md.match(/^# (.+)$/m) || [])[1] || name;
+  const title = renameAudit((md.match(/^# (.+)$/m) || [])[1] || name);
   const intro = (md.split('\n').find(l => l && !l.startsWith('#') && !l.startsWith('|')) || '');
   for (const g of gaps) g.pool ||= '3';
   const audit = dm ? JSON.parse(dm[1]).audit : null;
@@ -229,7 +229,7 @@ function parseResult(path, md) {
     for (const m of md.matchAll(/^\| (.+?) \| (\d+) \| (\d+)% \| ([\d-]+) \| (\d+)% \|$/gm)) cards.push({ card: m[1], games: +m[2], cast: +m[3] / 100, median_wait: m[4] === '-' ? null : +m[4], stuck: +m[5] / 100 });
     usage = { deck: arms[0]?.deck, cards, forced: [] };
   } const auditPool = dm ? poolOf(JSON.parse(dm[1]).opponents) : '3';
-  const dtitle = dm ? JSON.parse(dm[1]).title : null;
+  const dtitle = dm ? renameAudit(JSON.parse(dm[1]).title) : null;
   return { path, name, peek, title, dtitle, intro, arms, gaps, audit, auditPool, usage, games: arms.reduce((s, a) => s + a.games, 0) };
 }
 function verdict(g) {
@@ -356,7 +356,7 @@ async function viewDeck(v, name, sub = 'tests') {
   v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
     <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
       ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
-    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['audit', 'Audit'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
+    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['audit', 'Rank'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
     <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
   if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
   $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
@@ -616,7 +616,7 @@ async function openCard(name, deck) {
         ${st.hint ? `<p class="small" style="margin:6px 0 0"><b>Hint:</b> ${esc(st.hint.hint)}</p>` : ''}
         ${st.flag === 'A' ? `<p class="small muted" style="margin:6px 0 0">Forge marks this card as one its AI can't play well.</p>` : ''}</div>
       <div class="cp-sect"><div class="sect" style="margin:0">Test history in ${esc(deckTitle(deck))}</div>
-        ${ac ? `<p class="small" style="margin:6px 0 0">Audit: <span class="pill ${verdict(ac)[0]}">${ac.diff > 0 ? '+' : ''}${ac.diff.toFixed(1)} ± ${ac.ci.toFixed(1)}</span> when drawn early${audit.date ? ' · ' + esc(ago(audit.date)) : ''}</p>` : '<p class="small muted" style="margin:6px 0 0">Not in an audit yet.</p>'}
+        ${ac ? `<p class="small" style="margin:6px 0 0">Ranking: <span class="pill ${verdict(ac)[0]}">${ac.diff > 0 ? '+' : ''}${ac.diff.toFixed(1)} ± ${ac.ci.toFixed(1)}</span> when drawn early${audit.date ? ' · ' + esc(ago(audit.date)) : ''}</p>` : '<p class="small muted" style="margin:6px 0 0">Not ranked yet.</p>'}
         ${tests.length ? (() => { const seen = new Set(), latest = [], older = []; for (const g of [...tests].sort((a, b) => (b.date || '').localeCompare(a.date || ''))) { const k = g.label + '|' + (g.direct ? g.aswap?.in?.[0] : g.vs) + '|' + !!g.direct; (seen.has(k) ? older : latest).push(g); seen.add(k); }
           const li = g => `<li class="small">${esc(g.label.split(',')[0])} ${g.direct ? 'vs' : 'in for'} ${esc((g.direct ? g.aswap?.in?.[0] : g.vs || '').split(',')[0])}: <span class="pill ${verdict(g)[0]}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span>${g.date ? ' <span class="muted">' + esc(ago(g.date)) + '</span>' : ''}</li>`;
           return `<ul class="h2h">${latest.map(li).join('')}</ul>${older.length ? `<details><summary>${older.length} earlier result${older.length > 1 ? 's' : ''}</summary><ul class="h2h">${older.map(li).join('')}</ul></details>` : ''}`; })() : ''}
@@ -656,7 +656,8 @@ async function queueCardCheck(deck, cards, why) {
   try { await putFile(`queue/${stamp}-check-${deck.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue AI check of new cards in ${deck}`); toast(`Queued a quick AI check of ${todo.length > 12 ? 'the whole list' : todo.length + ' new card' + (todo.length > 1 ? 's' : '')}.`); } catch {}
 }
 
-/* ---------- deck audit ---------- */
+/* ---------- deck audit (shown as "Rank") ---------- */
+const renameAudit = t => t && t.replace(/^Audit of /, 'Ranking of ').replace(/^audit_of_/, 'ranking_of_');
 async function drawAudit(body, name) {
   if (!S.results) await loadResults();
   if (!S.runs) { try { await loadRuns(); } catch {} }
@@ -664,12 +665,12 @@ async function drawAudit(body, name) {
   const finals = new Set(S.results.filter(r => !r.peek).map(r => r.name));
   // an early read is dropped once its run's final result exists
   const audits = S.results.filter(r => r.audit?.deck === name && !(r.peek && finals.has(r.name.replace(/_peek$/, '')))).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-  const a = audits[0]; const act = activeFor(name).filter(x => /audit/i.test(x.label));
-  const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~2 h'], [1.5, 'Standard ±1.5 · ~3.5 h']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new audit</button></div>`;
-  let h = act.length ? `<div class="note" style="margin-bottom:12px">Audit ${act.some(x => x.state === 'Testing now') ? 'running' : 'queued'} · <a href="#runs">Runs</a></div>` : '';
+  const a = audits[0]; const act = activeFor(name).filter(x => /ranking|audit/i.test(x.label));
+  const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~2 h'], [1.5, 'Standard ±1.5 · ~3.5 h']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new ranking</button></div>`;
+  let h = act.length ? `<div class="note" style="margin-bottom:12px">Ranking ${act.some(x => x.state === 'Testing now') ? 'running' : 'queued'} · <a href="#runs">Runs</a></div>` : '';
   if (!a) {
     body.innerHTML = h + `<div class="card stack"><h2>Find this deck's weakest slots</h2>
-      <p class="muted">An audit plays the list as built against the ${esc(poolName(String(deckBracket(name))))} pool and logs each game's kept opening hand plus the next three draws. Every card is then scored by how the deck does when the shuffle gives it to you early, compared with games where it didn't. One run covers every card at once.</p>${runBtn}</div>`;
+      <p class="muted">A ranking plays the list as built against the ${esc(poolName(String(deckBracket(name))))} pool and logs each game's kept opening hand plus the next three draws. Every card is then scored by how the deck does when the shuffle gives it to you early, compared with games where it didn't. One run covers every card at once.</p>${runBtn}</div>`;
     bindAuditRun(name); return;
   }
   const inList = new Set([...S.deck.d.main.map(r => r.name)]);
@@ -681,16 +682,16 @@ async function drawAudit(body, name) {
   const toGap = c => ({ label: c.card, diff: c.diff, ci: c.ci });
   const testLink = g => `#test/${encodeURIComponent(name)}?out=${encodeURIComponent(g.label)}&pool=${a.auditPool}`;
   const N = a.arms[0]?.games || 0;
-  h += `<div class="card"><div class="res-head"><div><div class="res-title">Deck audit</div>
-      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${(() => { const ed = Object.values(S.hints || {}).map(h => h.since).sort().pop() || ''; return ed && (a.date || '') < ed && !a.peek ? ' · <span class="pill" title="Measured before the latest AI fixes; a fresh audit will replace it">older engine</span>' : ''; })()}${a.peek ? ' · <span class="pill gold">still running · early read, refreshes every ~20 min</span>' : a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div></div>
+  h += `<div class="card"><div class="res-head"><div><div class="res-title">Card rank</div>
+      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${(() => { const ed = Object.values(S.hints || {}).map(h => h.since).sort().pop() || ''; return ed && (a.date || '') < ed && !a.peek ? ' · <span class="pill" title="Measured before the latest AI fixes; a fresh ranking will replace it">older engine</span>' : ''; })()}${a.peek ? ' · <span class="pill gold">still running · early read, refreshes every ~20 min</span>' : a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div></div>
 <details class="info"><summary>ⓘ How to read this</summary><p class="small muted">Each card's change in win rate when the shuffle put it in your kept opening hand or next three draws, compared with games where it didn't. Cards that matter late (finishers, answers to specific threats) can score lower than their real value, and with this many cards a few will look bad by chance. Confirm a weak slot with a swap test before cutting it.</p></details>
     <div class="sect">Weakest slots</div>
     <p class="small muted" style="margin:4px 0 6px">Red = clearly below average; grey = could be noise.</p>
     <table class="weak"><tbody>${weakest.map(c => { const [cls] = verdict(c); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card.split(',')[0])} ${S.forge?.get(c.card) === 'A' ? '<span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)}</span></td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Replace</a></td></tr>`; }).join('')}</tbody></table>
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
-    <details class="info" style="margin-top:14px"><summary>Run a new audit</summary><div style="margin-top:8px">${runBtn}</div></details>
-    ${audits.length > 1 ? `<p class="small muted">${audits.length - 1} earlier audit${audits.length > 2 ? 's' : ''} of this deck kept in the history.</p>` : ''}</div>`;
+    <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
+    ${audits.length > 1 ? `<p class="small muted">${audits.length - 1} earlier ranking${audits.length > 2 ? 's' : ''} of this deck kept in the history.</p>` : ''}</div>`;
   body.innerHTML = h; bindAuditRun(name);
 }
 function bindAuditRun(name) {
@@ -698,11 +699,11 @@ function bindAuditRun(name) {
   b.onclick = async () => {
     if (needToken()) return;
     const precision = +$('#aprec').value, pool = POOLS()[deckBracket(name)]?.decks || OPP_DEFAULT;
-    const req = { mode: 'audit', base: name, name: `Audit of ${name}`, precision, shards: SHARDS, opponents: pool, submitted: new Date().toISOString() };
+    const req = { mode: 'audit', base: name, name: `Ranking of ${name}`, precision, shards: SHARDS, opponents: pool, submitted: new Date().toISOString() };
     const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
     b.disabled = true; b.innerHTML = '<span class="spin"></span> Queuing';
-    try { await putFile(`queue/${stamp}-audit-${name.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue audit of ${name}`); toast('Audit queued.'); S.runs = null; location.hash = '#runs'; }
-    catch (e) { toast('Could not queue: ' + e.message, true); b.disabled = false; b.textContent = 'Run a new audit'; }
+    try { await putFile(`queue/${stamp}-audit-${name.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue ranking of ${name}`); toast('Ranking queued.'); S.runs = null; location.hash = '#runs'; }
+    catch (e) { toast('Could not queue: ' + e.message, true); b.disabled = false; b.textContent = 'Run a new ranking'; }
   };
 }
 
@@ -932,7 +933,7 @@ function reqSummary(q) {
   if (q.mode === 'decks' || (!q.slots && q.decks)) return (q.decks || []).join(' vs ');
   if (q.mode === 'cardcheck') return `AI check of new cards: ${(q.cards || []).join(', ')}`;
   if (q.mode === 'usage') return 'AI card-usage check of the whole list';
-  if (q.mode === 'audit') return 'Deck audit: every card scored from the shuffle';
+  if (q.mode === 'audit') return 'Ranking: every card scored from the shuffle';
   if (q.packages) return q.packages.map(p => `${p.in.join(', ')} in for ${p.out.join(', ')}`).join(' · ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');
   if (q.arms && q.compare) {
