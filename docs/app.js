@@ -91,7 +91,6 @@ function flagPill(name) {
   if (!S.forge.has(name)) return '<span class="pill bad" title="Forge has no script for this card, so it can\'t be simulated">Not in Forge</span>';
   const f = S.forge.get(name);
   if (f === 'A') return '<span class="pill warn" title="Forge marks this card as one its AI can\'t play well. Sim results will likely undervalue it.">AI weak</span>';
-  if (f === 'R') return '<span class="pill" title="Forge marks this card as one its AI plays unreliably. Results may undervalue it somewhat.">AI so-so</span>';
   return '';
 }
 async function sfLoad(names) {
@@ -254,7 +253,7 @@ function forestSVG(gaps, link) {
     const y = i * rowH + rowH / 2 + 2;
     if (link) s += `<a href="${esc(link(g))}" class="frow"><title>Test replacements for ${esc(g.label)}</title><rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" rx="6"/>`; const [cls] = verdict(g);
     const col = cls === 'good' ? 'var(--good)' : cls === 'bad' ? 'var(--bad)' : 'var(--muted)';
-    const L = nar ? 19 : 34; const sh = g.label.split(' vs ').map(x => x.includes(' for ') ? x : x.split(',')[0]).join(' vs '); const lab = sh.length > L ? sh.slice(0, L - 1) + '…' : sh;
+    const L = nar ? 19 : 34; const early = g.label.endsWith(' (early)'); const base0 = early ? g.label.slice(0, -8) : g.label; const sh = base0.split(' vs ').map(x => x.includes(' for ') ? x : x.split(',')[0]).join(' vs ') + (early ? ' (early)' : ''); const lab = sh.length > L ? sh.slice(0, L - 1) + '…' : sh;
     s += `<text x="0" y="${y + 4}"><title>${esc(g.label)} vs ${esc(g.vs)}</title>${esc(lab)}</text>`;
     s += `<line x1="${x(g.diff - g.ci)}" x2="${x(g.diff + g.ci)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="4" stroke-linecap="round" opacity=".45"/>`;
     s += `<circle cx="${x(g.diff)}" cy="${y}" r="6" fill="${col}"/>`;
@@ -357,7 +356,7 @@ async function viewDeck(v, name, sub = 'tests') {
   $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
   $('#dbr') && ($('#dbr').onchange = async e => { if (needToken()) { e.target.value = deckBracket(name); return; } S.lab.decks.find(d => d.name === name).bracket = +e.target.value; try { await putFile('decks/lab.json', JSON.stringify(S.lab, null, 2) + '\n', `Deck Lab: ${name} is bracket ${e.target.value}`); toast('Saved. New tests default to that bracket\'s opponents.'); } catch (err) { toast(err.message, true); } });
   const body = $('#dbody');
-  if (sub === 'list') { await loadCardMeta(); if (!S.results) await loadResults(); S.usageNow = usageFor(name); body.innerHTML = `<p class="small muted" style="margin:0 0 10px">Tap a card for its AI status, test history and notes. Dots: <span class="sdot" style="background:var(--good)"></span>AI plays it normally <span class="sdot" style="background:var(--warn)"></span>often held or flagged <span class="sdot" style="background:var(--bad)"></span>AI rarely plays it <span class="sdot" style="background:var(--accent)"></span>hint added, not re-checked <span class="sdot" style="background:var(--line)"></span>not checked yet</p><div id="editor"></div>`; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
+  if (sub === 'list') { await loadCardMeta(); if (!S.results) await loadResults(); S.usageNow = usageFor(name); body.innerHTML = `<details class="info"><summary>ⓘ Tap a card for its AI status, test history and notes</summary><p class="small muted">Dots: <span class="sdot" style="background:var(--good)"></span>AI plays it normally <span class="sdot" style="background:var(--warn)"></span>often held or flagged <span class="sdot" style="background:var(--bad)"></span>AI rarely plays it <span class="sdot" style="background:var(--accent)"></span>hint added, not re-checked <span class="sdot" style="background:var(--line)"></span>not checked yet</p></details><div id="editor"></div>`; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
   else if (sub === 'notes') await drawNotes(body, name);
   else if (sub === 'history') await drawHistory(body, name);
   else if (sub === 'audit') await drawAudit(body, name);
@@ -373,9 +372,10 @@ async function drawDeckTests(body, name) {
   await Promise.all([...new Set(rows.filter(g => g.mode === 'decks').map(g => g.other))].map(n => loadDeck(n).catch(() => null)));
   const hist = await loadHistory(name); const lastChange = hist.length ? hist[hist.length - 1].date : null;
   await loadCardMeta(); const engineDate = Object.values(S.hints || {}).map(h => h.since).sort().pop() || '';
-  let h = act.map(a => `<div class="note" style="margin-bottom:12px"><b>${esc(a.state)}:</b> ${esc(a.label)} · <a href="#runs">Runs</a></div>`).join('');
+  const nRun = act.filter(a => a.state === 'Testing now').length, nQ = act.length - nRun;
+  let h = act.length ? `<div class="note" style="margin-bottom:12px">${[nRun ? `${nRun} test running` : '', nQ ? `${nQ} queued` : ''].filter(Boolean).join(' · ')} · <a href="#runs">Runs</a></div>` : '';
   if (!rows.length) h += `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${encodeURIComponent(name)}">Start one</a></div>`;
-  else h += `<p class="muted small" style="margin:0 0 4px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots.</p><details class="info"><summary>ⓘ How to read this</summary><p class="small muted">Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range. A range that crosses zero means no clear difference. Results tagged <b>older list</b> or <b>older engine</b> were measured before the deck or the AI changed, so treat them as approximate.</p></details><div class="results">`;
+  else h += `<p class="muted small" style="margin:0 0 4px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots.${engineDate && rows.some(g => !g.date || g.date < engineDate) ? ' Some results predate the latest AI fixes (tagged inside Details).' : ''}</p><details class="info"><summary>ⓘ How to read this</summary><p class="small muted">Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range. A range that crosses zero means no clear difference. Results tagged <b>older list</b> or <b>older engine</b> were measured before the deck or the AI changed, so treat them as approximate.</p></details><div class="results">`;
   const short = c => c.split(',')[0];
   const latestBy = (list, keyf) => { const m = new Map(); for (const g of list) { const k = keyf(g), cur = m.get(k); if (!cur || (g.date || '') > (cur.date || '')) m.set(k, g); } return m; };
   for (let [key, gs] of slots) {
@@ -401,18 +401,24 @@ async function drawDeckTests(body, name) {
     });
     const h2h = [...latestBy(pairs, g => [g.lead, g.trail].sort().join('|')).values()].sort((a, b) => b.diff - a.diff);
     const detailRows = [...(promoted ? [...vsCur, ...gs] : gs)].sort((a, b) => b.diff - a.diff || (b.date || '').localeCompare(a.date || ''));
-    const now = isDecks || isPkg ? '' : promoted ? '<span class="pill good">promoted</span>' : inList.has(slot) ? '<span class="pill">in the list now</span>' : '<span class="pill warn">no longer in the list</span>';
+    const now = isDecks || isPkg ? '' : promoted ? '<span class="pill good">promoted</span>' : inList.has(slot) ? '' : '<span class="pill warn">no longer in the list</span>';
     const all = [...gs, ...direct].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     const anyOld = engineDate && [...gs, ...direct].some(g => !g.date || g.date < engineDate);
     h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(cur) + ' slot'}${promoted ? ` <span class="small muted" style="font-weight:500">(was ${esc(slot)})</span>` : ''}</div>
-        <div class="small muted"><span class="pill ${pool === String(deckBracket(name)) ? '' : 'accent'}">vs ${esc(poolName(pool))}</span> ${all.length} result${all.length > 1 ? 's' : ''} · latest ${all[0]?.date ? esc(ago(all[0].date)) : 'date unknown'}</div></div>
-        <div class="row">${anyOld ? '<span class="pill" title="Some of these results were measured before the latest AI fixes">older engine</span>' : ''}${now}${isDecks || isPkg || !inList.has(cur) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(cur)}&pool=${pool}">Test more here</a>`}</div></div>
+        <div class="small muted">${pool === String(deckBracket(name)) ? '' : `<span class="pill accent">vs ${esc(poolName(pool))}</span> `}${all.length} result${all.length > 1 ? 's' : ''} · latest ${all[0]?.date ? esc(ago(all[0].date)) : 'date unknown'}</div></div>
+        <div class="row">${now}${isDecks || isPkg || !inList.has(cur) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(cur)}&pool=${pool}">Test more here</a>`}</div></div>
       ${h2h.length ? `<div class="seg panes" style="margin-top:12px"><button class="on" data-pane="cur">vs current card</button><button data-pane="cvc">Challengers <span class="muted">${h2h.length}</span></button></div>` : ''}
       <div class="pane" data-pane-body="cur">
       ${sorted.length ? forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') }))) : `<p class="small muted">No challengers tested against ${esc(cur)} yet.</p>`}
-      <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th>For</th><th class="r">Change</th><th class="r">Games</th><th>When</th><th></th></tr></thead><tbody>
-      ${detailRows.map(g => { const [c] = verdict(g); const old = (lastChange && (!g.date || g.date < lastChange)) || (promoted && g.vs === slot); const oldEng = engineDate && (!g.date || g.date < engineDate); return `<tr${latest.get(g.label) === g ? '' : ' class="superseded"'}><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="small">${esc(isDecks ? '' : g.vs)}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small muted" title="${esc(prettyName(g.test))}">${g.date ? esc(ago(g.date)) : '—'}${old ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}${oldEng ? ' <span class="pill" title="Measured before the latest AI fixes, so treat it as approximate">older engine</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
-      </tbody></table></details></div>
+      ${(() => {
+        // one row per card (its latest result); repeats from earlier tests tucked away
+        const cur0 = detailRows.filter(g => latest.get(g.label) === g), older = detailRows.filter(g => latest.get(g.label) !== g);
+        const mixedFor = new Set(detailRows.map(g => g.vs)).size > 1;
+        const row = g => { const [c] = verdict(g); const old = (lastChange && (!g.date || g.date < lastChange)) || (promoted && g.vs === slot); const oldEng = engineDate && (!g.date || g.date < engineDate);
+          const sub = [mixedFor && !isDecks ? 'in for ' + g.vs.split(',')[0] : '', g.games ? g.games.toLocaleString() + ' games' : '', g.date ? ago(g.date) : '', g.peek ? 'early read' : '', old ? 'older list' : '', oldEng ? 'older engine' : ''].filter(Boolean).join(' · ');
+          return `<tr><td><div class="dn">${esc(isDecks || isPkg ? g.label : g.label.split(',')[0])}</div><div class="ds">${esc(sub)}</div></td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)}</span><div class="ds">± ${g.ci.toFixed(1)}</div></td><td class="r">${promoteBtn(g, name)}</td></tr>`; };
+        return `<details><summary>Details</summary><table class="dt"><tbody>${cur0.map(row).join('')}</tbody></table>${older.length ? `<details class="older"><summary>Show ${older.length} earlier result${older.length > 1 ? 's' : ''}</summary><table class="dt"><tbody>${older.map(row).join('')}</tbody></table></details>` : ''}</details></div>`;
+      })()}
       ${h2h.length ? `<div class="pane" data-pane-body="cvc" hidden>
         <p class="small muted" style="margin:10px 0 0">Challengers tested directly against each other in this slot. The leader of each pair is named first.</p>
         ${forestSVG(h2h)}
@@ -654,7 +660,7 @@ async function drawAudit(body, name) {
   const audits = S.results.filter(r => r.audit?.deck === name && !(r.peek && finals.has(r.name.replace(/_peek$/, '')))).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const a = audits[0]; const act = activeFor(name).filter(x => /audit/i.test(x.label));
   const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~2 h'], [1.5, 'Standard ±1.5 · ~3.5 h']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new audit</button></div>`;
-  let h = act.map(x => `<div class="note" style="margin-bottom:12px"><b>${esc(x.state)}:</b> deck audit · <a href="#runs">Runs</a></div>`).join('');
+  let h = act.length ? `<div class="note" style="margin-bottom:12px">Audit ${act.some(x => x.state === 'Testing now') ? 'running' : 'queued'} · <a href="#runs">Runs</a></div>` : '';
   if (!a) {
     body.innerHTML = h + `<div class="card stack"><h2>Find this deck's weakest slots</h2>
       <p class="muted">An audit plays the list as built against the ${esc(poolName(String(deckBracket(name))))} pool and logs each game's kept opening hand plus the next three draws. Every card is then scored by how the deck does when the shuffle gives it to you early, compared with games where it didn't. One run covers every card at once.</p>${runBtn}</div>`;
@@ -670,13 +676,14 @@ async function drawAudit(body, name) {
   const testLink = g => `#test/${encodeURIComponent(name)}?out=${encodeURIComponent(g.label)}&pool=${a.auditPool}`;
   const N = a.arms[0]?.games || 0;
   h += `<div class="card"><div class="res-head"><div><div class="res-title">Deck audit</div>
-      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${(() => { const ed = Object.values(S.hints || {}).map(h => h.since).sort().pop() || ''; return ed && (a.date || '') < ed && !a.peek ? ' · <span class="pill" title="Measured before the latest AI fixes; a fresh audit will replace it">older engine</span>' : ''; })()}${a.peek ? ' · <span class="pill gold">still running · early read, refreshes every ~20 min</span>' : a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div>${runBtn}</div>
+      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${(() => { const ed = Object.values(S.hints || {}).map(h => h.since).sort().pop() || ''; return ed && (a.date || '') < ed && !a.peek ? ' · <span class="pill" title="Measured before the latest AI fixes; a fresh audit will replace it">older engine</span>' : ''; })()}${a.peek ? ' · <span class="pill gold">still running · early read, refreshes every ~20 min</span>' : a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div></div>
 <details class="info"><summary>ⓘ How to read this</summary><p class="small muted">Each card's change in win rate when the shuffle put it in your kept opening hand or next three draws, compared with games where it didn't. Cards that matter late (finishers, answers to specific threats) can score lower than their real value, and with this many cards a few will look bad by chance. Confirm a weak slot with a swap test before cutting it.</p></details>
     <div class="sect">Weakest slots</div>
     <p class="small muted" style="margin:4px 0 6px">Red = clearly below average; grey = could be noise.</p>
     <table class="weak"><tbody>${weakest.map(c => { const [cls] = verdict(c); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card.split(',')[0])} ${S.forge?.get(c.card) === 'A' ? '<span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)}</span></td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Replace</a></td></tr>`; }).join('')}</tbody></table>
-    <div class="sect">Every spell, best to worst <span style="text-transform:none;font-weight:500;letter-spacing:0">· click any card to test replacements for it</span></div>${forestSVG(spells.map(toGap), testLink)}
+    <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
+    <details class="info" style="margin-top:14px"><summary>Run a new audit</summary><div style="margin-top:8px">${runBtn}</div></details>
     ${audits.length > 1 ? `<p class="small muted">${audits.length - 1} earlier audit${audits.length > 2 ? 's' : ''} of this deck kept in the history.</p>` : ''}</div>`;
   body.innerHTML = h; bindAuditRun(name);
 }
@@ -754,7 +761,7 @@ async function promote(name, g) {
 }
 async function drawHistory(body, name) {
   const hist = await loadHistory(name);
-  if (!hist.length) { body.innerHTML = '<div class="card empty">No changes promoted yet. Promote a tested card from the Tests tab (open Details and promote on any slot).</div>'; return; }
+  if (!hist.length) { body.innerHTML = '<div class="card empty">No changes promoted yet. Promote a tested card from the Tests tab (open Details on any slot).</div>'; return; }
   body.innerHTML = `<div class="stack">${hist.map((h, i) => ({ h, i })).reverse().map(({ h, i }) => `<div class="card row">
       <div class="grow"><div><b>${h.undo ? 'Undid: ' : ''}${esc(h.in.join(', '))}</b> <span class="muted">in for</span> <b>${esc(h.out.join(', '))}</b></div>
         <div class="small muted">${esc(new Date(h.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }))}${h.result ? ` · ${h.result.diff > 0 ? '+' : ''}${h.result.diff} ± ${h.result.ci} points (${esc(h.result.verdict || '')})${h.result.games ? ', ' + h.result.games.toLocaleString() + ' games' : ''} · ${esc(prettyName(h.result.test || ''))}` : ''}</div></div>
@@ -931,8 +938,7 @@ function reqSummary(q) {
   return '';
 }
 async function viewRuns(v) {
-  v.innerHTML = `<div class="pagehead"><div><h1>Runs</h1><p class="muted">Tests run one at a time on 38 GitHub runners. Queued tests start automatically.</p></div><button id="rrefresh" class="sm">Refresh</button></div><div id="runsBody"><div class="empty"><span class="spin"></span></div></div>`;
-  $('#rrefresh').onclick = async () => { await loadTree().catch(() => {}); S.runs = null; viewRuns(v); };
+  v.innerHTML = `<div class="pagehead"><div><h1>Runs</h1></div></div><div id="runsBody"><div class="empty"><span class="spin"></span></div></div>`;
   try { if (!S.runs || Date.now() - S.runs.at > 20000) await loadRuns(); } catch (e) { $('#runsBody').innerHTML = `<div class="note bad">Couldn't load runs: ${esc(e.message)}${S.token ? '' : '. Without a token GitHub allows 60 requests an hour; adding one lifts that.'}</div>`; return; }
   drawRuns();
   clearInterval(S.runTimer);
