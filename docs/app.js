@@ -324,17 +324,23 @@ async function viewHome(v) {
   const others = deckNames().filter(n => !prim.includes(n) && !poolDecks().includes(n)).sort();
   v.innerHTML = `<div class="pagehead"><div><h1>Decks</h1><p class="muted">Pick a deck to see every card tested in it, edit the list, or start a test.</p></div>
       <div class="row"><a class="btn" href="#test/${encodeURIComponent(prim[0] || '')}?mode=decks">Head to head</a><button class="primary" id="newDeck">+ New deck</button></div></div>
-    <div class="deckgrid" id="dgrid">${prim.map(n => `<a class="dcard" href="#deck/${encodeURIComponent(n)}" data-name="${esc(n)}"><div class="art"></div><div class="body"><div class="res-title">${esc(deckTitle(n))}</div><div class="small muted">${esc(n)} · bracket ${deckBracket(n)}</div><div class="dmeta small muted"><span class="spin"></span></div></div></a>`).join('')}</div>
+    <div class="deckgrid" id="dgrid">${prim.map(n => `<a class="dcard" href="#deck/${encodeURIComponent(n)}" data-name="${esc(n)}"><div class="art"></div><div class="body"><div class="res-title">${esc(deckTitle(n))}</div>${/bracket/i.test(deckTitle(n)) ? '' : `<div class="small muted">Bracket ${deckBracket(n)}</div>`}<div class="dmeta small muted"><span class="spin"></span></div></div></a>`).join('')}</div>
     <details class="more"><summary>Test variants and older lists (${others.length})</summary><div class="row" style="margin-top:10px">${others.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></details>
     <details class="more"><summary>Opponent pools</summary>${Object.entries(POOLS()).map(([b, p]) => `<div style="margin-top:10px"><div class="small"><b>${esc(p.label)}</b></div><div class="row" style="margin-top:6px">${p.decks.map(n => `<a class="pill" href="#deck/${encodeURIComponent(n)}/list">${esc(n)}</a>`).join('')}</div></div>`).join('')}</details>`;
   $('#newDeck').onclick = () => { location.hash = '#new'; };
   if (!S.results) await loadResults();
+  await loadCardMeta();
   const decks = await Promise.all(prim.map(n => loadDeck(n).catch(() => null)));
   await sfLoad(decks.filter(Boolean).flatMap(d => d.commander));
   prim.forEach((n, k) => {
     const el = $(`.dcard[data-name="${CSS.escape(n)}"]`); if (!el) return; const d = decks[k];
     const art = d && S.sf[d.commander[0]]?.art; if (art) $('.art', el).style.backgroundImage = `url("${art}")`;
-    const rows = testsFor(n); const best = rows.filter(g => verdict(g)[0] === 'good').sort((a, b) => b.diff - a.diff)[0];
+    const rows = testsFor(n);
+    // highlight only a current upgrade: latest result per matchup, not measured on an older engine, early reads excluded
+    const engineDate = Object.values(S.hints || {}).map(h => h.since).sort().pop() || '';
+    const seen = new Set(), current = [];
+    for (const g of [...rows].sort((a, b) => (b.date || '').localeCompare(a.date || ''))) { const k = g.label + '|' + g.vs + '|' + !!g.direct; if (seen.has(k)) continue; seen.add(k); current.push(g); }
+    const best = current.filter(g => !g.direct && !g.peek && g.mode === 'swap' && (!engineDate || (g.date || '') >= engineDate) && verdict(g)[0] === 'good').sort((a, b) => b.diff - a.diff)[0];
     const act = activeFor(n);
     $('.dmeta', el).innerHTML = `${d ? esc(d.commander.join(' + ')) + '<br>' : ''}${rows.length ? `${new Set(rows.map(r => r.label)).size} cards tested${rows[0].date ? ' · last ' + esc(ago(rows[0].date)) : ''}` : 'No tests yet'}
       ${best ? `<div style="margin-top:6px"><span class="pill good">${esc(best.label.split(',')[0])} for ${esc(best.vs.split(',')[0])}: +${best.diff.toFixed(1)}</span></div>` : ''}
