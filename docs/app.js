@@ -410,9 +410,15 @@ async function drawDeckTests(body, name) {
       ${h2h.length ? `<div class="seg panes" style="margin-top:12px"><button class="on" data-pane="cur">vs current card</button><button data-pane="cvc">Challengers <span class="muted">${h2h.length}</span></button></div>` : ''}
       <div class="pane" data-pane-body="cur">
       ${sorted.length ? forestSVG(sorted.map(g => ({ ...g, label: g.label + (g.peek ? ' (early)' : '') }))) : `<p class="small muted">No challengers tested against ${esc(cur)} yet.</p>`}
-      <details><summary>Details and promote</summary><table><thead><tr><th>${isDecks ? 'Deck' : isPkg ? 'Package' : 'Card in'}</th><th>For</th><th class="r">Change</th><th class="r">Games</th><th>When</th><th></th></tr></thead><tbody>
-      ${detailRows.map(g => { const [c] = verdict(g); const old = (lastChange && (!g.date || g.date < lastChange)) || (promoted && g.vs === slot); const oldEng = engineDate && (!g.date || g.date < engineDate); return `<tr${latest.get(g.label) === g ? '' : ' class="superseded"'}><td>${esc(g.label)}${g.peek ? ' <span class="pill gold">early read</span>' : ''}</td><td class="small">${esc(isDecks ? '' : g.vs)}</td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span></td><td class="r num">${g.games ? g.games.toLocaleString() : '—'}</td><td class="small muted" title="${esc(prettyName(g.test))}">${g.date ? esc(ago(g.date)) : '—'}${old ? ' <span class="pill" title="The list has changed since this test, so treat it as approximate">older list</span>' : ''}${oldEng ? ' <span class="pill" title="Measured before the latest AI fixes, so treat it as approximate">older engine</span>' : ''}</td><td class="r">${promoteBtn(g, name)}</td></tr>`; }).join('')}
-      </tbody></table></details></div>
+      ${(() => {
+        // one row per card (its latest result); repeats from earlier tests tucked away
+        const cur0 = detailRows.filter(g => latest.get(g.label) === g), older = detailRows.filter(g => latest.get(g.label) !== g);
+        const mixedFor = new Set(detailRows.map(g => g.vs)).size > 1;
+        const row = g => { const [c] = verdict(g); const old = (lastChange && (!g.date || g.date < lastChange)) || (promoted && g.vs === slot); const oldEng = engineDate && (!g.date || g.date < engineDate);
+          const sub = [mixedFor && !isDecks ? 'in for ' + g.vs.split(',')[0] : '', g.games ? g.games.toLocaleString() + ' games' : '', g.date ? ago(g.date) : '', g.peek ? 'early read' : '', old ? 'older list' : '', oldEng ? 'older engine' : ''].filter(Boolean).join(' · ');
+          return `<tr><td><div class="dn">${esc(isDecks || isPkg ? g.label : g.label.split(',')[0])}</div><div class="ds">${esc(sub)}</div></td><td class="r num"><span class="pill ${c}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)}</span><div class="ds">± ${g.ci.toFixed(1)}</div></td><td class="r">${promoteBtn(g, name)}</td></tr>`; };
+        return `<details><summary>Details</summary><table class="dt"><tbody>${cur0.map(row).join('')}</tbody></table>${older.length ? `<details class="older"><summary>Show ${older.length} earlier result${older.length > 1 ? 's' : ''}</summary><table class="dt"><tbody>${older.map(row).join('')}</tbody></table></details>` : ''}</details></div>`;
+      })()}
       ${h2h.length ? `<div class="pane" data-pane-body="cvc" hidden>
         <p class="small muted" style="margin:10px 0 0">Challengers tested directly against each other in this slot. The leader of each pair is named first.</p>
         ${forestSVG(h2h)}
@@ -755,7 +761,7 @@ async function promote(name, g) {
 }
 async function drawHistory(body, name) {
   const hist = await loadHistory(name);
-  if (!hist.length) { body.innerHTML = '<div class="card empty">No changes promoted yet. Promote a tested card from the Tests tab (open Details and promote on any slot).</div>'; return; }
+  if (!hist.length) { body.innerHTML = '<div class="card empty">No changes promoted yet. Promote a tested card from the Tests tab (open Details on any slot).</div>'; return; }
   body.innerHTML = `<div class="stack">${hist.map((h, i) => ({ h, i })).reverse().map(({ h, i }) => `<div class="card row">
       <div class="grow"><div><b>${h.undo ? 'Undid: ' : ''}${esc(h.in.join(', '))}</b> <span class="muted">in for</span> <b>${esc(h.out.join(', '))}</b></div>
         <div class="small muted">${esc(new Date(h.date).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }))}${h.result ? ` · ${h.result.diff > 0 ? '+' : ''}${h.result.diff} ± ${h.result.ci} points (${esc(h.result.verdict || '')})${h.result.games ? ', ' + h.result.games.toLocaleString() + ' games' : ''} · ${esc(prettyName(h.result.test || ''))}` : ''}</div></div>
