@@ -5,11 +5,19 @@ import cache
 PEEK = bool(os.environ.get("PEEK"))
 req = json.load(open('tests/request.json')); arms = req['arms']
 new = [[0, 0] for _ in arms]   # wins, games played in this run
+seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
-    i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']
+    i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
     for l in open(f, errors='ignore'):
+        if l.startswith('TOP '): top = set(l[4:].rstrip('\n').split('|')); continue
         m = re.match(r'G\d+ winner=(\S+)', l)
-        if m: new[i][1] += 1; new[i][0] += m.group(1) == me
+        if m:
+            won = m.group(1) == me
+            if arms[i]['card'] == '@audit' and top is None: top = None; continue   # no draw log: skip the game for audits
+            new[i][1] += 1; new[i][0] += won
+            if top is not None:
+                for c in top: e = seen.setdefault(c, [0, 0]); e[0] += 1; e[1] += won
+            top = None
 # totals include games reused from the cache (recorded in the request when the run was dispatched)
 res = [[new[i][0] + a.get('prior_wins', 0), new[i][1] + a.get('prior_games', 0)] for i, a in enumerate(arms)]
 
@@ -30,12 +38,31 @@ lab = lambda a: a.get('label') or a['card'] or a['deck']
 for b, i in pairs:
     p0, n0 = p(b); pi, n = p(i); se = math.sqrt(p0*(1-p0)/max(1, n0) + pi*(1-pi)/max(1, n))
     t.append(f"- **{lab(arms[i])} vs {lab(arms[b])}: {100*(pi-p0):+.1f} ± {196*se:.1f} points**")
+audit = None
+if req.get('mode') == 'audit':
+    # every card: win rate when it was in the kept hand or the next 3 draws, vs games where it wasn't
+    a0 = arms[0]; prior = cache.load().get(a0.get('key'), {}).get('cards', {})
+    cards = {k: [v[0], v[1]] for k, v in prior.items()}
+    for k, v in seen.items(): e = cards.setdefault(k, [0, 0]); e[0] += v[0]; e[1] += v[1]
+    W, N = res[0]; rows = []
+    for k, (n1, w1) in cards.items():
+        n0, w0 = N - n1, W - w1
+        if n1 < 30 or n0 < 30: continue
+        p1, p0 = w1 / n1, w0 / n0
+        se = math.sqrt(p1 * (1 - p1) / n1 + p0 * (1 - p0) / n0)
+        rows.append({"card": k, "seen": n1, "wins": w1, "diff": round(100 * (p1 - p0), 2), "ci": round(196 * se, 2)})
+    rows.sort(key=lambda r: r["diff"])
+    audit = {"cards": rows, "tallies": cards}
+    t.append(f"\nDeck audit: {N:,} games, {100*W/max(1,N):.1f}% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):\n")
+    t.append("| Card | Games seen | Win rate seen | Change | ± |"); t.append("|---|---|---|---|---|")
+    for r in rows: t.append(f"| {r['card']} | {r['seen']} | {100*r['wins']/r['seen']:.1f}% | {r['diff']:+.1f} | {r['ci']:.1f} |")
 data = {"name": req['name'], "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
                   "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
-        "compare": pairs, "opponents": req.get('opponents')}
+        "compare": pairs, "opponents": req.get('opponents'),
+        **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped'))}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"
 os.makedirs('results', exist_ok=True); open(f"results/{req['name']}.md", 'w').write(txt); print(txt)
@@ -48,4 +75,5 @@ if not PEEK:
         e = c.setdefault(a['key'], {"deck": a['deck'], "card": a['card'], "games": 0, "wins": 0, "runs": []})
         e["games"] += new[i][1]; e["wins"] += new[i][0]
         e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}"); changed = True
+        if audit and i == 0: e["cards"] = audit["tallies"]
     if changed: cache.save(c)

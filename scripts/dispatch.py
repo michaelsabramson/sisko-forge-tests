@@ -76,6 +76,14 @@ def plan_games(arms, compare, precision):
     return [max(0, t - a["prior_games"]) for t, a in zip(total, arms)]
 
 
+def audit_games(arm, precision):
+    """Total games so each card's gap (seen early vs not) has a 95% range of +/- precision points.
+    A card is in the kept hand + next 3 draws in about 10% of games."""
+    p = _p(arm); share = 0.10
+    total = math.ceil(p * (1 - p) * (1 + share / (1 - share)) / (share * (precision / 196.0) ** 2))
+    return [max(0, total - arm["prior_games"])]
+
+
 def allocate(need, todo, procs_total):
     """Give each arm that still needs games a share of the game processes in proportion to its need."""
     tot = sum(need[i] for i in todo)
@@ -148,6 +156,10 @@ def main():
             for x in range(len(ins_idx)):
                 for y in range(x + 1, len(ins_idx)):
                     compare.append([ins_idx[x], ins_idx[y]])
+    elif r.get("mode") == "audit":
+        # one unforced arm; the runner logs each game's kept hand + next 3 draws and every card is scored from those
+        read_deck(r["base"])
+        arms.append({"deck": r["base"], "card": "@audit", "label": f"Audit of {r['base']}"})
     elif r.get("mode") == "package":
         # each game forces one package card into the opening hand, rotating through the package;
         # the baseline forces the matching card being cut, so both sides answer "when this slot shows up early"
@@ -169,8 +181,9 @@ def main():
         compare = [[0, i] for i in range(1, len(arms))]
     name = re.sub(r"[^a-z0-9_]+", "_", r.get("name", "test").lower()).strip("_")[:80] or "test"
     n, k = name, 2
-    while os.path.exists(f"results/{n}.md"):
+    while os.path.exists(f"results/{n}.md") and not r.get("result_name"):
         n, k = f"{name}_{k}", k + 1
+    n = r.get("result_name") or n
     req = {"name": n, "arms": arms, "compare": compare, "band": 0,
            "minutes": int(r.get("minutes", 160)), "shards": int(r.get("shards", 38)),
            "mode": r.get("mode", "swap"), "queued_from": os.path.basename(src),
@@ -188,7 +201,7 @@ def main():
     procs_total = req["shards"] * 4
     if r.get("precision"):
         req["precision"] = float(r["precision"])
-        need = plan_games(arms, compare, req["precision"])
+        need = audit_games(arms[0], req["precision"]) if req["mode"] == "audit" else plan_games(arms, compare, req["precision"])
         for a, n_new in zip(arms, need):
             a["target_new"] = n_new
             a["cached"] = n_new == 0
@@ -209,7 +222,14 @@ def main():
     req["seedbase"] = 10000 + (int(time.time()) // 60 % 1_000_000) * 200   # fresh seeds every run
     with open("tests/request.json", "w", encoding="utf-8") as f:
         json.dump(req, f, indent=2)
-    os.remove(src)
+    if req.get("capped") and not req["allcached"] and r.get("chunk", 1) < 8:
+        # more games needed than one run allows: keep it queued; the next run continues from the cache
+        r["result_name"], r["chunk"] = n, r.get("chunk", 1) + 1
+        req["chunk"] = r["chunk"] - 1
+        with open(src, "w", encoding="utf-8") as f:
+            json.dump(r, f, indent=2)
+    else:
+        os.remove(src)
     print(n)
 
 main()

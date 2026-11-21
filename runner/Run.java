@@ -32,6 +32,14 @@ public class Run {
       List<RegisteredPlayer> pp=new ArrayList<>(); int k=pod.size();
       for(int j=0;j<k;j++){ Deck d=pod.get((j+g)%k); RegisteredPlayer rp=RegisteredPlayer.forCommander(d); LobbyPlayerAi lp=new LobbyPlayerAi(d.getName(),null); lp.setAiProfile(d.getName().startsWith("Sisko") ? System.getProperty("sisko.profile","Default") : "Default"); rp.setPlayer(lp); pp.add(rp);}
       Match mc=new Match(rules,pp,"T"); Game game=mc.createGame(); game.setNoGUIUser();
+      final String auditDeck=System.getProperty("audit"); // deck audit: log the kept opening hand + next 3 draws ("TOP" line, before the G line)
+      if(auditDeck!=null){ final boolean[] said={false};
+        game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void tbA(forge.game.event.GameEventTurnBegan e){
+          if(said[0]) return; said[0]=true;
+          for(Player p:game.getRegisteredPlayers()) if(p.getName().equals(auditDeck)){ List<String> top=new ArrayList<>();
+            for(var c:p.getCardsIn(forge.game.zone.ZoneType.Hand)) top.add(c.getName());
+            int i=0; for(var c:p.getCardsIn(forge.game.zone.ZoneType.Library)){ if(i++>=3) break; top.add(c.getName()); }
+            System.out.println("TOP "+String.join("|",top)); } } }); }
       final Map<String,Integer> seen=new LinkedHashMap<>(); final StringBuilder offs=new StringBuilder(); final int[] myTurn={0};
       game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void on(forge.game.event.GameEventTurnBegan e){
         for(Player p:game.getPlayers()) if(p.getName().startsWith("Sisko") && e.turnOwner().toString().contains(p.getName())){ myTurn[0]++;
