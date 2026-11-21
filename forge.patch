@@ -94,10 +94,10 @@ index 60a19966..803cd2f0 100644
              c = attachAIPumpPreference(ai, sa, prefList, mandatory, attachSource);
          } else if ("Curiosity".equals(logic)) {
 diff --git a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
-index 6b36e381..555373c8 100644
+index 6b36e381..8942a710 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
 +++ b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
-@@ -48,6 +48,37 @@ public class CharmAi extends SpellAbilityAi {
+@@ -48,6 +48,40 @@ public class CharmAi extends SpellAbilityAi {
              // This branch is for "An Opponent chooses" Charm spells from Alliances
              // Current just choose the first available spell, which seem generally less disastrous for the AI.
              chosenList = choices.subList(1, choices.size());
@@ -116,8 +116,10 @@ index 6b36e381..555373c8 100644
 +            if (second == null) second = dmg != null ? dmg : draw;
 +            if (second != null) { second.setActivatingPlayer(ai); chosenList.add(second); }
 +        } else if ("BlackMarket".equals(sa.getParam("AILogic"))) {
-+            // test hook (Black Market Connections): modes by life total
-+            // 30+: Treasure + Shapeshifter + draw; 25-29: Treasure + Shapeshifter; 12-24: Treasure + draw; under 12: Treasure only
++            // test hook (Black Market Connections). Treasure always. Shapeshifter (3 life) only when it does a job:
++            //  - Sisko can be activated this turn and we have fewer than 5 Officers (the changeling is an Officer), or
++            //  - the token(s) would deal 3+ damage to each opponent through enters-pingers, doublers and Ojer,
++            // and only at 12+ life. Draw (2 life) when we'd still be at 9+ afterwards.
 +            int life = ai.getLife();
 +            AbilitySub treasure = null, draw = null, merc = null;
 +            for (AbilitySub c : choices) {
@@ -126,16 +128,17 @@ index 6b36e381..555373c8 100644
 +                    if (String.valueOf(c.getParam("TokenScript")).contains("treasure")) treasure = c; else merc = c;
 +                }
 +            }
++            boolean useMerc = life >= 12 && (blackMarketSiskoNeedsOfficer(ai) || blackMarketTokenDamage(ai) >= 3);
 +            chosenList = Lists.newArrayList();
 +            List<AbilitySub> want = Lists.newArrayList();
 +            want.add(treasure);
-+            if (life >= 25) want.add(merc);
-+            if (life >= 30 || (life >= 12 && life < 25)) want.add(draw);
++            if (useMerc) want.add(merc);
++            if (life - 1 - (useMerc ? 3 : 0) - 2 >= 9) want.add(draw);
 +            for (AbilitySub c : want) if (c != null) { c.setActivatingPlayer(ai); chosenList.add(c); }
          } else if ("Triskaidekaphobia".equals(ComputerUtilAbility.getAbilitySourceName(sa))) {
              chosenList = chooseTriskaidekaphobia(choices, ai);
          } else {
-@@ -107,6 +138,13 @@ public class CharmAi extends SpellAbilityAi {
+@@ -107,6 +141,13 @@ public class CharmAi extends SpellAbilityAi {
      private List<AbilitySub> chooseOptionsAi(SpellAbility sa, List<AbilitySub> choices, final Player ai, boolean isTrigger, int num, int min) {
          List<AbilitySub> chosen = Lists.newArrayList();
          AiController aic = ((PlayerControllerAi) ai.getController()).getAi();
@@ -149,6 +152,63 @@ index 6b36e381..555373c8 100644
  
          // TODO the AI doesn't know how to effectively handle repeated choices from CanRepeatModes yet.
          final int pawprintLimit = sa.hasParam("Pawprint") ? AbilityUtils.calculateAmount(sa.getHostCard(), sa.getParam("Pawprint"), sa) : 0;
+@@ -368,4 +409,56 @@ public class CharmAi extends SpellAbilityAi {
+         return super.doTriggerNoCost(aiPlayer, sa, mandatory);
+     }
+ 
++
++    // test hook helpers for Black Market Connections
++    private static boolean blackMarketSiskoNeedsOfficer(Player ai) {
++        int officers = 0; boolean canActivate = false;
++        for (Card c : ai.getCardsIn(forge.game.zone.ZoneType.Battlefield)) {
++            if (c.isCreature() && c.getType().hasCreatureType("Officer")) officers++;
++            if ("Captain Benjamin Sisko".equals(c.getName()) && !c.isTapped() && !c.isSick()) {
++                for (SpellAbility a : c.getSpellAbilities()) {
++                    if (a.getApi() != forge.game.ability.ApiType.Dig) continue;
++                    a.setActivatingPlayer(ai);
++                    if (ComputerUtilMana.canPayManaCost(a, ai, 0, false)) canActivate = true;
++                }
++            }
++        }
++        return canActivate && officers < 5;
++    }
++
++    /** Damage each opponent takes when Black Market's Shapeshifter (and any doubled copies) enters. */
++    static int blackMarketTokenDamage(Player ai) {
++        List<Card> bf = Lists.newArrayList(ai.getCardsIn(forge.game.zone.ZoneType.Battlefield));
++        int extraTrig = 0, tokens = 1, ojer = 0;
++        for (Card c : bf) {
++            switch (c.getName()) {
++                case "Elesh Norn, Mother of Machines": case "Panharmonicon": case "Yarok, the Desecrated": extraTrig++; break;
++                case "Parallel Lives": case "Doubling Season": case "Anointed Procession": case "Primal Vigor":
++                case "Mondrak, Glory Dominus": case "Ojer Taq, Deepest Foundation": tokens *= 2; break;
++                case "Ojer Axonil, Deepest Might": if (c.isCreature()) ojer = Math.max(ojer, c.getNetPower()); break;
++                default: break;
++            }
++        }
++        int perToken = 0;
++        for (Card c : bf) {
++            int dmg; boolean red;
++            switch (c.getName()) {
++                case "Impact Tremors": case "Witty Roastmaster": case "Molten Gatekeeper": case "Agate Instigator": dmg = 1; red = true; break;
++                case "Purphoros, God of the Forge": dmg = 2; red = true; break;
++                case "Warleader's Call": dmg = 1; red = false; break;
++                case "Corpse Knight": dmg = 1; red = false; break;   // life loss, not damage
++                default: continue;
++            }
++            if (red && c.getColor().hasRed() && ojer > dmg) dmg = ojer;
++            int trig = 1 + extraTrig;
++            if (c.isCreature()) {
++                for (Card t : bf) {
++                    if (t != c && "Roaming Throne".equals(t.getName()) && t.getChosenType() != null
++                            && c.getType().hasCreatureType(t.getChosenType())) trig++;
++                }
++            }
++            perToken += dmg * trig;
++        }
++        return perToken * tokens;
++    }
+ }
 diff --git a/forge-ai/src/main/java/forge/ai/ability/CounterAi.java b/forge-ai/src/main/java/forge/ai/ability/CounterAi.java
 index 8597aaa6..0da82c2b 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/CounterAi.java
