@@ -1,8 +1,0 @@
-{
-  "mode": "audit",
-  "base": "SiskoFinal",
-  "name": "Audit of SiskoFinal with AI hints",
-  "precision": 2.0,
-  "shards": 38,
-  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"]
-}
