@@ -17,6 +17,15 @@
   ],
   "wins": 1380
  },
+ "243a987199add13ca9be": {
+  "card": "Caesar, Legion's Emperor",
+  "deck": "SiskoFinal__CaesarLegionsEmperor__for__Manamorphose",
+  "games": 6017,
+  "runs": [
+   "manamorphose_slot_retest_with_ai_hints:44867356632"
+  ],
+  "wins": 1198
+ },
  "47e3c83b370fac4eda3f": {
   "card": "Grand Abolisher",
   "deck": "SiskoFinal__GrandAbolisher__for__Manamorphose",
@@ -34,6 +43,15 @@
    "caesar_vs_cultivate_and_manamorphose:44769997296"
   ],
   "wins": 1113
+ },
+ "5a32f90b892c782c8a44": {
+  "card": "Riku of Many Paths",
+  "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
+  "games": 5733,
+  "runs": [
+   "manamorphose_slot_retest_with_ai_hints:44867356632"
+  ],
+  "wins": 1117
  },
  "6c7a99652a36eef2f81b": {
   "card": "@audit",
@@ -450,6 +468,15 @@
    "caesar_vs_cultivate_and_manamorphose:44769997296"
   ],
   "wins": 1293
+ },
+ "8170b90ddd75b2062e31": {
+  "card": "Manamorphose",
+  "deck": "SiskoFinal",
+  "games": 5916,
+  "runs": [
+   "manamorphose_slot_retest_with_ai_hints:44867356632"
+  ],
+  "wins": 1258
  },
  "87e6ee7d6a561bf769d0": {
   "card": "@usage",
