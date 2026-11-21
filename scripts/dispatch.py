@@ -160,6 +160,13 @@ def main():
         # one unforced arm; the runner logs each game's kept hand + next 3 draws and every card is scored from those
         read_deck(r["base"])
         arms.append({"deck": r["base"], "card": "@audit", "label": f"Audit of {r['base']}"})
+    elif r.get("mode") == "cardcheck":
+        # quick check of newly added cards: each one forced into the opening hand, with the usage log on
+        base = r["base"]; d = read_deck(base); have = {c for _, c in d["Main"] + d["Commander"]}
+        for c in r["cards"]:
+            if c not in have:
+                sys.exit(f"{c!r} is not in {base}")
+            arms.append({"deck": base, "card": c, "usage": True, "label": c})
     elif r.get("mode") == "usage":
         # short unforced run that logs how the AI handles every card it holds (cast rate, turns held while affordable)
         read_deck(r["base"])

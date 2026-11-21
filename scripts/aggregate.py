@@ -5,6 +5,7 @@ import cache
 PEEK = bool(os.environ.get("PEEK"))
 req = json.load(open('tests/request.json')); arms = req['arms']
 new = [[0, 0] for _ in arms]   # wins, games played in this run
+usage_rows = None
 usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
@@ -75,12 +76,14 @@ if usage:
     t.append(f"\nCard usage: how the AI handled each spell it held. 'Stuck' = held 3+ turns with enough lands to cast it and never cast (colors not checked).\n")
     t.append("| Card | Games held | Cast rate | Median affordable turns before casting | Stuck |"); t.append("|---|---|---|---|---|")
     for _, nm, g, cr, med, st in rows: t.append(f"| {nm} | {g} | {100*cr:.0f}% | {med if med is not None else '-'} | {100*st:.0f}% |")
+    usage_rows = [{"card": nm, "games": g, "cast": round(cr, 3), "median_wait": med, "stuck": round(st, 3)} for _, nm, g, cr, med, st in rows]
 data = {"name": req['name'], "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
                   "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "compare": pairs, "opponents": req.get('opponents'),
+        **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
         **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped'))}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"
