@@ -1,0 +1,11 @@
+{
+  "mode": "swap",
+  "base": "SiskoFinal",
+  "slots": [
+    {"out": "Manamorphose", "ins": ["Riku of Many Paths", "Caesar, Legion's Emperor"]}
+  ],
+  "name": "Manamorphose slot retest with AI hints",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"]
+}
