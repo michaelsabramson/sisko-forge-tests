@@ -1,5 +1,14 @@
 {
- "2477d9081f8dc1ed15da": {
+ "063d399e991ece64f158": {
+  "card": "Riku of Many Paths",
+  "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
+  "games": 5098,
+  "runs": [
+   "riku_vs_caesar_in_the_manamorphose_slot:44824332606"
+  ],
+  "wins": 992
+ },
+ "1e6d15b1854b7ad4d71f": {
   "card": "Cultivate",
   "deck": "SiskoFinal",
   "games": 6662,
@@ -8,25 +17,7 @@
   ],
   "wins": 1380
  },
- "290a23d10951cb03e81d": {
-  "card": "Caesar, Legion's Emperor",
-  "deck": "SiskoCaesarCult",
-  "games": 6716,
-  "runs": [
-   "caesar_vs_cultivate_and_manamorphose:44769997296"
-  ],
-  "wins": 1293
- },
- "30ad59ce74635792f80e": {
-  "card": "Caesar, Legion's Emperor",
-  "deck": "SiskoCaesarM",
-  "games": 6647,
-  "runs": [
-   "caesar_vs_cultivate_and_manamorphose:44769997296"
-  ],
-  "wins": 1268
- },
- "7ae8bffa55b9490ffc19": {
+ "47e3c83b370fac4eda3f": {
   "card": "Grand Abolisher",
   "deck": "SiskoFinal__GrandAbolisher__for__Manamorphose",
   "games": 4504,
@@ -35,7 +26,16 @@
   ],
   "wins": 758
  },
- "896e459c363ce8580498": {
+ "4fd029efa8839bd464f5": {
+  "card": "Manamorphose",
+  "deck": "SiskoFinal",
+  "games": 6737,
+  "runs": [
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
+  ],
+  "wins": 1113
+ },
+ "6c7a99652a36eef2f81b": {
   "card": "@audit",
   "cards": {
    "Abrade": [
@@ -442,16 +442,25 @@
   ],
   "wins": 3699
  },
- "b46f406457e099b109e3": {
-  "card": "Riku of Many Paths",
-  "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
-  "games": 5098,
+ "7ad5f95706a09802c121": {
+  "card": "Caesar, Legion's Emperor",
+  "deck": "SiskoCaesarCult",
+  "games": 6716,
   "runs": [
-   "riku_vs_caesar_in_the_manamorphose_slot:44824332606"
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
   ],
-  "wins": 992
+  "wins": 1293
  },
- "c1be9a5d76459dcd7153": {
+ "a9ea762e42ea79e4e97b": {
+  "card": "Caesar, Legion's Emperor",
+  "deck": "SiskoCaesarM",
+  "games": 6647,
+  "runs": [
+   "caesar_vs_cultivate_and_manamorphose:44769997296"
+  ],
+  "wins": 1268
+ },
+ "aca96d6c9551f89b6025": {
   "card": "Grand Abolisher",
   "deck": "SiskoFinal__GrandAbolisher__for__Cultivate",
   "games": 4866,
@@ -459,14 +468,5 @@
    "grand_abolisher_vs_cultivate_and_manamorphose:44815372817"
   ],
   "wins": 809
- },
- "dcfdf9a35beaff69178d": {
-  "card": "Manamorphose",
-  "deck": "SiskoFinal",
-  "games": 6737,
-  "runs": [
-   "caesar_vs_cultivate_and_manamorphose:44769997296"
-  ],
-  "wins": 1113
  }
 }
