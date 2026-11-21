@@ -758,7 +758,7 @@ index 657c7a33..d82369ea 100644
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
 diff --git a/forge-gui/res/cardsfolder/h/hydroblast.txt b/forge-gui/res/cardsfolder/h/hydroblast.txt
-index 2fb54990..337d97e0 100644
+index 2fb54990..eaa314d5 100644
 --- a/forge-gui/res/cardsfolder/h/hydroblast.txt
 +++ b/forge-gui/res/cardsfolder/h/hydroblast.txt
 @@ -2,7 +2,7 @@ Name:Hydroblast
@@ -767,8 +767,8 @@ index 2fb54990..337d97e0 100644
  A:SP$ Charm | Choices$ DBCounter,DBDestroy
 -SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Spell.Red | SpellDescription$ Counter target spell if it's red.
 -SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Card.Red | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's red.
-+SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card.Red | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Spell.Red | SpellDescription$ Counter target spell if it's red.
-+SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent.Red | AITgts$ Card.Red | ConditionDefined$ Targeted | ConditionPresent$ Card.Red | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's red.
++SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card.Red | AITgts$ Card.Red | SpellDescription$ Counter target spell if it's red.
++SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent.Red | AITgts$ Card.Red | SpellDescription$ Destroy target permanent if it's red.
  AI:RemoveDeck:Random
  Oracle:Choose one —\n• Counter target spell if it's red.\n• Destroy target permanent if it's red.
 diff --git a/forge-gui/res/cardsfolder/i/impact_tremors.txt b/forge-gui/res/cardsfolder/i/impact_tremors.txt
@@ -912,7 +912,7 @@ index c6b5fc54..5a45035d 100644
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
 diff --git a/forge-gui/res/cardsfolder/p/pyroblast.txt b/forge-gui/res/cardsfolder/p/pyroblast.txt
-index c23c78e2..b832914d 100644
+index c23c78e2..d46b442b 100644
 --- a/forge-gui/res/cardsfolder/p/pyroblast.txt
 +++ b/forge-gui/res/cardsfolder/p/pyroblast.txt
 @@ -2,7 +2,7 @@ Name:Pyroblast
@@ -921,8 +921,8 @@ index c23c78e2..b832914d 100644
  A:SP$ Charm | Choices$ DBCounter,DBDestroy
 -SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Spell.Blue | SpellDescription$ Counter target spell if it's blue.
 -SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Card.Blue | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's blue.
-+SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card.Blue | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Spell.Blue | SpellDescription$ Counter target spell if it's blue.
-+SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent.Blue | AITgts$ Card.Blue | ConditionDefined$ Targeted | ConditionPresent$ Card.Blue | ConditionCompare$ GE1 | SpellDescription$ Destroy target permanent if it's blue.
++SVar:DBCounter:DB$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card.Blue | AITgts$ Card.Blue | SpellDescription$ Counter target spell if it's blue.
++SVar:DBDestroy:DB$ Destroy | ValidTgts$ Permanent.Blue | AITgts$ Card.Blue | SpellDescription$ Destroy target permanent if it's blue.
  AI:RemoveDeck:Random
  Oracle:Choose one —\n• Counter target spell if it's blue.\n• Destroy target permanent if it's blue.
 diff --git a/forge-gui/res/cardsfolder/r/retreat_to_hagra.txt b/forge-gui/res/cardsfolder/r/retreat_to_hagra.txt
@@ -1002,21 +1002,24 @@ index 76beaf4e..04f55bbf 100644
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
 diff --git a/forge-gui/res/cardsfolder/u/utopia_sprawl.txt b/forge-gui/res/cardsfolder/u/utopia_sprawl.txt
-index b1a0b4e4..be99f41c 100644
+index b1a0b4e4..37ee027e 100644
 --- a/forge-gui/res/cardsfolder/u/utopia_sprawl.txt
 +++ b/forge-gui/res/cardsfolder/u/utopia_sprawl.txt
-@@ -2,10 +2,9 @@ Name:Utopia Sprawl
+@@ -2,10 +2,11 @@ Name:Utopia Sprawl
  ManaCost:G
  Types:Enchantment Aura
  K:Enchant:Forest
 -SVar:AttachAILogic:Pump
 +SVar:AttachAILogic:ManaLand
  K:ETBReplacement:Other:ChooseColor
- SVar:ChooseColor:DB$ ChooseColor | Defined$ You | SpellDescription$ As CARDNAME enters, choose a color.
+-SVar:ChooseColor:DB$ ChooseColor | Defined$ You | SpellDescription$ As CARDNAME enters, choose a color.
++SVar:ChooseColor:DB$ ChooseColor | Defined$ You | AILogic$ MostProminentInComputerDeck | SpellDescription$ As CARDNAME enters, choose a color.
  T:Mode$ TapsForMana | ValidCard$ Card.AttachedBy | TriggerZones$ Battlefield | Execute$ TrigMana | Static$ True | TriggerDescription$ Whenever enchanted Forest is tapped for mana, its controller adds an additional one mana of the chosen color.
  SVar:TrigMana:DB$ Mana | Produced$ Chosen | Defined$ TriggeredCardController
 -AI:RemoveDeck:All
  Oracle:Enchant Forest\nAs Utopia Sprawl enters, choose a color.\nWhenever enchanted Forest is tapped for mana, its controller adds an additional one mana of the chosen color.
++SVar:PlayMain1:ALWAYS
++SVar:AIPriorityModifier:20
 diff --git a/forge-gui/res/cardsfolder/w/warleaders_call.txt b/forge-gui/res/cardsfolder/w/warleaders_call.txt
 index f5cb1a7b..391d05c4 100644
 --- a/forge-gui/res/cardsfolder/w/warleaders_call.txt
