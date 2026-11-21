@@ -451,6 +451,15 @@
   ],
   "wins": 1293
  },
+ "87e6ee7d6a561bf769d0": {
+  "card": "@usage",
+  "deck": "SiskoFinal",
+  "games": 4020,
+  "runs": [
+   "card_usage_in_siskofinal:44859952920"
+  ],
+  "wins": 753
+ },
  "a9ea762e42ea79e4e97b": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoCaesarM",
