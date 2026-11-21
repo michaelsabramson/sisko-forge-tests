@@ -215,7 +215,8 @@ function parseResult(path, md) {
   const title = (md.match(/^# (.+)$/m) || [])[1] || name;
   const intro = (md.split('\n').find(l => l && !l.startsWith('#') && !l.startsWith('|')) || '');
   for (const g of gaps) g.pool ||= '3';
-  return { path, name, peek, title, intro, arms, gaps, games: arms.reduce((s, a) => s + a.games, 0) };
+  const audit = dm ? JSON.parse(dm[1]).audit : null; const auditPool = dm ? poolOf(JSON.parse(dm[1]).opponents) : '3';
+  return { path, name, peek, title, intro, arms, gaps, audit, auditPool, games: arms.reduce((s, a) => s + a.games, 0) };
 }
 function verdict(g) {
   const lo = g.diff - g.ci, hi = g.diff + g.ci;
@@ -254,7 +255,7 @@ async function loadResults() {
     for (const c of cs) for (const f of files) { const n = f.slice(8, -3); if (!dates[n] && c.commit.message.toLowerCase().includes(n.replace(/_/g, ' ').slice(0, 12))) dates[n] = c.commit.author.date; }
   } catch {}
   const out = await Promise.all(files.map(async f => { try { const r = parseResult(f, await raw(f)); r.date = dates[r.name]; return r; } catch { return null; } }));
-  S.results = out.filter(r => r && r.arms.length).sort((a, b) => (b.date || '').localeCompare(a.date || '') || a.name.localeCompare(b.name));
+  S.results = out.filter(r => r && (r.arms.length || r.audit)).sort((a, b) => (b.date || '').localeCompare(a.date || '') || a.name.localeCompare(b.name));
 }
 /* ---------- deck manifest ---------- */
 async function loadLab() {
@@ -333,7 +334,7 @@ async function viewDeck(v, name, sub = 'tests') {
   v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
     <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
       ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
-    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
+    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['audit', 'Audit'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
     <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
   if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
   $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
@@ -342,6 +343,7 @@ async function viewDeck(v, name, sub = 'tests') {
   if (sub === 'list') { body.innerHTML = '<div id="editor"></div>'; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
   else if (sub === 'notes') await drawNotes(body, name);
   else if (sub === 'history') await drawHistory(body, name);
+  else if (sub === 'audit') await drawAudit(body, name);
   else await drawDeckTests(body, name);
 }
 async function drawDeckTests(body, name) {
@@ -527,6 +529,51 @@ async function saveDeck(as) {
   } catch (e) { toast('Save failed: ' + e.message, true); btn.disabled = false; btn.textContent = 'Save'; }
 }
 
+
+
+/* ---------- deck audit ---------- */
+async function drawAudit(body, name) {
+  if (!S.results) await loadResults();
+  if (!S.runs) { try { await loadRuns(); } catch {} }
+  const audits = S.results.filter(r => r.audit?.deck === name).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const a = audits[0]; const act = activeFor(name).filter(x => /audit/i.test(x.label));
+  const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~2 h'], [1.5, 'Standard ±1.5 · ~3.5 h']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new audit</button></div>`;
+  let h = act.map(x => `<div class="note" style="margin-bottom:12px"><b>${esc(x.state)}:</b> deck audit · <a href="#runs">Runs</a></div>`).join('');
+  if (!a) {
+    body.innerHTML = h + `<div class="card stack"><h2>Find this deck's weakest slots</h2>
+      <p class="muted">An audit plays the list as built against the ${esc(poolName(String(deckBracket(name))))} pool and logs each game's kept opening hand plus the next three draws. Every card is then scored by how the deck does when the shuffle gives it to you early, compared with games where it didn't. One run covers every card at once.</p>${runBtn}</div>`;
+    bindAuditRun(name); return;
+  }
+  const inList = new Set([...S.deck.d.main.map(r => r.name)]);
+  await sfLoad(a.audit.cards.map(c => c.card));
+  const isLand = c => (S.sf[c]?.type || '').includes('Land');
+  const rows = a.audit.cards.filter(c => inList.has(c.card));
+  const spells = rows.filter(c => !isLand(c.card)).sort((x, y) => y.diff - x.diff), lands = rows.filter(c => isLand(c.card)).sort((x, y) => y.diff - x.diff);
+  const weakest = [...spells].sort((x, y) => x.diff - y.diff).slice(0, 8);
+  const toGap = c => ({ label: c.card, diff: c.diff, ci: c.ci });
+  const N = a.arms[0]?.games || 0;
+  h += `<div class="card"><div class="res-head"><div><div class="res-title">Deck audit</div>
+      <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div>${runBtn}</div>
+    <p class="small muted" style="margin:10px 0 0">Each card's change in win rate when the shuffle put it in your kept opening hand or next three draws, compared with games where it didn't. Cards that matter late (finishers, answers to specific threats) can score lower than their real value, and with this many cards a few will look bad by chance. Confirm a weak slot with a swap test before cutting it.</p>
+    <div class="sect">Weakest slots</div>
+    <table><tbody>${weakest.map(c => { const [cls, t] = verdict(c); return `<tr><td data-card="${esc(c.card)}">${esc(c.card)} ${flagPill(c.card)}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)} ± ${c.ci.toFixed(1)}</span></td><td class="small muted">${cls === 'bad' ? 'clearly below average' : 'within noise'}</td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Find a replacement</a></td></tr>`; }).join('')}</tbody></table>
+    <div class="sect">Every spell, best to worst</div>${forestSVG(spells.map(toGap))}
+    <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap))}</details>
+    ${audits.length > 1 ? `<p class="small muted">${audits.length - 1} earlier audit${audits.length > 2 ? 's' : ''} of this deck kept in the history.</p>` : ''}</div>`;
+  body.innerHTML = h; bindAuditRun(name);
+}
+function bindAuditRun(name) {
+  const b = $('#arun'); if (!b) return;
+  b.onclick = async () => {
+    if (needToken()) return;
+    const precision = +$('#aprec').value, pool = POOLS()[deckBracket(name)]?.decks || OPP_DEFAULT;
+    const req = { mode: 'audit', base: name, name: `Audit of ${name}`, precision, shards: SHARDS, opponents: pool, submitted: new Date().toISOString() };
+    const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
+    b.disabled = true; b.innerHTML = '<span class="spin"></span> Queuing';
+    try { await putFile(`queue/${stamp}-audit-${name.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue audit of ${name}`); toast('Audit queued.'); S.runs = null; location.hash = '#runs'; }
+    catch (e) { toast('Could not queue: ' + e.message, true); b.disabled = false; b.textContent = 'Run a new audit'; }
+  };
+}
 
 /* ---------- promote tested changes ---------- */
 async function loadHistory(name) {
@@ -753,6 +800,7 @@ async function loadRuns() {
 function reqSummary(q) {
   if (!q) return '';
   if (q.mode === 'decks' || (!q.slots && q.decks)) return (q.decks || []).join(' vs ');
+  if (q.mode === 'audit') return 'Deck audit: every card scored from the shuffle';
   if (q.packages) return q.packages.map(p => `${p.in.join(', ')} in for ${p.out.join(', ')}`).join(' · ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');
   if (q.arms && q.compare) {
