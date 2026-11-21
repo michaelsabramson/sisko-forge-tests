@@ -93,6 +93,10 @@
    "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
    "since": "2026-11-19"
   },
+  "Pact of Negation": {
+   "hint": "Only counter what really matters: a board wipe, a spell aimed at our cards, or a big threat (mana value 6+). Needs 7+ lands so paying next upkeep doesn't eat the whole turn, unless it's protecting our board. Without this the AI fires it at a random spell the moment it has 5 lands.",
+   "since": "2026-11-21T13:30"
+  },
   "Puca's Mischief": {
    "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
    "since": "2026-11-19"

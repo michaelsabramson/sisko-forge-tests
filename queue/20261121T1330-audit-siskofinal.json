@@ -1,0 +1,14 @@
+{
+  "mode": "audit",
+  "base": "SiskoFinal",
+  "name": "Audit of SiskoFinal with Pact hint",
+  "precision": 2.0,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ]
+}

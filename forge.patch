@@ -149,6 +149,35 @@ index 6b36e381..555373c8 100644
  
          // TODO the AI doesn't know how to effectively handle repeated choices from CanRepeatModes yet.
          final int pawprintLimit = sa.hasParam("Pawprint") ? AbilityUtils.calculateAmount(sa.getHostCard(), sa.getParam("Pawprint"), sa) : 0;
+diff --git a/forge-ai/src/main/java/forge/ai/ability/CounterAi.java b/forge-ai/src/main/java/forge/ai/ability/CounterAi.java
+index 8597aaa6..0da82c2b 100644
+--- a/forge-ai/src/main/java/forge/ai/ability/CounterAi.java
++++ b/forge-ai/src/main/java/forge/ai/ability/CounterAi.java
+@@ -136,6 +136,24 @@ public class CounterAi extends SpellAbilityAi {
+                 if (tgtCMC < minCMC) {
+                     return new AiAbilityDecision(0, AiPlayDecision.CantPlayAi);
+                 }
++            } else if ("Pact".equals(logic)) {
++                // test hook (Pact of Negation): only counter what really matters, and only when paying next upkeep
++                // won't eat the whole turn. Matters = board wipe, something aimed at our cards, or a big threat (MV 6+).
++                if (tgtSA == null) {
++                    return new AiAbilityDecision(0, AiPlayDecision.CantPlayAi);
++                }
++                ApiType api = tgtSA.getApi();
++                boolean wipe = api == ApiType.DestroyAll || api == ApiType.ChangeZoneAll || api == ApiType.DamageAll
++                        || api == ApiType.SacrificeAll || api == ApiType.PumpAll && tgtCMC >= 4;
++                boolean atUs = false;
++                for (SpellAbility s2 = tgtSA; s2 != null && !atUs; s2 = s2.getSubAbility()) {
++                    for (Card c : s2.getTargets().getTargetCards()) if (c.getController() == ai) { atUs = true; break; }
++                }
++                boolean bigThreat = tgtCMC >= 6;
++                int lands = ai.getLandsInPlay().size();
++                if (!(wipe || atUs || bigThreat) || (lands < 7 && !(wipe || atUs))) {
++                    return new AiAbilityDecision(0, AiPlayDecision.CantPlayAi);
++                }
+             } else if ("NullBrooch".equals(logic)) {
+                 if (!SpecialCardAi.NullBrooch.consider(ai, sa)) {
+                     return new AiAbilityDecision(0, AiPlayDecision.CantPlayAi);
 diff --git a/forge-ai/src/main/java/forge/ai/ability/DigAi.java b/forge-ai/src/main/java/forge/ai/ability/DigAi.java
 index 265d1549..635e4fb4 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/DigAi.java
@@ -913,6 +942,19 @@ index 35733685..b471ec63 100644
  Oracle:At the beginning of your upkeep, choose one at random. Create a red and white creature token with those characteristics.\n• 3/1 Human Warrior with trample and haste.\n• 2/1 Human Cleric with lifelink and haste.\n• 1/2 Human Rogue with haste and "When this token enters, it deals 1 damage to any target."
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
+diff --git a/forge-gui/res/cardsfolder/p/pact_of_negation.txt b/forge-gui/res/cardsfolder/p/pact_of_negation.txt
+index fe869e5c..99d8da64 100644
+--- a/forge-gui/res/cardsfolder/p/pact_of_negation.txt
++++ b/forge-gui/res/cardsfolder/p/pact_of_negation.txt
+@@ -2,7 +2,7 @@ Name:Pact of Negation
+ ManaCost:0
+ Colors:blue
+ Types:Instant
+-A:SP$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card | SubAbility$ DBDelTrig | SpellDescription$ Counter target spell. At the beginning of your next upkeep, pay {3}{U}{U}. If you don't, you lose the game.
++A:SP$ Counter | TargetType$ Spell | TgtPrompt$ Select target spell | ValidTgts$ Card | AILogic$ Pact | SubAbility$ DBDelTrig | SpellDescription$ Counter target spell. At the beginning of your next upkeep, pay {3}{U}{U}. If you don't, you lose the game.
+ SVar:DBDelTrig:DB$ DelayedTrigger | Mode$ Phase | Phase$ Upkeep | ValidPlayer$ You | Execute$ TrigLoseGame | TriggerDescription$ At the beginning of your next upkeep, pay {3}{U}{U}. If you don't, you lose the game.
+ SVar:TrigLoseGame:DB$ LosesGame | UnlessCost$ 3 U U | UnlessPayer$ You | Defined$ You
+ SVar:NeedsToPlayVar:NumLands GE5
 diff --git a/forge-gui/res/cardsfolder/p/pucas_mischief.txt b/forge-gui/res/cardsfolder/p/pucas_mischief.txt
 index 2ae6df76..5864aa4d 100644
 --- a/forge-gui/res/cardsfolder/p/pucas_mischief.txt
