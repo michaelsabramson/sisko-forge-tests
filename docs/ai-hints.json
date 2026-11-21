@@ -10,8 +10,8 @@
    "since": "2026-11-19"
   },
   "Black Market Connections": {
-   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
-   "since": "2026-11-19"
+   "hint": "Cast early. Modes by life total: 30+ Treasure + Shapeshifter + draw; 25-29 Treasure + Shapeshifter; 12-24 Treasure + draw; under 12 Treasure only. Without this the AI almost always just draws and never makes the Shapeshifter.",
+   "since": "2026-11-21T12:20"
   },
   "Caesar, Legion's Emperor": {
    "hint": "Attacks with something so he triggers, sacrifices a token, takes the Soldiers plus card draw (or damage once the board is wide).",

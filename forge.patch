@@ -94,10 +94,10 @@ index 60a19966..803cd2f0 100644
              c = attachAIPumpPreference(ai, sa, prefList, mandatory, attachSource);
          } else if ("Curiosity".equals(logic)) {
 diff --git a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
-index 6b36e381..79cd9ce1 100644
+index 6b36e381..555373c8 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
 +++ b/forge-ai/src/main/java/forge/ai/ability/CharmAi.java
-@@ -48,6 +48,20 @@ public class CharmAi extends SpellAbilityAi {
+@@ -48,6 +48,37 @@ public class CharmAi extends SpellAbilityAi {
              // This branch is for "An Opponent chooses" Charm spells from Alliances
              // Current just choose the first available spell, which seem generally less disastrous for the AI.
              chosenList = choices.subList(1, choices.size());
@@ -115,10 +115,27 @@ index 6b36e381..79cd9ce1 100644
 +            AbilitySub second = (tokens >= 4 || ai.getLife() <= 5) ? dmg : draw;
 +            if (second == null) second = dmg != null ? dmg : draw;
 +            if (second != null) { second.setActivatingPlayer(ai); chosenList.add(second); }
++        } else if ("BlackMarket".equals(sa.getParam("AILogic"))) {
++            // test hook (Black Market Connections): modes by life total
++            // 30+: Treasure + Shapeshifter + draw; 25-29: Treasure + Shapeshifter; 12-24: Treasure + draw; under 12: Treasure only
++            int life = ai.getLife();
++            AbilitySub treasure = null, draw = null, merc = null;
++            for (AbilitySub c : choices) {
++                if (c.getApi() == forge.game.ability.ApiType.Draw) draw = c;
++                else if (c.getApi() == forge.game.ability.ApiType.Token) {
++                    if (String.valueOf(c.getParam("TokenScript")).contains("treasure")) treasure = c; else merc = c;
++                }
++            }
++            chosenList = Lists.newArrayList();
++            List<AbilitySub> want = Lists.newArrayList();
++            want.add(treasure);
++            if (life >= 25) want.add(merc);
++            if (life >= 30 || (life >= 12 && life < 25)) want.add(draw);
++            for (AbilitySub c : want) if (c != null) { c.setActivatingPlayer(ai); chosenList.add(c); }
          } else if ("Triskaidekaphobia".equals(ComputerUtilAbility.getAbilitySourceName(sa))) {
              chosenList = chooseTriskaidekaphobia(choices, ai);
          } else {
-@@ -107,6 +121,13 @@ public class CharmAi extends SpellAbilityAi {
+@@ -107,6 +138,13 @@ public class CharmAi extends SpellAbilityAi {
      private List<AbilitySub> chooseOptionsAi(SpellAbility sa, List<AbilitySub> choices, final Player ai, boolean isTrigger, int num, int min) {
          List<AbilitySub> chosen = Lists.newArrayList();
          AiController aic = ((PlayerControllerAi) ai.getController()).getAi();
@@ -609,9 +626,18 @@ index 2f55802b..e8e054d2 100644
 +SVar:PlayMain1:ALWAYS
 +SVar:AIPriorityModifier:10
 diff --git a/forge-gui/res/cardsfolder/b/black_market_connections.txt b/forge-gui/res/cardsfolder/b/black_market_connections.txt
-index eeff719b..54082de4 100644
+index eeff719b..035bb867 100644
 --- a/forge-gui/res/cardsfolder/b/black_market_connections.txt
 +++ b/forge-gui/res/cardsfolder/b/black_market_connections.txt
+@@ -2,7 +2,7 @@ Name:Black Market Connections
+ ManaCost:2 B
+ Types:Enchantment
+ T:Mode$ Phase | Phase$ Main1 | ValidPlayer$ You | TriggerZones$ Battlefield | Execute$ TrigCharm | TriggerDescription$ At the beginning of your first main phase, ABILITY
+-SVar:TrigCharm:DB$ Charm | Choices$ DBTreasureLose1,DBDrawLose2,DBTokenLose3 | MinCharmNum$ 1 | CharmNum$ 3
++SVar:TrigCharm:DB$ Charm | Choices$ DBTreasureLose1,DBDrawLose2,DBTokenLose3 | MinCharmNum$ 1 | CharmNum$ 3 | AILogic$ BlackMarket
+ SVar:DBTreasureLose1:DB$ Token | TokenScript$ c_a_treasure_sac | SubAbility$ DBLoseLife1 | SpellDescription$ Sell Contraband — Create a Treasure token. You lose 1 life.
+ SVar:DBDrawLose2:DB$ Draw | SubAbility$ DBLoseLife2 | SpellDescription$ Buy Information — Draw a card. You lose 2 life.
+ SVar:DBTokenLose3:DB$ Token | TokenScript$ c_3_2_shapeshifter_changeling | SubAbility$ DBLoseLife3 | SpellDescription$ Hire a Mercenary — Create a 3/2 colorless Shapeshifter creature token with changeling. You lose 3 life.
 @@ -11,3 +11,5 @@ SVar:DBLoseLife2:DB$ LoseLife | LifeAmount$ 2 | Defined$ You
  SVar:DBLoseLife3:DB$ LoseLife | LifeAmount$ 3 | Defined$ You
  DeckHas:Ability$Token|Sacrifice
