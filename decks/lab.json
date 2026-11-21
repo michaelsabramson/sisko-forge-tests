@@ -9,6 +9,11 @@
       "name": "SiskoB2",
       "title": "Sisko \u00b7 Bracket 2",
       "bracket": 2
+    },
+    {
+      "name": "NorinB3",
+      "title": "Norin \u00b7 Bracket 3",
+      "bracket": 3
     }
   ],
   "pools": {

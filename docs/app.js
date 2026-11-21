@@ -138,7 +138,9 @@ function parseText(txt) {
     if (/^(deck|main(board)?|mainboard|library|creatures?|lands?|instants?|sorcer(y|ies)|artifacts?|enchantments?|planeswalkers?|battles?|other|spells?)(\s*\(\d+\))?$/.test(h)) { sec = 'main'; continue; }
     if (/^(sideboard|maybeboard|considering|tokens?)/.test(h)) { sec = 'skip'; continue; }
     if (sec === 'skip') continue;
-    let cmd = /\*CMDR\*/i.test(line);
+    // a trailing "(Commander)" / "(CMDR)" tag also marks a commander (Archidekt / plain-text exports)
+    let cmd = /\*CMDR\*/i.test(line) || /\s*[\(\[](commander|cmdr)[\)\]]\s*$/i.test(line);
+    line = line.replace(/\s*[\(\[](commander|cmdr)[\)\]]\s*$/i, '');
     let m = line.match(/^(\d+)\s*x?\s+(.+)$/i); let n = 1, name = line;
     if (m) { n = +m[1]; name = m[2]; }
     name = name.replace(/\*[A-Z]+\*/gi, '').replace(/\s+\([A-Za-z0-9]{2,6}\)\s*[\w-]*\s*$/, '').replace(/\s+\[[^\]]+\]\s*$/, '').replace(/\s+#.*$/, '').trim();
