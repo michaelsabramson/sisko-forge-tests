@@ -207,5 +207,6 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   .decklist{position:static}
   .grid2{grid-template-columns:1fr}
   .crow .x{opacity:1}
+  #dname{max-width:none!important;flex-basis:100%}
   .preview{display:none}
 }
