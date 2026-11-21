@@ -27,9 +27,14 @@ def deck_sig(name):
     return _h("\n".join(sorted(cards)).encode())[:16]
 
 
+# Bump when a runner change alters how games are played (logging-only changes don't need a bump),
+# then run scripts/cache_rekey.py only if old games are still valid under the new version.
+RUNNER_VERSION = "runner-2"   # runner-2: package rotation; audit logging added without a bump (no gameplay change)
+
+
 def engine_sig():
-    parts = [open(p, "rb").read() for p in ("FORGE_COMMIT", "forge.patch", "runner/Run.java")]
-    return _h(b"\0".join(parts) + SETTINGS.encode())[:16]
+    parts = [open(p, "rb").read() for p in ("FORGE_COMMIT", "forge.patch")]
+    return _h(b"\0".join(parts) + RUNNER_VERSION.encode() + SETTINGS.encode())[:16]
 
 
 def arm_key(arm, opponents, band, engine=None):
