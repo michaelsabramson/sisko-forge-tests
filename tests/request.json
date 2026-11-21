@@ -1,12 +1,12 @@
 {
-  "name": "audit_of_siskofinal_with_pact_hint",
-  "title": "Audit of SiskoFinal with Pact hint",
+  "name": "audit_of_siskofinal_with_pact_and_new_black_market_hints",
+  "title": "Audit of SiskoFinal with Pact and new Black Market hints",
   "arms": [
     {
       "deck": "SiskoFinal",
       "card": "@audit",
       "label": "Audit of SiskoFinal",
-      "key": "e20a5cca13932ba46b6e",
+      "key": "48219b8224770b8ce314",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -18,8 +18,8 @@
   "minutes": 111,
   "shards": 38,
   "mode": "audit",
-  "queued_from": "20261121T1330-audit-siskofinal.json",
-  "started": "2026-11-21T15:51:21Z",
+  "queued_from": "20261121T1620-audit-siskofinal.json",
+  "started": "2026-11-21T16:25:59Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -184,5 +184,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184264200
+  "seedbase": 184271000
 }
