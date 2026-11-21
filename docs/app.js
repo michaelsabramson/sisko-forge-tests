@@ -215,8 +215,14 @@ function parseResult(path, md) {
   const title = (md.match(/^# (.+)$/m) || [])[1] || name;
   const intro = (md.split('\n').find(l => l && !l.startsWith('#') && !l.startsWith('|')) || '');
   for (const g of gaps) g.pool ||= '3';
-  const audit = dm ? JSON.parse(dm[1]).audit : null; const auditPool = dm ? poolOf(JSON.parse(dm[1]).opponents) : '3';
-  return { path, name, peek, title, intro, arms, gaps, audit, auditPool, games: arms.reduce((s, a) => s + a.games, 0) };
+  const audit = dm ? JSON.parse(dm[1]).audit : null;
+  let usage = dm ? JSON.parse(dm[1]).usage : null;
+  if (!usage && md.includes('Card usage:')) {
+    const cards = [];
+    for (const m of md.matchAll(/^\| (.+?) \| (\d+) \| (\d+)% \| ([\d-]+) \| (\d+)% \|$/gm)) cards.push({ card: m[1], games: +m[2], cast: +m[3] / 100, median_wait: m[4] === '-' ? null : +m[4], stuck: +m[5] / 100 });
+    usage = { deck: arms[0]?.deck, cards, forced: [] };
+  } const auditPool = dm ? poolOf(JSON.parse(dm[1]).opponents) : '3';
+  return { path, name, peek, title, intro, arms, gaps, audit, auditPool, usage, games: arms.reduce((s, a) => s + a.games, 0) };
 }
 function verdict(g) {
   const lo = g.diff - g.ci, hi = g.diff + g.ci;
@@ -257,7 +263,7 @@ async function loadResults() {
     for (const c of cs) for (const f of files) { const n = f.slice(8, -3); if (!dates[n] && c.commit.message.toLowerCase().includes(n.replace(/_/g, ' ').slice(0, 12))) dates[n] = c.commit.author.date; }
   } catch {}
   const out = await Promise.all(files.map(async f => { try { const r = parseResult(f, await raw(f)); r.date = dates[r.name]; return r; } catch { return null; } }));
-  S.results = out.filter(r => r && (r.arms.length || r.audit)).sort((a, b) => (b.date || '').localeCompare(a.date || '') || a.name.localeCompare(b.name));
+  S.results = out.filter(r => r && (r.arms.length || r.audit || r.usage)).sort((a, b) => (b.date || '').localeCompare(a.date || '') || a.name.localeCompare(b.name));
 }
 /* ---------- deck manifest ---------- */
 async function loadLab() {
@@ -342,7 +348,7 @@ async function viewDeck(v, name, sub = 'tests') {
   $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
   $('#dbr') && ($('#dbr').onchange = async e => { if (needToken()) { e.target.value = deckBracket(name); return; } S.lab.decks.find(d => d.name === name).bracket = +e.target.value; try { await putFile('decks/lab.json', JSON.stringify(S.lab, null, 2) + '\n', `Deck Lab: ${name} is bracket ${e.target.value}`); toast('Saved. New tests default to that bracket\'s opponents.'); } catch (err) { toast(err.message, true); } });
   const body = $('#dbody');
-  if (sub === 'list') { body.innerHTML = '<div id="editor"></div>'; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
+  if (sub === 'list') { await loadCardMeta(); if (!S.results) await loadResults(); S.usageNow = usageFor(name); body.innerHTML = `<p class="small muted" style="margin:0 0 10px">Tap a card for its AI status, test history and notes. Dots: <span class="sdot" style="background:var(--good)"></span>AI plays it normally <span class="sdot" style="background:var(--warn)"></span>often held or flagged <span class="sdot" style="background:var(--bad)"></span>AI rarely plays it <span class="sdot" style="background:var(--accent)"></span>hint added, not re-checked <span class="sdot" style="background:var(--line)"></span>not checked yet</p><div id="editor"></div>`; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
   else if (sub === 'notes') await drawNotes(body, name);
   else if (sub === 'history') await drawHistory(body, name);
   else if (sub === 'audit') await drawAudit(body, name);
@@ -486,9 +492,10 @@ function drawEditor() {
       `<div class="row"><div class="ac grow" style="max-width:420px"><input id="addCard" placeholder="Add a card…"></div>
         <label class="chk"><input type="checkbox" id="asCmd"> as commander</label></div>
       <div class="groups">${TYPE_ORDER.filter(t => groups[t]).map(t => `<div class="group"><h3>${t} <span class="muted">${groups[t].reduce((s, r) => s + r.n, 0)}</span></h3>
-        ${groups[t].sort((a, b) => (S.sf[a.name]?.cmc ?? 99) - (S.sf[b.name]?.cmc ?? 99) || a.name.localeCompare(b.name)).map(r => `<div class="crow"><span class="q">${r.n}</span><span class="n" data-card="${esc(r.name)}">${esc(r.name)}</span>${flagPill(r.name)}<span class="mana">${esc((S.sf[r.name]?.mana || '').replace(/[{}]/g, ''))}</span><button class="x" data-rm="${esc(r.name)}" data-cmd="${r.cmd ? 1 : ''}" title="Remove">×</button></div>`).join('')}</div>`).join('')}</div>`}
+        ${groups[t].sort((a, b) => (S.sf[a.name]?.cmc ?? 99) - (S.sf[b.name]?.cmc ?? 99) || a.name.localeCompare(b.name)).map(r => `<div class="crow"><span class="q">${r.n}</span>${S.hints ? statusDot(cardStatus(r.name, S.deck.name, S.usageNow)) : ''}<span class="n clickable" data-card="${esc(r.name)}" data-open="${esc(r.name)}">${esc(r.name)}</span>${flagPill(r.name)}<span class="mana">${esc((S.sf[r.name]?.mana || '').replace(/[{}]/g, ''))}</span><button class="x" data-rm="${esc(r.name)}" data-cmd="${r.cmd ? 1 : ''}" title="Remove">×</button></div>`).join('')}</div>`).join('')}</div>`}
   </div>`;
   const dirty = () => { S.deckDirty = true; drawEditor(); };
+  $$('[data-open]', ed).forEach(el => el.onclick = () => !S.deck.isNew && openCard(el.dataset.open, S.deck.name));
   $('#txtBtn').onclick = () => { S.deckText = !S.deckText; drawEditor(); };
   $('#saveDeck').onclick = () => saveDeck(false);
   $('#saveAs') && ($('#saveAs').onclick = () => saveDeck(true));
@@ -523,8 +530,11 @@ async function saveDeck(as) {
   if ((as || S.deck.isNew) && deckNames().includes(name) && !confirm(`${name} already exists. Overwrite it?`)) return;
   if (OPP_DEFAULT.includes(name) && !confirm(`${name} is in the opponent pool. Changing it changes every future test. Continue?`)) return;
   const btn = $('#saveDeck'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  const before = new Set(deckNames().includes(name) && S.decks[name] ? [...S.decks[name].main.map(r => r.name), ...S.decks[name].commander] : []);
   try {
     await putFile(`decks/${name}.dck`, toDck(name, S.deck.d), `Deck Lab: save ${name}`);
+    const added = [...S.deck.d.main.map(r => r.name), ...S.deck.d.commander].filter(c => !before.has(c));
+    if (!OPP_DEFAULT.includes(name) && !poolDecks().includes(name)) queueCardCheck(name, added, 'deck saved');
     S.decks[name] = structuredClone(S.deck.d); const wasNew = S.deck.isNew || as; S.deck = { name, d: S.deck.d, isNew: false }; S.deckDirty = false;
     if (wasNew && !OPP_DEFAULT.includes(name)) { try { await addToLab(name); } catch {} }
     toast(`Saved ${name}`); location.hash = `#deck/${encodeURIComponent(name)}/list`; route();
@@ -532,6 +542,93 @@ async function saveDeck(as) {
 }
 
 
+
+
+/* ---------- card pages: AI status, history, notes ---------- */
+async function loadCardMeta() {
+  if (!S.hints) { try { S.hints = (await (await fetch('ai-hints.json', { cache: 'no-store' })).json()).cards; } catch { S.hints = {}; } }
+  if (!S.cardNotes) { S.cardNotes = {}; if (S.tree.includes('decks/card-notes.json')) { try { S.cardNotes = JSON.parse(await raw('decks/card-notes.json')); } catch {} } }
+}
+function usageFor(deck) {
+  // newest measurement of each card in this deck (card checks and full usage runs)
+  const out = {};
+  for (const r of [...S.results].filter(r => r.usage?.deck === deck).sort((a, b) => (b.date || '').localeCompare(a.date || '')))
+    for (const u of r.usage.cards) if (!out[u.card]) out[u.card] = { ...u, date: r.date, test: r.name, forced: r.usage.forced?.includes(u.card) };
+  return out;
+}
+function cardStatus(name, deck, usage) {
+  const hint = S.hints?.[name], u = usage?.[name], flag = S.forge?.get(name), note = S.cardNotes?.[name];
+  const land = (S.sf[name]?.type || '').includes('Land');
+  const stale = u && hint && (u.date || '') < hint.since;
+  let cls = 'unknown', label = 'Not checked yet';
+  if (land) { cls = 'land'; label = 'Land'; }
+  else if (u && u.games >= 20 && !stale) {
+    if (u.cast < 0.1) { cls = 'bad'; label = 'AI never or rarely plays this'; }
+    else if (u.stuck >= 0.3) { cls = 'warn'; label = 'AI often holds this without casting it'; }
+    else { cls = 'ok'; label = 'AI plays this normally'; }
+  } else if (hint) { cls = 'hint'; label = 'AI hint added, not re-checked yet'; }
+  else if (flag === 'A') { cls = 'warn'; label = "Forge marks this as one its AI can't play well"; }
+  if (cls === 'ok' && hint) label += ' (with hint)';
+  return { cls, label, hint, u, stale, flag, note };
+}
+const DOT = { ok: 'var(--good)', warn: 'var(--warn)', bad: 'var(--bad)', hint: 'var(--accent)', unknown: 'var(--line)', land: 'transparent' };
+function statusDot(st) { return st.cls === 'land' ? '<span class="sdot"></span>' : `<span class="sdot" style="background:${DOT[st.cls]}" title="${esc(st.label)}"></span>`; }
+async function openCard(name, deck) {
+  await loadCardMeta(); if (!S.results) await loadResults(); await sfLoad([name]);
+  const st = cardStatus(name, deck, usageFor(deck)), info = S.sf[name] || {};
+  const audit = S.results.filter(r => r.audit?.deck === deck && !r.peek).sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+  const ac = audit?.audit.cards.find(c => c.card === name);
+  const tests = testsFor(deck).filter(g => g.label === name || g.vs === name || g.swap?.in?.includes(name) || g.swap?.out?.includes(name));
+  const n = st.note || {};
+  let d = $('#cardDlg'); if (!d) { d = document.createElement('dialog'); d.id = 'cardDlg'; document.body.appendChild(d); d.addEventListener('click', e => { if (e.target === d) d.close(); }); }
+  const u = st.u;
+  d.innerHTML = `<div class="dlg cardpage">
+    <div class="cp-img">${info.img ? `<img src="${esc(info.img)}" alt="${esc(name)}">` : ''}</div>
+    <div class="cp-body stack">
+      <div class="row"><h2 class="grow">${esc(name)}</h2><button class="ghost sm" id="cpClose" aria-label="Close">✕</button></div>
+      <div class="small muted">${esc(info.type || '')}</div>
+      <div class="cp-sect"><div class="sect" style="margin:0">AI status</div>
+        <div class="row" style="margin-top:6px"><span class="pill ${st.cls === 'ok' ? 'good' : st.cls === 'bad' ? 'bad' : st.cls === 'warn' ? 'warn' : st.cls === 'hint' ? 'accent' : ''}">${esc(st.label)}</span></div>
+        ${u ? `<p class="small" style="margin:6px 0 0">${u.forced ? 'Forced-hand check' : 'Card-usage run'} (${u.games.toLocaleString()} games held${u.date ? ', ' + esc(ago(u.date)) : ''}): cast ${Math.round(u.cast * 100)}%, stuck in hand ${Math.round(u.stuck * 100)}%${u.median_wait != null ? (u.median_wait === 0 ? ', usually cast as soon as it can be' : `, usually cast after waiting ${u.median_wait} turn${u.median_wait === 1 ? '' : 's'} it could have been cast`) : ''}.${st.stale ? ' <b>Measured before the hint was added.</b>' : ''}</p>` : ''}
+        ${st.hint ? `<p class="small" style="margin:6px 0 0"><b>Hint:</b> ${esc(st.hint.hint)}</p>` : ''}
+        ${st.flag === 'A' ? `<p class="small muted" style="margin:6px 0 0">Forge marks this card as one its AI can't play well.</p>` : ''}</div>
+      <div class="cp-sect"><div class="sect" style="margin:0">Test history in ${esc(deckTitle(deck))}</div>
+        ${ac ? `<p class="small" style="margin:6px 0 0">Audit: <span class="pill ${verdict(ac)[0]}">${ac.diff > 0 ? '+' : ''}${ac.diff.toFixed(1)} ± ${ac.ci.toFixed(1)}</span> when drawn early${audit.date ? ' · ' + esc(ago(audit.date)) : ''}</p>` : '<p class="small muted" style="margin:6px 0 0">Not in an audit yet.</p>'}
+        ${tests.length ? `<ul class="h2h">${tests.slice(0, 8).map(g => `<li class="small">${esc(g.label.split(',')[0])} ${g.direct ? 'vs' : 'in for'} ${esc((g.direct ? g.aswap?.in?.[0] : g.vs || '').split(',')[0])}: <span class="pill ${verdict(g)[0]}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)} ± ${g.ci.toFixed(1)}</span>${g.date ? ' <span class="muted">' + esc(ago(g.date)) + '</span>' : ''}</li>`).join('')}</ul>` : ''}</div>
+      <div class="cp-sect stack"><div class="sect" style="margin:0">Your notes</div>
+        <textarea id="cpNote" class="prose" style="min-height:80px" placeholder="How you play it, why it's in the deck…">${esc(n.note || '')}</textarea>
+        <label class="fld"><span>How should the AI play this? (optional)</span><textarea id="cpReq" class="prose" style="min-height:60px" placeholder="e.g. Cast it early; pick the draw mode unless below 10 life.">${esc(n.request || '')}</textarea></label>
+        <label class="chk ${n.needsHint ? 'on' : ''}" style="align-self:flex-start"><input type="checkbox" id="cpNeeds" ${n.needsHint ? 'checked' : ''}>Needs an AI hint</label></div>
+      <div class="row end"><a class="btn sm" href="#test/${encodeURIComponent(deck)}?out=${encodeURIComponent(name)}" id="cpTest">Find a replacement</a><button class="primary" id="cpSave">Save notes</button></div>
+    </div></div>`;
+  d.showModal();
+  $('#cpClose').onclick = () => d.close();
+  $('#cpTest').onclick = () => d.close();
+  $('#cpNeeds').onchange = e => e.target.parentElement.classList.toggle('on', e.target.checked);
+  $('#cpSave').onclick = async () => {
+    if (needToken()) return; const b = $('#cpSave'); b.disabled = true; b.innerHTML = '<span class="spin"></span>';
+    try {
+      await loadTree(); let all = {}; if (S.tree.includes('decks/card-notes.json')) { try { all = JSON.parse(await raw('decks/card-notes.json')); } catch {} }
+      const entry = { note: $('#cpNote').value.trim(), request: $('#cpReq').value.trim(), needsHint: $('#cpNeeds').checked, updated: new Date().toISOString() };
+      if (!entry.note && !entry.request && !entry.needsHint) delete all[name]; else all[name] = entry;
+      await putFile('decks/card-notes.json', JSON.stringify(all, null, 2) + '\n', `Deck Lab: notes for ${name}`);
+      S.cardNotes = all; toast('Saved'); d.close(); if (S.tab === 'decks') drawEditor();
+    } catch (e) { toast('Save failed: ' + e.message, true); b.disabled = false; b.textContent = 'Save notes'; }
+  };
+}
+async function queueCardCheck(deck, cards, why) {
+  // quick forced-hand check of cards new to a deck, so AI trouble shows up before it skews a test
+  await loadCardMeta(); if (!S.results) await loadResults();
+  const usage = usageFor(deck);
+  const todo = cards.filter(c => !(S.sf[c]?.type || '').includes('Land') && !(usage[c] && usage[c].games >= 20 && !(S.hints[c] && (usage[c].date || '') < S.hints[c].since)));
+  if (!todo.length || !S.token) return;
+  const req = todo.length > 12
+    ? { mode: 'usage', base: deck, name: `Card usage in ${deck}`, minutes: 25, shards: SHARDS }
+    : { mode: 'cardcheck', base: deck, cards: todo, name: `Card check in ${deck}`, minutes: 8, shards: SHARDS };
+  req.opponents = POOLS()[deckBracket(deck)]?.decks || OPP_DEFAULT; req.reason = why;
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
+  try { await putFile(`queue/${stamp}-check-${deck.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue AI check of new cards in ${deck}`); toast(`Queued a quick AI check of ${todo.length > 12 ? 'the whole list' : todo.length + ' new card' + (todo.length > 1 ? 's' : '')}.`); } catch {}
+}
 
 /* ---------- deck audit ---------- */
 async function drawAudit(body, name) {
@@ -636,7 +733,7 @@ async function promote(name, g) {
     hist.push({ date: new Date().toISOString(), out, in: ins, result: { diff: +g.diff.toFixed(2), ci: +g.ci.toFixed(2), games: g.games || null, test: g.test, verdict: verdict(g)[1] } });
     await putFile(`decks/${name}.history.json`, JSON.stringify(hist, null, 2) + '\n', `Deck Lab: log change to ${name}`);
     S.decks[name] = next; S.deck = { name, d: structuredClone(next), isNew: false };
-    toast(`Promoted: ${what}`); route();
+    toast(`Promoted: ${what}`); queueCardCheck(name, ins, 'promotion'); route();
   } catch (e) { toast('Promote failed: ' + e.message, true); }
 }
 async function drawHistory(body, name) {
@@ -805,6 +902,8 @@ async function loadRuns() {
 function reqSummary(q) {
   if (!q) return '';
   if (q.mode === 'decks' || (!q.slots && q.decks)) return (q.decks || []).join(' vs ');
+  if (q.mode === 'cardcheck') return `AI check of new cards: ${(q.cards || []).join(', ')}`;
+  if (q.mode === 'usage') return 'AI card-usage check of the whole list';
   if (q.mode === 'audit') return 'Deck audit: every card scored from the shuffle';
   if (q.packages) return q.packages.map(p => `${p.in.join(', ')} in for ${p.out.join(', ')}`).join(' · ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');

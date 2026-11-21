@@ -1,0 +1,141 @@
+{
+ "about": "AI hints in forge.patch, per card. 'since' = when the hint went live; usage data older than that was measured without it.",
+ "cards": {
+  "Academy Instructor": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Agate Instigator": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Black Market Connections": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Caesar, Legion's Emperor": {
+   "hint": "Attacks with something so he triggers, sacrifices a token, takes the Soldiers plus card draw (or damage once the board is wide).",
+   "since": "2026-11-20T15:00"
+  },
+  "Captain Benjamin Sisko": {
+   "hint": "Cast early; activates his dig ability when he can; equipment goes on him first.",
+   "since": "2026-11-19"
+  },
+  "Captain James T. Kirk": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Copy Enchantment": {
+   "hint": "Copies your own best enchantment.",
+   "since": "2026-11-19"
+  },
+  "Corpse Knight": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Demonic Pact": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Diabolic Intent": {
+   "hint": "May sacrifice a token to pay its cost. Without this the AI refuses the sacrifice and never casts it.",
+   "since": "2026-11-21T04:41"
+  },
+  "Esper Sentinel": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Estrid's Invocation": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Gala Greeters": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Hydroblast": {
+   "hint": "Only targets red spells and permanents. Without this the AI never finds a target.",
+   "since": "2026-11-21T04:41"
+  },
+  "Impact Tremors": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Kobayashi Maru Scenario": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Manamorphose": {
+   "hint": "Cast as a 'draw a card' spell. Without this the AI never casts it (it won't cast pure mana spells).",
+   "since": "2026-11-21T04:41"
+  },
+  "Mirrormade": {
+   "hint": "Copies your own best artifact or enchantment.",
+   "since": "2026-11-19"
+  },
+  "Molten Gatekeeper": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Night Out in Vegas": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Norin the Wary": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Ojer Axonil, Deepest Might": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Outlaws' Merriment": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Puca's Mischief": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Purphoros, God of the Forge": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Pyroblast": {
+   "hint": "Only targets blue spells and permanents. Without this the AI never finds a target.",
+   "since": "2026-11-21T04:41"
+  },
+  "Retreat to Hagra": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Rhystic Study": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Riku of Many Paths": {
+   "hint": "Picks its modes in a fixed order: the Bird token first.",
+   "since": "2026-11-19"
+  },
+  "SOLDIER Military Program": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Triskaidekaphobia": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Utopia Sprawl": {
+   "hint": "Enchants one of your Forests, picks your deck's main color, and is cast early. Without this the AI never casts it.",
+   "since": "2026-11-21T04:41"
+  },
+  "Warleader's Call": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  },
+  "Witty Roastmaster": {
+   "hint": "Cast early in the main phase (raised priority), so the AI doesn't sit on it.",
+   "since": "2026-11-19"
+  }
+ }
+}
