@@ -29,7 +29,7 @@ def deck_sig(name):
 
 # Bump when a runner change alters how games are played (logging-only changes don't need a bump),
 # then run scripts/cache_rekey.py only if old games are still valid under the new version.
-RUNNER_VERSION = "runner-2"   # runner-2: package rotation; audit logging added without a bump (no gameplay change)
+RUNNER_VERSION = "runner-2"   # runner-2: package rotation; audit logging and ending games once the tracked deck is out added without a bump (results unchanged)
 
 
 def engine_sig():

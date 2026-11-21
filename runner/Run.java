@@ -32,6 +32,13 @@ public class Run {
       List<RegisteredPlayer> pp=new ArrayList<>(); int k=pod.size();
       for(int j=0;j<k;j++){ Deck d=pod.get((j+g)%k); RegisteredPlayer rp=RegisteredPlayer.forCommander(d); LobbyPlayerAi lp=new LobbyPlayerAi(d.getName(),null); lp.setAiProfile(d.getName().startsWith("Sisko") ? System.getProperty("sisko.profile","Default") : "Default"); rp.setPlayer(lp); pp.add(rp);}
       Match mc=new Match(rules,pp,"T"); Game game=mc.createGame(); game.setNoGUIUser();
+      // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
+      final boolean[] trackedOut={false};
+      { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());
+        game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void endIfOut(forge.game.event.GameEventTurnBegan e){
+          if(game.isGameOver()) return; boolean any=false, alive=false;
+          for(Player x:game.getRegisteredPlayers()) if(mine.contains(x.getName())){ any=true; if(!x.hasLost()) alive=true; }
+          if(any && !alive){ trackedOut[0]=true; game.setGameOver(forge.game.GameEndReason.Draw); } } }); }
       final String auditDeck=System.getProperty("audit"); // deck audit: log the kept opening hand + next 3 draws ("TOP" line, before the G line)
       if(auditDeck!=null){ final boolean[] said={false};
         game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void tbA(forge.game.event.GameEventTurnBegan e){
@@ -168,6 +175,7 @@ public class Run {
       int turn=game.getPhaseHandler().getTurn();
       if(game.getOutcome()==null || game.getOutcome().isDraw()) res2="Draw"; else res2=game.getOutcome().getWinningLobbyPlayer().getName();
       if(!game.isGameOver()) res2="Draw";
+      if(trackedOut[0]) res2="TrackedOut";   // ended early once the tracked deck was eliminated (a loss for it)
       wins.merge(res2,1,Integer::sum);
       StringBuilder life=new StringBuilder(); for(Player p:game.getRegisteredPlayers()) life.append(p.getName().replaceAll(" .*","")).append("=").append(p.getLife()).append(p.hasLost()?"x ":" ");
       if(!use.isEmpty()){ StringBuilder ub=new StringBuilder("USE"); for(var en:use.entrySet()){ int[] r=en.getValue(); ub.append("\t").append(en.getKey()).append("~").append(r[0]).append("~").append(r[1]).append("~").append(r[2]).append("~").append(r[3]).append("~").append(r[4]); } System.out.println(ub); }
