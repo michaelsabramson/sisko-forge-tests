@@ -25,7 +25,7 @@ jobs:
           n=$(gh run list -R ${{ github.repository }} -w swaptest.yml -L 20 --json status -q '[.[]|select(.status!="completed")]|length')
           echo "active=$n" >> $GITHUB_OUTPUT; echo "active swap-test runs: $n"
       - name: Refresh the early read of a running audit
-        if: steps.busy.outputs.active != '0' && github.event_name == 'schedule'
+        if: false   # replaced by the test workflow requesting its own early reads (GitHub's scheduler is unreliable)
         run: |
           id=$(gh run list -R ${{ github.repository }} -w swaptest.yml -L 5 --json databaseId,status,startedAt -q '[.[]|select(.status=="in_progress")][0].databaseId')
           [ -z "$id" ] && exit 0

@@ -85,6 +85,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read for audits (2)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # an audit refreshes its early read each time the runners save progress (needs games still running)
+          if [ "$(jq -r .mode tests/request.json)" = "audit" ] && pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 3
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
@@ -95,6 +105,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read for audits (3)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # an audit refreshes its early read each time the runners save progress (needs games still running)
+          if [ "$(jq -r .mode tests/request.json)" = "audit" ] && pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 4
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
@@ -105,6 +125,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read for audits (4)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # an audit refreshes its early read each time the runners save progress (needs games still running)
+          if [ "$(jq -r .mode tests/request.json)" = "audit" ] && pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 5
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
@@ -115,6 +145,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read for audits (5)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # an audit refreshes its early read each time the runners save progress (needs games still running)
+          if [ "$(jq -r .mode tests/request.json)" = "audit" ] && pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 6
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
@@ -125,6 +165,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read for audits (6)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # an audit refreshes its early read each time the runners save progress (needs games still running)
+          if [ "$(jq -r .mode tests/request.json)" = "audit" ] && pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 7
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
@@ -135,6 +185,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read for audits (7)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # an audit refreshes its early read each time the runners save progress (needs games still running)
+          if [ "$(jq -r .mode tests/request.json)" = "audit" ] && pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 8
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
