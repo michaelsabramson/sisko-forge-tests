@@ -4,113 +4,113 @@ Swapped card forced into opening hand (band 0). Same opponents for every list.
 
 | List | Card | Games | Wins | Win rate | Reused |
 |---|---|---|---|---|---|
-| SiskoFinal | Audit of SiskoFinal | 10808 | 2287 | 21.2% | 0 |
+| SiskoFinal | Audit of SiskoFinal | 14556 | 3048 | 20.9% | 0 |
 
 Gaps (95% interval):
 
 
-Deck audit: 10,808 games, 21.2% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
+Deck audit: 14,556 games, 20.9% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
 
 | Card | Games seen | Win rate seen | Change | ± |
 |---|---|---|---|---|
-| Abzan Charm | 881 | 16.1% | -5.5 | 2.6 |
-| Esper Charm | 929 | 17.4% | -4.1 | 2.6 |
-| Abrade | 897 | 17.6% | -3.9 | 2.6 |
-| Black Market Connections | 936 | 17.7% | -3.8 | 2.6 |
-| Pact of Negation | 1048 | 18.0% | -3.5 | 2.5 |
-| Impossible Choice | 905 | 18.0% | -3.4 | 2.6 |
-| Path to Exile | 932 | 18.0% | -3.4 | 2.6 |
-| Ertai Resurrected | 888 | 18.0% | -3.4 | 2.6 |
-| Collective Defiance | 928 | 18.1% | -3.3 | 2.6 |
-| Heartless Act | 866 | 18.1% | -3.3 | 2.7 |
-| Swords to Plowshares | 912 | 18.3% | -3.1 | 2.6 |
-| Counterspell | 1133 | 18.5% | -2.9 | 2.4 |
-| Assassin's Trophy | 1081 | 18.8% | -2.6 | 2.5 |
-| Test of Priorities | 916 | 18.8% | -2.6 | 2.7 |
-| Prismari Command | 962 | 18.9% | -2.5 | 2.6 |
-| An Offer You Can't Refuse | 1012 | 19.0% | -2.4 | 2.5 |
-| Parallel Lives | 869 | 19.0% | -2.4 | 2.7 |
-| Test of Conviction | 948 | 19.2% | -2.1 | 2.6 |
-| Outlaws' Merriment | 864 | 19.2% | -2.1 | 2.8 |
-| Pyroblast | 853 | 19.5% | -1.9 | 2.8 |
-| City of Brass | 1260 | 19.5% | -1.9 | 2.3 |
-| Smuggler's Surprise | 924 | 19.6% | -1.7 | 2.7 |
-| Utopia Sprawl | 967 | 19.8% | -1.6 | 2.6 |
-| Sylvan Library | 917 | 19.7% | -1.6 | 2.7 |
-| Command Decision | 915 | 19.8% | -1.5 | 2.7 |
-| Misty Rainforest | 1257 | 20.0% | -1.3 | 2.4 |
-| Bloodstained Mire | 1290 | 20.2% | -1.1 | 2.3 |
-| Fatal Push | 990 | 20.2% | -1.1 | 2.6 |
-| Jeska's Will | 865 | 20.2% | -1.0 | 2.8 |
-| Overgrown Tomb | 1276 | 20.4% | -0.9 | 2.4 |
-| Tropical Island | 1276 | 20.4% | -0.9 | 2.4 |
-| Plains | 1268 | 20.4% | -0.8 | 2.4 |
-| Mana Confluence | 1251 | 20.5% | -0.8 | 2.4 |
-| Windswept Heath | 1315 | 20.5% | -0.7 | 2.3 |
-| Marsh Flats | 1294 | 20.6% | -0.7 | 2.4 |
-| Diabolic Intent | 944 | 20.6% | -0.7 | 2.7 |
-| Arid Mesa | 1317 | 20.6% | -0.7 | 2.3 |
-| Polluted Delta | 1333 | 20.7% | -0.5 | 2.3 |
-| Verdant Catacombs | 1312 | 20.7% | -0.5 | 2.3 |
-| Resistance Is Futile | 903 | 20.7% | -0.5 | 2.8 |
-| Savannah | 1325 | 20.8% | -0.5 | 2.3 |
-| Farseek | 914 | 20.8% | -0.4 | 2.8 |
-| Island | 1348 | 20.8% | -0.4 | 2.3 |
-| Collective Effort | 878 | 21.0% | -0.2 | 2.8 |
-| Boros Charm | 928 | 21.0% | -0.2 | 2.7 |
-| Make It So | 888 | 21.1% | -0.1 | 2.8 |
-| Steam Vents | 1319 | 21.1% | -0.1 | 2.4 |
-| Consider the Prime Directive | 856 | 21.1% | -0.0 | 2.9 |
-| Noble Hierarch | 950 | 21.2% | -0.0 | 2.7 |
-| Corpse Knight | 902 | 21.2% | +0.0 | 2.8 |
-| The Unicomplex | 1350 | 21.2% | +0.0 | 2.3 |
-| Llanowar Elves | 928 | 21.2% | +0.1 | 2.8 |
-| Impact Tremors | 917 | 21.3% | +0.1 | 2.8 |
-| Rapid Hybridization | 1039 | 21.3% | +0.1 | 2.6 |
-| Molten Gatekeeper | 885 | 21.4% | +0.2 | 2.8 |
-| Forest | 1231 | 21.4% | +0.2 | 2.4 |
-| Captain James T. Kirk | 944 | 21.4% | +0.3 | 2.7 |
-| Tundra | 1294 | 21.5% | +0.4 | 2.4 |
-| Test of Loyalty | 897 | 21.5% | +0.4 | 2.8 |
-| Panharmonicon | 925 | 21.5% | +0.4 | 2.8 |
-| Sacred Foundry | 1351 | 21.5% | +0.4 | 2.3 |
-| Manamorphose | 877 | 21.7% | +0.6 | 2.8 |
-| Roaming Throne | 951 | 21.8% | +0.7 | 2.7 |
-| Retreat to Hagra | 898 | 21.9% | +0.8 | 2.8 |
-| Bayou | 1327 | 21.9% | +0.9 | 2.4 |
-| Esper Sentinel | 896 | 22.0% | +0.9 | 2.8 |
-| Cultivate | 896 | 22.0% | +0.9 | 2.8 |
-| Fierce Guardianship | 1028 | 22.0% | +0.9 | 2.7 |
-| Federation Outpost | 1307 | 22.0% | +0.9 | 2.4 |
-| Ni'Var Science Academy | 1333 | 22.1% | +1.0 | 2.4 |
-| Flooded Strand | 1271 | 22.1% | +1.1 | 2.4 |
-| Blood Crypt | 1281 | 22.2% | +1.2 | 2.4 |
-| Witty Roastmaster | 971 | 22.3% | +1.3 | 2.7 |
-| Deadly Rollick | 930 | 22.4% | +1.3 | 2.8 |
-| Rhystic Study | 933 | 22.4% | +1.4 | 2.8 |
-| Birds of Paradise | 892 | 22.4% | +1.4 | 2.9 |
-| Quark's Bar | 1314 | 22.4% | +1.4 | 2.4 |
-| Scalding Tarn | 1254 | 22.4% | +1.4 | 2.5 |
-| Wooded Foothills | 1313 | 22.5% | +1.5 | 2.4 |
-| Volcanic Island | 1275 | 22.5% | +1.5 | 2.4 |
-| Badlands | 1293 | 22.9% | +2.0 | 2.4 |
-| Bloom Tender | 953 | 23.0% | +2.0 | 2.8 |
-| Underground Sea | 1321 | 22.9% | +2.0 | 2.4 |
-| Godless Shrine | 1237 | 23.0% | +2.0 | 2.5 |
-| Agate Instigator | 934 | 23.0% | +2.0 | 2.8 |
-| Taiga | 1302 | 23.0% | +2.1 | 2.4 |
-| Sol Ring | 895 | 23.1% | +2.1 | 2.9 |
-| Q Continuum | 1265 | 23.1% | +2.2 | 2.5 |
-| Command Tower | 1290 | 23.1% | +2.2 | 2.4 |
-| Academy Instructor | 860 | 23.3% | +2.3 | 2.9 |
-| Plateau | 1291 | 23.5% | +2.6 | 2.5 |
-| Warleader's Call | 955 | 23.6% | +2.6 | 2.8 |
-| Elesh Norn, Mother of Machines | 886 | 23.7% | +2.8 | 2.9 |
-| Ojer Axonil, Deepest Might | 871 | 24.1% | +3.2 | 3.0 |
-| Scrubland | 1287 | 24.0% | +3.2 | 2.5 |
-| Elim Garak, Simple Tailor | 918 | 24.2% | +3.3 | 2.9 |
-| Purphoros, God of the Forge | 891 | 27.9% | +7.4 | 3.0 |
-| Gala Greeters | 894 | 28.1% | +7.5 | 3.0 |
-| Norin the Wary | 941 | 30.4% | +10.1 | 3.0 |
+| Abzan Charm | 1203 | 16.5% | -4.8 | 2.2 |
+| Pact of Negation | 1422 | 17.4% | -4.0 | 2.1 |
+| Black Market Connections | 1243 | 17.7% | -3.5 | 2.2 |
+| Esper Charm | 1254 | 17.8% | -3.5 | 2.2 |
+| Impossible Choice | 1210 | 17.9% | -3.4 | 2.3 |
+| Counterspell | 1507 | 18.0% | -3.2 | 2.1 |
+| Heartless Act | 1146 | 18.2% | -3.0 | 2.3 |
+| Collective Defiance | 1235 | 18.2% | -3.0 | 2.3 |
+| Path to Exile | 1244 | 18.3% | -2.9 | 2.3 |
+| Assassin's Trophy | 1453 | 18.4% | -2.9 | 2.1 |
+| Sylvan Library | 1217 | 18.3% | -2.9 | 2.3 |
+| Prismari Command | 1296 | 18.4% | -2.7 | 2.2 |
+| Outlaws' Merriment | 1159 | 18.6% | -2.6 | 2.3 |
+| Jeska's Will | 1180 | 18.6% | -2.6 | 2.3 |
+| Parallel Lives | 1195 | 18.7% | -2.4 | 2.3 |
+| Swords to Plowshares | 1242 | 18.8% | -2.4 | 2.3 |
+| Ertai Resurrected | 1180 | 18.8% | -2.3 | 2.3 |
+| Fatal Push | 1364 | 18.9% | -2.2 | 2.2 |
+| Utopia Sprawl | 1286 | 19.0% | -2.2 | 2.2 |
+| Pyroblast | 1192 | 19.0% | -2.2 | 2.3 |
+| Test of Priorities | 1229 | 19.0% | -2.2 | 2.3 |
+| Test of Conviction | 1272 | 19.0% | -2.1 | 2.3 |
+| Abrade | 1217 | 19.1% | -2.0 | 2.3 |
+| An Offer You Can't Refuse | 1375 | 19.2% | -1.9 | 2.2 |
+| Command Decision | 1246 | 19.6% | -1.5 | 2.3 |
+| Resistance Is Futile | 1234 | 19.9% | -1.2 | 2.3 |
+| Panharmonicon | 1216 | 19.9% | -1.1 | 2.4 |
+| Misty Rainforest | 1742 | 20.0% | -1.1 | 2.0 |
+| City of Brass | 1712 | 20.1% | -1.0 | 2.0 |
+| Marsh Flats | 1763 | 20.1% | -0.9 | 2.0 |
+| Overgrown Tomb | 1686 | 20.2% | -0.9 | 2.0 |
+| Llanowar Elves | 1231 | 20.3% | -0.7 | 2.4 |
+| Smuggler's Surprise | 1258 | 20.4% | -0.6 | 2.3 |
+| Forest | 1647 | 20.5% | -0.5 | 2.1 |
+| Farseek | 1214 | 20.5% | -0.5 | 2.4 |
+| Make It So | 1200 | 20.6% | -0.4 | 2.4 |
+| Polluted Delta | 1777 | 20.6% | -0.4 | 2.0 |
+| Plains | 1722 | 20.6% | -0.4 | 2.0 |
+| The Unicomplex | 1866 | 20.6% | -0.3 | 2.0 |
+| Rapid Hybridization | 1415 | 20.6% | -0.3 | 2.2 |
+| Mana Confluence | 1728 | 20.8% | -0.2 | 2.0 |
+| Corpse Knight | 1241 | 20.8% | -0.2 | 2.4 |
+| Windswept Heath | 1797 | 20.8% | -0.1 | 2.0 |
+| Molten Gatekeeper | 1194 | 20.9% | -0.1 | 2.4 |
+| Arid Mesa | 1773 | 20.9% | -0.0 | 2.0 |
+| Captain James T. Kirk | 1269 | 21.0% | +0.0 | 2.3 |
+| Tropical Island | 1716 | 21.0% | +0.0 | 2.0 |
+| Island | 1800 | 21.0% | +0.1 | 2.0 |
+| Boros Charm | 1222 | 21.0% | +0.1 | 2.4 |
+| Consider the Prime Directive | 1183 | 21.0% | +0.1 | 2.4 |
+| Bloodstained Mire | 1728 | 21.1% | +0.1 | 2.0 |
+| Verdant Catacombs | 1779 | 21.1% | +0.2 | 2.0 |
+| Steam Vents | 1746 | 21.1% | +0.2 | 2.0 |
+| Collective Effort | 1218 | 21.2% | +0.3 | 2.4 |
+| Manamorphose | 1195 | 21.3% | +0.3 | 2.4 |
+| Scalding Tarn | 1700 | 21.4% | +0.5 | 2.1 |
+| Diabolic Intent | 1246 | 21.4% | +0.5 | 2.4 |
+| Esper Sentinel | 1222 | 21.4% | +0.6 | 2.4 |
+| Savannah | 1755 | 21.4% | +0.6 | 2.0 |
+| Fierce Guardianship | 1368 | 21.5% | +0.6 | 2.3 |
+| Federation Outpost | 1758 | 21.5% | +0.6 | 2.0 |
+| Test of Loyalty | 1227 | 21.6% | +0.7 | 2.4 |
+| Roaming Throne | 1249 | 21.6% | +0.7 | 2.4 |
+| Bayou | 1789 | 21.6% | +0.8 | 2.0 |
+| Cultivate | 1206 | 21.7% | +0.9 | 2.4 |
+| Tundra | 1741 | 21.7% | +0.9 | 2.1 |
+| Witty Roastmaster | 1261 | 21.8% | +0.9 | 2.4 |
+| Sacred Foundry | 1796 | 21.8% | +0.9 | 2.0 |
+| Wooded Foothills | 1738 | 21.8% | +1.0 | 2.1 |
+| Impact Tremors | 1208 | 21.9% | +1.0 | 2.4 |
+| Quark's Bar | 1781 | 21.8% | +1.0 | 2.0 |
+| Noble Hierarch | 1275 | 21.9% | +1.0 | 2.4 |
+| Birds of Paradise | 1231 | 21.9% | +1.1 | 2.4 |
+| Ni'Var Science Academy | 1715 | 21.9% | +1.1 | 2.1 |
+| Retreat to Hagra | 1201 | 22.1% | +1.2 | 2.4 |
+| Godless Shrine | 1691 | 22.1% | +1.3 | 2.1 |
+| Deadly Rollick | 1245 | 22.2% | +1.3 | 2.4 |
+| Underground Sea | 1779 | 22.1% | +1.4 | 2.0 |
+| Academy Instructor | 1183 | 22.2% | +1.4 | 2.5 |
+| Rhystic Study | 1250 | 22.2% | +1.4 | 2.4 |
+| Volcanic Island | 1718 | 22.2% | +1.5 | 2.1 |
+| Flooded Strand | 1701 | 22.3% | +1.5 | 2.1 |
+| Q Continuum | 1734 | 22.3% | +1.6 | 2.1 |
+| Sol Ring | 1211 | 22.5% | +1.8 | 2.5 |
+| Blood Crypt | 1743 | 22.5% | +1.8 | 2.1 |
+| Taiga | 1759 | 22.6% | +1.9 | 2.1 |
+| Command Tower | 1723 | 22.6% | +1.9 | 2.1 |
+| Agate Instigator | 1248 | 22.8% | +2.0 | 2.4 |
+| Plateau | 1722 | 22.9% | +2.2 | 2.1 |
+| Bloom Tender | 1279 | 23.1% | +2.3 | 2.4 |
+| Badlands | 1725 | 23.0% | +2.4 | 2.1 |
+| Warleader's Call | 1281 | 23.3% | +2.5 | 2.4 |
+| Elesh Norn, Mother of Machines | 1187 | 23.5% | +2.8 | 2.5 |
+| Elim Garak, Simple Tailor | 1248 | 23.6% | +2.9 | 2.5 |
+| Ojer Axonil, Deepest Might | 1192 | 23.6% | +2.9 | 2.5 |
+| Scrubland | 1724 | 23.6% | +3.0 | 2.1 |
+| Gala Greeters | 1215 | 26.4% | +6.0 | 2.6 |
+| Purphoros, God of the Forge | 1238 | 27.5% | +7.1 | 2.6 |
+| Norin the Wary | 1260 | 30.3% | +10.3 | 2.6 |
 
-<!-- data {"name": "audit_of_siskofinal_with_ai_hints", "title": "Audit of SiskoFinal with AI hints", "mode": "audit", "run_id": "44881181320", "finished": "2026-11-21T07:38:39Z", "arms": [{"deck": "SiskoFinal", "card": "@audit", "games": 10808, "wins": 2287, "reused": 0, "label": "Audit of SiskoFinal"}], "compare": [], "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"], "audit": {"deck": "SiskoFinal", "cards": [{"card": "Abzan Charm", "seen": 881, "wins": 142, "diff": -5.49, "ci": 2.56}, {"card": "Esper Charm", "seen": 929, "wins": 162, "diff": -4.07, "ci": 2.57}, {"card": "Abrade", "seen": 897, "wins": 158, "diff": -3.87, "ci": 2.62}, {"card": "Black Market Connections", "seen": 936, "wins": 166, "diff": -3.75, "ci": 2.58}, {"card": "Pact of Negation", "seen": 1048, "wins": 189, "diff": -3.46, "ci": 2.47}, {"card": "Impossible Choice", "seen": 905, "wins": 163, "diff": -3.44, "ci": 2.63}, {"card": "Path to Exile", "seen": 932, "wins": 168, "diff": -3.43, "ci": 2.6}, {"card": "Ertai Resurrected", "seen": 888, "wins": 160, "diff": -3.42, "ci": 2.65}, {"card": "Collective Defiance", "seen": 928, "wins": 168, "diff": -3.34, "ci": 2.61}, {"card": "Heartless Act", "seen": 866, "wins": 157, "diff": -3.29, "ci": 2.69}, {"card": "Swords to Plowshares", "seen": 912, "wins": 167, "diff": -3.11, "ci": 2.64}, {"card": "Counterspell", "seen": 1133, "wins": 210, "diff": -2.93, "ci": 2.41}, {"card": "Assassin's Trophy", "seen": 1081, "wins": 203, "diff": -2.65, "ci": 2.47}, {"card": "Test of Priorities", "seen": 916, "wins": 172, "diff": -2.6, "ci": 2.66}, {"card": "Prismari Command", "seen": 962, "wins": 182, "diff": -2.46, "ci": 2.6}, {"card": "An Offer You Can't Refuse", "seen": 1012, "wins": 192, "diff": -2.41, "ci": 2.55}, {"card": "Parallel Lives", "seen": 869, "wins": 165, "diff": -2.36, "ci": 2.73}, {"card": "Test of Conviction", "seen": 948, "wins": 182, "diff": -2.15, "ci": 2.63}, {"card": "Outlaws' Merriment", "seen": 864, "wins": 166, "diff": -2.12, "ci": 2.75}, {"card": "Pyroblast", "seen": 853, "wins": 166, "diff": -1.85, "ci": 2.78}, {"card": "City of Brass", "seen": 1260, "wins": 246, "diff": -1.85, "ci": 2.34}, {"card": "Smuggler's Surprise", "seen": 924, "wins": 181, "diff": -1.72, "ci": 2.68}, {"card": "Utopia Sprawl", "seen": 967, "wins": 191, "diff": -1.55, "ci": 2.64}, {"card": "Sylvan Library", "seen": 917, "wins": 181, "diff": -1.55, "ci": 2.7}, {"card": "Command Decision", "seen": 915, "wins": 181, "diff": -1.51, "ci": 2.7}, {"card": "Misty Rainforest", "seen": 1257, "wins": 252, "diff": -1.26, "ci": 2.36}, {"card": "Bloodstained Mire", "seen": 1290, "wins": 260, "diff": -1.14, "ci": 2.34}, {"card": "Fatal Push", "seen": 990, "wins": 200, "diff": -1.05, "ci": 2.63}, {"card": "Jeska's Will", "seen": 865, "wins": 175, "diff": -1.01, "ci": 2.8}, {"card": "Overgrown Tomb", "seen": 1276, "wins": 260, "diff": -0.89, "ci": 2.36}, {"card": "Tropical Island", "seen": 1276, "wins": 260, "diff": -0.89, "ci": 2.36}, {"card": "Plains", "seen": 1268, "wins": 259, "diff": -0.83, "ci": 2.37}, {"card": "Mana Confluence", "seen": 1251, "wins": 256, "diff": -0.79, "ci": 2.38}, {"card": "Windswept Heath", "seen": 1315, "wins": 270, "diff": -0.71, "ci": 2.33}, {"card": "Marsh Flats", "seen": 1294, "wins": 266, "diff": -0.69, "ci": 2.35}, {"card": "Diabolic Intent", "seen": 944, "wins": 194, "diff": -0.67, "ci": 2.7}, {"card": "Arid Mesa", "seen": 1317, "wins": 271, "diff": -0.66, "ci": 2.33}, {"card": "Polluted Delta", "seen": 1333, "wins": 276, "diff": -0.52, "ci": 2.33}, {"card": "Verdant Catacombs", "seen": 1312, "wins": 272, "diff": -0.49, "ci": 2.34}, {"card": "Resistance Is Futile", "seen": 903, "wins": 187, "diff": -0.49, "ci": 2.76}, {"card": "Savannah", "seen": 1325, "wins": 275, "diff": -0.46, "ci": 2.33}, {"card": "Farseek", "seen": 914, "wins": 190, "diff": -0.41, "ci": 2.75}, {"card": "Island", "seen": 1348, "wins": 281, "diff": -0.36, "ci": 2.32}, {"card": "Collective Effort", "seen": 878, "wins": 184, "diff": -0.22, "ci": 2.81}, {"card": "Boros Charm", "seen": 928, "wins": 195, "diff": -0.16, "ci": 2.74}, {"card": "Make It So", "seen": 888, "wins": 187, "diff": -0.11, "ci": 2.8}, {"card": "Steam Vents", "seen": 1319, "wins": 278, "diff": -0.1, "ci": 2.35}, {"card": "Consider the Prime Directive", "seen": 856, "wins": 181, "diff": -0.02, "ci": 2.85}, {"card": "Noble Hierarch", "seen": 950, "wins": 201, "diff": -0.0, "ci": 2.72}, {"card": "Corpse Knight", "seen": 902, "wins": 191, "diff": 0.02, "ci": 2.78}, {"card": "The Unicomplex", "seen": 1350, "wins": 286, "diff": 0.03, "ci": 2.33}, {"card": "Llanowar Elves", "seen": 928, "wins": 197, "diff": 0.07, "ci": 2.75}, {"card": "Impact Tremors", "seen": 917, "wins": 195, "diff": 0.11, "ci": 2.77}, {"card": "Rapid Hybridization", "seen": 1039, "wins": 221, "diff": 0.12, "ci": 2.62}, {"card": "Molten Gatekeeper", "seen": 885, "wins": 189, "diff": 0.21, "ci": 2.82}, {"card": "Forest", "seen": 1231, "wins": 263, "diff": 0.23, "ci": 2.43}, {"card": "Captain James T. Kirk", "seen": 944, "wins": 202, "diff": 0.26, "ci": 2.74}, {"card": "Tundra", "seen": 1294, "wins": 278, "diff": 0.37, "ci": 2.38}, {"card": "Test of Loyalty", "seen": 897, "wins": 193, "diff": 0.39, "ci": 2.81}, {"card": "Panharmonicon", "seen": 925, "wins": 199, "diff": 0.39, "ci": 2.77}, {"card": "Sacred Foundry", "seen": 1351, "wins": 291, "diff": 0.43, "ci": 2.34}, {"card": "Manamorphose", "seen": 877, "wins": 190, "diff": 0.55, "ci": 2.84}, {"card": "Roaming Throne", "seen": 951, "wins": 207, "diff": 0.66, "ci": 2.74}, {"card": "Retreat to Hagra", "seen": 898, "wins": 197, "diff": 0.85, "ci": 2.82}, {"card": "Bayou", "seen": 1327, "wins": 291, "diff": 0.88, "ci": 2.37}, {"card": "Esper Sentinel", "seen": 896, "wins": 197, "diff": 0.9, "ci": 2.83}, {"card": "Cultivate", "seen": 896, "wins": 197, "diff": 0.9, "ci": 2.83}, {"card": "Fierce Guardianship", "seen": 1028, "wins": 226, "diff": 0.91, "ci": 2.66}, {"card": "Federation Outpost", "seen": 1307, "wins": 287, "diff": 0.91, "ci": 2.39}, {"card": "Ni'Var Science Academy", "seen": 1333, "wins": 294, "diff": 1.02, "ci": 2.37}, {"card": "Flooded Strand", "seen": 1271, "wins": 281, "diff": 1.07, "ci": 2.42}, {"card": "Blood Crypt", "seen": 1281, "wins": 285, "diff": 1.23, "ci": 2.42}, {"card": "Witty Roastmaster", "seen": 971, "wins": 217, "diff": 1.31, "ci": 2.74}, {"card": "Deadly Rollick", "seen": 930, "wins": 208, "diff": 1.32, "ci": 2.8}, {"card": "Rhystic Study", "seen": 933, "wins": 209, "diff": 1.36, "ci": 2.79}, {"card": "Birds of Paradise", "seen": 892, "wins": 200, "diff": 1.37, "ci": 2.85}, {"card": "Quark's Bar", "seen": 1314, "wins": 294, "diff": 1.38, "ci": 2.4}, {"card": "Scalding Tarn", "seen": 1254, "wins": 281, "diff": 1.41, "ci": 2.45}, {"card": "Wooded Foothills", "seen": 1313, "wins": 295, "diff": 1.49, "ci": 2.4}, {"card": "Volcanic Island", "seen": 1275, "wins": 287, "diff": 1.53, "ci": 2.43}, {"card": "Badlands", "seen": 1293, "wins": 296, "diff": 1.97, "ci": 2.43}, {"card": "Bloom Tender", "seen": 953, "wins": 219, "diff": 2.0, "ci": 2.79}, {"card": "Underground Sea", "seen": 1321, "wins": 303, "diff": 2.02, "ci": 2.41}, {"card": "Godless Shrine", "seen": 1237, "wins": 284, "diff": 2.03, "ci": 2.48}, {"card": "Agate Instigator", "seen": 934, "wins": 215, "diff": 2.03, "ci": 2.82}, {"card": "Taiga", "seen": 1302, "wins": 300, "diff": 2.14, "ci": 2.43}, {"card": "Sol Ring", "seen": 895, "wins": 207, "diff": 2.15, "ci": 2.88}, {"card": "Q Continuum", "seen": 1265, "wins": 292, "diff": 2.18, "ci": 2.46}, {"card": "Command Tower", "seen": 1290, "wins": 298, "diff": 2.2, "ci": 2.44}, {"card": "Academy Instructor", "seen": 860, "wins": 200, "diff": 2.28, "ci": 2.93}, {"card": "Plateau", "seen": 1291, "wins": 303, "diff": 2.62, "ci": 2.45}, {"card": "Warleader's Call", "seen": 955, "wins": 225, "diff": 2.63, "ci": 2.81}, {"card": "Elesh Norn, Mother of Machines", "seen": 886, "wins": 210, "diff": 2.77, "ci": 2.91}, {"card": "Ojer Axonil, Deepest Might", "seen": 871, "wins": 210, "diff": 3.21, "ci": 2.95}, {"card": "Scrubland", "seen": 1287, "wins": 309, "diff": 3.23, "ci": 2.47}, {"card": "Elim Garak, Simple Tailor", "seen": 918, "wins": 222, "diff": 3.3, "ci": 2.88}, {"card": "Purphoros, God of the Forge", "seen": 891, "wins": 249, "diff": 7.4, "ci": 3.05}, {"card": "Gala Greeters", "seen": 894, "wins": 251, "diff": 7.54, "ci": 3.05}, {"card": "Norin the Wary", "seen": 941, "wins": 286, "diff": 10.11, "ci": 3.04}], "chunk": null, "partial": false}} -->
+<!-- data {"name": "audit_of_siskofinal_with_ai_hints", "title": "Audit of SiskoFinal with AI hints", "mode": "audit", "run_id": "44882790582", "finished": "2026-11-21T08:00:19Z", "arms": [{"deck": "SiskoFinal", "card": "@audit", "games": 14556, "wins": 3048, "reused": 0, "label": "Audit of SiskoFinal"}], "compare": [], "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"], "audit": {"deck": "SiskoFinal", "cards": [{"card": "Abzan Charm", "seen": 1203, "wins": 199, "diff": -4.79, "ci": 2.21}, {"card": "Pact of Negation", "seen": 1422, "wins": 247, "diff": -3.96, "ci": 2.09}, {"card": "Black Market Connections", "seen": 1243, "wins": 220, "diff": -3.54, "ci": 2.23}, {"card": "Esper Charm", "seen": 1254, "wins": 223, "diff": -3.45, "ci": 2.23}, {"card": "Impossible Choice", "seen": 1210, "wins": 216, "diff": -3.37, "ci": 2.27}, {"card": "Counterspell", "seen": 1507, "wins": 272, "diff": -3.22, "ci": 2.06}, {"card": "Heartless Act", "seen": 1146, "wins": 208, "diff": -3.03, "ci": 2.34}, {"card": "Collective Defiance", "seen": 1235, "wins": 225, "diff": -2.97, "ci": 2.26}, {"card": "Path to Exile", "seen": 1244, "wins": 228, "diff": -2.86, "ci": 2.26}, {"card": "Assassin's Trophy", "seen": 1453, "wins": 267, "diff": -2.85, "ci": 2.11}, {"card": "Sylvan Library", "seen": 1217, "wins": 223, "diff": -2.85, "ci": 2.28}, {"card": "Prismari Command", "seen": 1296, "wins": 239, "diff": -2.74, "ci": 2.22}, {"card": "Outlaws' Merriment", "seen": 1159, "wins": 215, "diff": -2.6, "ci": 2.34}, {"card": "Jeska's Will", "seen": 1180, "wins": 219, "diff": -2.59, "ci": 2.32}, {"card": "Parallel Lives", "seen": 1195, "wins": 224, "diff": -2.39, "ci": 2.32}, {"card": "Swords to Plowshares", "seen": 1242, "wins": 233, "diff": -2.38, "ci": 2.28}, {"card": "Ertai Resurrected", "seen": 1180, "wins": 222, "diff": -2.31, "ci": 2.33}, {"card": "Fatal Push", "seen": 1364, "wins": 258, "diff": -2.23, "ci": 2.19}, {"card": "Utopia Sprawl", "seen": 1286, "wins": 244, "diff": -2.16, "ci": 2.25}, {"card": "Pyroblast", "seen": 1192, "wins": 226, "diff": -2.16, "ci": 2.33}, {"card": "Test of Priorities", "seen": 1229, "wins": 233, "diff": -2.16, "ci": 2.3}, {"card": "Test of Conviction", "seen": 1272, "wins": 242, "diff": -2.1, "ci": 2.27}, {"card": "Abrade", "seen": 1217, "wins": 233, "diff": -1.96, "ci": 2.32}, {"card": "An Offer You Can't Refuse", "seen": 1375, "wins": 264, "diff": -1.92, "ci": 2.2}, {"card": "Command Decision", "seen": 1246, "wins": 244, "diff": -1.48, "ci": 2.31}, {"card": "Resistance Is Futile", "seen": 1234, "wins": 245, "diff": -1.19, "ci": 2.33}, {"card": "Panharmonicon", "seen": 1216, "wins": 242, "diff": -1.13, "ci": 2.35}, {"card": "Misty Rainforest", "seen": 1742, "wins": 348, "diff": -1.09, "ci": 2.01}, {"card": "City of Brass", "seen": 1712, "wins": 344, "diff": -0.96, "ci": 2.02}, {"card": "Marsh Flats", "seen": 1763, "wins": 355, "diff": -0.91, "ci": 2.0}, {"card": "Overgrown Tomb", "seen": 1686, "wins": 340, "diff": -0.88, "ci": 2.04}, {"card": "Llanowar Elves", "seen": 1231, "wins": 250, "diff": -0.69, "ci": 2.35}, {"card": "Smuggler's Surprise", "seen": 1258, "wins": 257, "diff": -0.56, "ci": 2.33}, {"card": "Forest", "seen": 1647, "wins": 337, "diff": -0.54, "ci": 2.07}, {"card": "Farseek", "seen": 1214, "wins": 249, "diff": -0.47, "ci": 2.37}, {"card": "Make It So", "seen": 1200, "wins": 247, "diff": -0.39, "ci": 2.39}, {"card": "Polluted Delta", "seen": 1777, "wins": 366, "diff": -0.39, "ci": 2.01}, {"card": "Plains", "seen": 1722, "wins": 355, "diff": -0.37, "ci": 2.04}, {"card": "The Unicomplex", "seen": 1866, "wins": 385, "diff": -0.35, "ci": 1.97}, {"card": "Rapid Hybridization", "seen": 1415, "wins": 292, "diff": -0.34, "ci": 2.22}, {"card": "Mana Confluence", "seen": 1728, "wins": 359, "diff": -0.19, "ci": 2.04}, {"card": "Corpse Knight", "seen": 1241, "wins": 258, "diff": -0.16, "ci": 2.36}, {"card": "Windswept Heath", "seen": 1797, "wins": 374, "diff": -0.15, "ci": 2.01}, {"card": "Molten Gatekeeper", "seen": 1194, "wins": 249, "diff": -0.09, "ci": 2.41}, {"card": "Arid Mesa", "seen": 1773, "wins": 371, "diff": -0.02, "ci": 2.02}, {"card": "Captain James T. Kirk", "seen": 1269, "wins": 266, "diff": 0.02, "ci": 2.34}, {"card": "Tropical Island", "seen": 1716, "wins": 360, "diff": 0.04, "ci": 2.05}, {"card": "Island", "seen": 1800, "wins": 378, "diff": 0.07, "ci": 2.01}, {"card": "Boros Charm", "seen": 1222, "wins": 257, "diff": 0.1, "ci": 2.39}, {"card": "Consider the Prime Directive", "seen": 1183, "wins": 249, "diff": 0.12, "ci": 2.42}, {"card": "Bloodstained Mire", "seen": 1728, "wins": 364, "diff": 0.14, "ci": 2.05}, {"card": "Verdant Catacombs", "seen": 1779, "wins": 375, "diff": 0.16, "ci": 2.02}, {"card": "Steam Vents", "seen": 1746, "wins": 369, "diff": 0.22, "ci": 2.04}, {"card": "Collective Effort", "seen": 1218, "wins": 258, "diff": 0.26, "ci": 2.4}, {"card": "Manamorphose", "seen": 1195, "wins": 254, "diff": 0.34, "ci": 2.42}, {"card": "Scalding Tarn", "seen": 1700, "wins": 364, "diff": 0.53, "ci": 2.07}, {"card": "Diabolic Intent", "seen": 1246, "wins": 267, "diff": 0.53, "ci": 2.38}, {"card": "Esper Sentinel", "seen": 1222, "wins": 262, "diff": 0.55, "ci": 2.4}, {"card": "Savannah", "seen": 1755, "wins": 376, "diff": 0.55, "ci": 2.04}, {"card": "Fierce Guardianship", "seen": 1368, "wins": 294, "diff": 0.61, "ci": 2.28}, {"card": "Federation Outpost", "seen": 1758, "wins": 378, "diff": 0.64, "ci": 2.05}, {"card": "Test of Loyalty", "seen": 1227, "wins": 265, "diff": 0.72, "ci": 2.4}, {"card": "Roaming Throne", "seen": 1249, "wins": 270, "diff": 0.74, "ci": 2.39}, {"card": "Bayou", "seen": 1789, "wins": 387, "diff": 0.79, "ci": 2.03}, {"card": "Cultivate", "seen": 1206, "wins": 262, "diff": 0.86, "ci": 2.43}, {"card": "Tundra", "seen": 1741, "wins": 378, "diff": 0.88, "ci": 2.06}, {"card": "Witty Roastmaster", "seen": 1261, "wins": 275, "diff": 0.95, "ci": 2.38}, {"card": "Sacred Foundry", "seen": 1796, "wins": 391, "diff": 0.95, "ci": 2.03}, {"card": "Wooded Foothills", "seen": 1738, "wins": 379, "diff": 0.98, "ci": 2.06}, {"card": "Impact Tremors", "seen": 1208, "wins": 264, "diff": 1.0, "ci": 2.43}, {"card": "Quark's Bar", "seen": 1781, "wins": 389, "diff": 1.03, "ci": 2.04}, {"card": "Noble Hierarch", "seen": 1275, "wins": 279, "diff": 1.03, "ci": 2.37}, {"card": "Birds of Paradise", "seen": 1231, "wins": 270, "diff": 1.09, "ci": 2.41}, {"card": "Ni'Var Science Academy", "seen": 1715, "wins": 376, "diff": 1.12, "ci": 2.08}, {"card": "Retreat to Hagra", "seen": 1201, "wins": 265, "diff": 1.23, "ci": 2.44}, {"card": "Godless Shrine", "seen": 1691, "wins": 373, "diff": 1.27, "ci": 2.1}, {"card": "Deadly Rollick", "seen": 1245, "wins": 276, "diff": 1.34, "ci": 2.41}, {"card": "Underground Sea", "seen": 1779, "wins": 394, "diff": 1.38, "ci": 2.05}, {"card": "Academy Instructor", "seen": 1183, "wins": 263, "diff": 1.41, "ci": 2.47}, {"card": "Rhystic Study", "seen": 1250, "wins": 278, "diff": 1.42, "ci": 2.41}, {"card": "Volcanic Island", "seen": 1718, "wins": 382, "diff": 1.47, "ci": 2.09}, {"card": "Flooded Strand", "seen": 1701, "wins": 379, "diff": 1.52, "ci": 2.1}, {"card": "Q Continuum", "seen": 1734, "wins": 387, "diff": 1.56, "ci": 2.08}, {"card": "Sol Ring", "seen": 1211, "wins": 273, "diff": 1.75, "ci": 2.45}, {"card": "Blood Crypt", "seen": 1743, "wins": 393, "diff": 1.83, "ci": 2.08}, {"card": "Taiga", "seen": 1759, "wins": 397, "diff": 1.85, "ci": 2.08}, {"card": "Command Tower", "seen": 1723, "wins": 390, "diff": 1.92, "ci": 2.1}, {"card": "Agate Instigator", "seen": 1248, "wins": 284, "diff": 1.99, "ci": 2.43}, {"card": "Plateau", "seen": 1722, "wins": 394, "diff": 2.2, "ci": 2.1}, {"card": "Bloom Tender", "seen": 1279, "wins": 295, "diff": 2.33, "ci": 2.41}, {"card": "Badlands", "seen": 1725, "wins": 397, "diff": 2.35, "ci": 2.11}, {"card": "Warleader's Call", "seen": 1281, "wins": 298, "diff": 2.55, "ci": 2.41}, {"card": "Elesh Norn, Mother of Machines", "seen": 1187, "wins": 279, "diff": 2.79, "ci": 2.51}, {"card": "Elim Garak, Simple Tailor", "seen": 1248, "wins": 294, "diff": 2.86, "ci": 2.45}, {"card": "Ojer Axonil, Deepest Might", "seen": 1192, "wins": 281, "diff": 2.87, "ci": 2.51}, {"card": "Scrubland", "seen": 1724, "wins": 407, "diff": 3.03, "ci": 2.12}, {"card": "Gala Greeters", "seen": 1215, "wins": 321, "diff": 5.98, "ci": 2.57}, {"card": "Purphoros, God of the Forge", "seen": 1238, "wins": 340, "diff": 7.13, "ci": 2.58}, {"card": "Norin the Wary", "seen": 1260, "wins": 382, "diff": 10.27, "ci": 2.63}], "chunk": null, "partial": false}} -->
