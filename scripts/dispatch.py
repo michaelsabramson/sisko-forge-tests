@@ -160,6 +160,10 @@ def main():
         # one unforced arm; the runner logs each game's kept hand + next 3 draws and every card is scored from those
         read_deck(r["base"])
         arms.append({"deck": r["base"], "card": "@audit", "label": f"Audit of {r['base']}"})
+    elif r.get("mode") == "usage":
+        # short unforced run that logs how the AI handles every card it holds (cast rate, turns held while affordable)
+        read_deck(r["base"])
+        arms.append({"deck": r["base"], "card": "@usage", "label": f"Card usage in {r['base']}"})
     elif r.get("mode") == "package":
         # each game forces one package card into the opening hand, rotating through the package;
         # the baseline forces the matching card being cut, so both sides answer "when this slot shows up early"

@@ -40,6 +40,18 @@ public class Run {
             for(var c:p.getCardsIn(forge.game.zone.ZoneType.Hand)) top.add(c.getName());
             int i=0; for(var c:p.getCardsIn(forge.game.zone.ZoneType.Library)){ if(i++>=3) break; top.add(c.getName()); }
             System.out.println("TOP "+String.join("|",top)); } } }); }
+      // card-usage log (with -Dusage): for each spell the audited deck held, how long it sat in hand while affordable and whether it was cast
+      final Map<String,int[]> use=new LinkedHashMap<>(); final int[] ut={0}; // name -> [firstSeenTurn, affordableTurnsHeld, cast, castTurn, turnsInHand]
+      if(auditDeck!=null && System.getProperty("usage")!=null) game.subscribeToEvents(new Object(){
+        @com.google.common.eventbus.Subscribe public void uTurn(forge.game.event.GameEventTurnBegan e){
+          for(Player p:game.getRegisteredPlayers()) if(p.getName().equals(auditDeck) && e.turnOwner().toString().contains(p.getName())){ ut[0]++;
+            int mana=p.getLandsInPlay().size();
+            for(var c:p.getCardsIn(forge.game.zone.ZoneType.Hand)){ if(c.isLand()) continue;
+              int[] r=use.computeIfAbsent(c.getName(),k->new int[]{ut[0],0,0,0,0}); if(r[2]==0){ r[4]++; if(c.getCMC()<=mana) r[1]++; } } } }
+        @com.google.common.eventbus.Subscribe public void uZone(forge.game.event.GameEventCardChangeZone e){
+          if(e.from()!=null && e.to()!=null && e.from().zoneType()==forge.game.zone.ZoneType.Hand && e.to().zoneType()==forge.game.zone.ZoneType.Stack
+             && e.card().getController()!=null && e.card().getController().getName().equals(auditDeck)){
+            int[] r=use.computeIfAbsent(e.card().getName(),k->new int[]{ut[0],0,0,0,0}); if(r[2]==0){ r[2]=1; r[3]=ut[0]; } } } });
       final Map<String,Integer> seen=new LinkedHashMap<>(); final StringBuilder offs=new StringBuilder(); final int[] myTurn={0};
       game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void on(forge.game.event.GameEventTurnBegan e){
         for(Player p:game.getPlayers()) if(p.getName().startsWith("Sisko") && e.turnOwner().toString().contains(p.getName())){ myTurn[0]++;
@@ -158,6 +170,7 @@ public class Run {
       if(!game.isGameOver()) res2="Draw";
       wins.merge(res2,1,Integer::sum);
       StringBuilder life=new StringBuilder(); for(Player p:game.getRegisteredPlayers()) life.append(p.getName().replaceAll(" .*","")).append("=").append(p.getLife()).append(p.hasLost()?"x ":" ");
+      if(!use.isEmpty()){ StringBuilder ub=new StringBuilder("USE"); for(var en:use.entrySet()){ int[] r=en.getValue(); ub.append("\t").append(en.getKey()).append("~").append(r[0]).append("~").append(r[1]).append("~").append(r[2]).append("~").append(r[3]).append("~").append(r[4]); } System.out.println(ub); }
       System.out.println("POD "+pod.stream().map(Deck::getName).toList()); System.out.printf("G%d winner=%s turn=%d (round %.1f) %dms  %s%n", g+1, res2, turn, turn/(double)k, System.currentTimeMillis()-s, life);
       { int T=tick[0]+1; for(Player p:game.getRegisteredPlayers()) if(p.hasLost()) outAt.putIfAbsent(p.getName(),T);
         StringBuilder sb=new StringBuilder("PLACE "); for(Player p:game.getRegisteredPlayers()){ Integer o=outAt.get(p.getName()); sb.append(p.getName()).append(":").append(o==null?"alive":o).append(":").append(p.getLife()).append(" "); } System.out.println(sb); }

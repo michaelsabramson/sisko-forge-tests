@@ -1,0 +1,8 @@
+{
+  "mode": "usage",
+  "base": "SiskoFinal",
+  "name": "Card usage in SiskoFinal",
+  "minutes": 25,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"]
+}

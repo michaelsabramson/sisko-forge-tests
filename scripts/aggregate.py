@@ -5,11 +5,20 @@ import cache
 PEEK = bool(os.environ.get("PEEK"))
 req = json.load(open('tests/request.json')); arms = req['arms']
 new = [[0, 0] for _ in arms]   # wins, games played in this run
+usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
     i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
     for l in open(f, errors='ignore'):
         if l.startswith('TOP '): top = set(l[4:].rstrip('\n').split('|')); continue
+        if l.startswith('USE\t'):
+            for ent in l.rstrip('\n').split('\t')[1:]:
+                nm, first, held, cast, cturn, inhand = ent.rsplit('~', 5)
+                u = usage.setdefault(nm, {"games": 0, "cast": 0, "held": [], "stuck": 0, "inhand": 0})
+                u["games"] += 1; u["cast"] += int(cast); u["inhand"] += int(inhand)
+                if int(cast): u["held"].append(int(held))
+                elif int(held) >= 3: u["stuck"] += 1
+            continue
         m = re.match(r'G\d+ winner=(\S+)', l)
         if m:
             won = m.group(1) == me
@@ -56,6 +65,16 @@ if req.get('mode') == 'audit':
     t.append(f"\nDeck audit: {N:,} games, {100*W/max(1,N):.1f}% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):\n")
     t.append("| Card | Games seen | Win rate seen | Change | ± |"); t.append("|---|---|---|---|---|")
     for r in rows: t.append(f"| {r['card']} | {r['seen']} | {100*r['wins']/r['seen']:.1f}% | {r['diff']:+.1f} | {r['ci']:.1f} |")
+if usage:
+    rows = []
+    for nm, u in usage.items():
+        if u["games"] < 20: continue
+        h = sorted(u["held"]); med = h[len(h) // 2] if h else None
+        rows.append((u["stuck"] / u["games"], nm, u["games"], u["cast"] / u["games"], med, u["stuck"] / u["games"]))
+    rows.sort(reverse=True)
+    t.append(f"\nCard usage: how the AI handled each spell it held. 'Stuck' = held 3+ turns with enough lands to cast it and never cast (colors not checked).\n")
+    t.append("| Card | Games held | Cast rate | Median affordable turns before casting | Stuck |"); t.append("|---|---|---|---|---|")
+    for _, nm, g, cr, med, st in rows: t.append(f"| {nm} | {g} | {100*cr:.0f}% | {med if med is not None else '-'} | {100*st:.0f}% |")
 data = {"name": req['name'], "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
