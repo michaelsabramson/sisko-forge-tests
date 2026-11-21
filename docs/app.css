@@ -154,6 +154,11 @@ tr.superseded td:first-child::after{content:' · earlier test';font-size:12px;co
 .h2h{list-style:none;margin:4px 0 0;padding:0;font-size:14px}
 .h2h li{margin:4px 0}
 
+.forest a.frow rect{fill:transparent}
+.forest a.frow:hover rect{fill:var(--panel2)}
+.forest a.frow{cursor:pointer}
+tr.clickrow{cursor:pointer} tr.clickrow:hover td{background:var(--panel2)}
+
 /* test builder */
 .slot{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--panel2)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}

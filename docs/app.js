@@ -225,7 +225,7 @@ function verdict(g) {
   if (Math.abs(g.diff) < 0.5) return ['', 'No difference'];
   return ['', g.diff > 0 ? 'Leans better' : 'Leans worse'];
 }
-function forestSVG(gaps) {
+function forestSVG(gaps, link) {
   const nar = innerWidth < 640; const W = nar ? 360 : 900, rowH = nar ? 30 : 36, padL = nar ? 120 : 250, padR = nar ? 44 : 80, H = gaps.length * rowH + 26;
   const span = Math.max(4, ...gaps.map(g => Math.abs(g.diff) + g.ci)) * 1.1;
   const x = v => padL + (v + span) / (2 * span) * (W - padL - padR);
@@ -236,13 +236,15 @@ function forestSVG(gaps) {
   for (const t of tks) s += `<line class="ax" x1="${x(t)}" x2="${x(t)}" y1="0" y2="${H - 20}"/><text class="tick" x="${x(t)}" y="${H - 5}" text-anchor="middle">${t > 0 ? '+' : ''}${t}</text>`;
   s += `<line class="zero" x1="${x(0)}" x2="${x(0)}" y1="0" y2="${H - 20}"/>`;
   gaps.forEach((g, i) => {
-    const y = i * rowH + rowH / 2 + 2; const [cls] = verdict(g);
+    const y = i * rowH + rowH / 2 + 2;
+    if (link) s += `<a href="${esc(link(g))}" class="frow"><title>Test replacements for ${esc(g.label)}</title><rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" rx="6"/>`; const [cls] = verdict(g);
     const col = cls === 'good' ? 'var(--good)' : cls === 'bad' ? 'var(--bad)' : 'var(--muted)';
     const L = nar ? 17 : 32; const lab = g.label.length > L ? g.label.slice(0, L - 1) + '…' : g.label;
     s += `<text x="0" y="${y + 4}"><title>${esc(g.label)} vs ${esc(g.vs)}</title>${esc(lab)}</text>`;
     s += `<line x1="${x(g.diff - g.ci)}" x2="${x(g.diff + g.ci)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="4" stroke-linecap="round" opacity=".45"/>`;
     s += `<circle cx="${x(g.diff)}" cy="${y}" r="6" fill="${col}"/>`;
     s += `<text x="${W - padR + (nar ? 6 : 10)}" y="${y + 4}" class="num" font-weight="700" fill="${col}">${g.diff > 0 ? '+' : ''}${g.diff.toFixed(1)}</text>`;
+    if (link) s += '</a>';
   });
   return s + '</svg>';
 }
@@ -551,14 +553,15 @@ async function drawAudit(body, name) {
   const spells = rows.filter(c => !isLand(c.card)).sort((x, y) => y.diff - x.diff), lands = rows.filter(c => isLand(c.card)).sort((x, y) => y.diff - x.diff);
   const weakest = [...spells].sort((x, y) => x.diff - y.diff).slice(0, 8);
   const toGap = c => ({ label: c.card, diff: c.diff, ci: c.ci });
+  const testLink = g => `#test/${encodeURIComponent(name)}?out=${encodeURIComponent(g.label)}&pool=${a.auditPool}`;
   const N = a.arms[0]?.games || 0;
   h += `<div class="card"><div class="res-head"><div><div class="res-title">Deck audit</div>
       <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div>${runBtn}</div>
     <p class="small muted" style="margin:10px 0 0">Each card's change in win rate when the shuffle put it in your kept opening hand or next three draws, compared with games where it didn't. Cards that matter late (finishers, answers to specific threats) can score lower than their real value, and with this many cards a few will look bad by chance. Confirm a weak slot with a swap test before cutting it.</p>
     <div class="sect">Weakest slots</div>
-    <table><tbody>${weakest.map(c => { const [cls, t] = verdict(c); return `<tr><td data-card="${esc(c.card)}">${esc(c.card)} ${flagPill(c.card)}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)} ± ${c.ci.toFixed(1)}</span></td><td class="small muted">${cls === 'bad' ? 'clearly below average' : 'within noise'}</td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Find a replacement</a></td></tr>`; }).join('')}</tbody></table>
-    <div class="sect">Every spell, best to worst</div>${forestSVG(spells.map(toGap))}
-    <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap))}</details>
+    <table><tbody>${weakest.map(c => { const [cls, t] = verdict(c); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card)} ${flagPill(c.card)}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)} ± ${c.ci.toFixed(1)}</span></td><td class="small muted">${cls === 'bad' ? 'clearly below average' : 'within noise'}</td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Find a replacement</a></td></tr>`; }).join('')}</tbody></table>
+    <div class="sect">Every spell, best to worst <span style="text-transform:none;font-weight:500;letter-spacing:0">· click any card to test replacements for it</span></div>${forestSVG(spells.map(toGap), testLink)}
+    <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     ${audits.length > 1 ? `<p class="small muted">${audits.length - 1} earlier audit${audits.length > 2 ? 's' : ''} of this deck kept in the history.</p>` : ''}</div>`;
   body.innerHTML = h; bindAuditRun(name);
 }
