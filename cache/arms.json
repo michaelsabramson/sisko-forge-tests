@@ -1301,6 +1301,24 @@
   ],
   "wins": 753
  },
+ "a5a4f5e4776e3c1a1b19": {
+  "card": "Assassin's Trophy",
+  "deck": "SiskoFinal",
+  "games": 5670,
+  "runs": [
+   "riku_of_many_paths_for_assassin_s_trophy:44942508142"
+  ],
+  "wins": 1021
+ },
+ "a947a4d61ea75f9ead7d": {
+  "card": "Riku of Many Paths",
+  "deck": "SiskoFinal__RikuOfManyPaths__for__AssassinsTrophy",
+  "games": 5626,
+  "runs": [
+   "riku_of_many_paths_for_assassin_s_trophy:44942508142"
+  ],
+  "wins": 1196
+ },
  "a9ea762e42ea79e4e97b": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoCaesarM",
