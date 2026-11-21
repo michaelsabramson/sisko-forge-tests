@@ -43,6 +43,14 @@ async function loadTree() {
   S.head = b.commit.sha;
   const t = await api(`/repos/${REPO}/git/trees/${b.commit.commit.tree.sha}?recursive=1`);
   S.tree = t.tree.filter(e => e.type === 'blob').map(e => e.path);
+  // notice when a newer version of the app itself has been published (an open tab keeps running the old code)
+  const appSig = t.tree.filter(e => /^docs\/(app\.js|app\.css|index\.html)$/.test(e.path)).map(e => e.sha).join('');
+  if (!S.appSig) S.appSig = appSig;
+  else if (appSig && appSig !== S.appSig && !$('#updBar')) {
+    const b = document.createElement('div'); b.id = 'updBar'; b.className = 'updbar';
+    b.innerHTML = 'A new version of Deck Lab is available. <button class="sm">Reload</button>';
+    b.querySelector('button').onclick = () => location.reload(); document.body.appendChild(b);
+  }
 }
 async function raw(path, sha = S.head) {
   const key = sha + ':' + path;
@@ -1007,6 +1015,8 @@ async function boot() {
     }
   });
   window.addEventListener('hashchange', route);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) loadTree().catch(() => {}); });
+  setInterval(() => { if (!document.hidden) loadTree().catch(() => {}); }, 600000);
   window.addEventListener('beforeunload', e => { if (S.deckDirty) { e.preventDefault(); e.returnValue = ''; } });
   $('#view').innerHTML = '<div class="empty"><span class="spin"></span> Loading…</div>';
   try { await Promise.all([loadTree(), loadForge()]); await loadLab(); }
