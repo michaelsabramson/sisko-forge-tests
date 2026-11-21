@@ -1,0 +1,15 @@
+{
+  "mode": "audit",
+  "base": "NorinB3",
+  "name": "Ranking of NorinB3",
+  "precision": 2,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-21T21:42:50.860Z"
+}
