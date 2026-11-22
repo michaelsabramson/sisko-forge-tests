@@ -16,8 +16,13 @@ for p in 0 1 2 3; do
   if [ "$(jq '.procs|length' $REQ)" -gt "$k" ] 2>/dev/null; then i=$(jq -r ".procs[$k]" $REQ); else i=${RUN[$((k % N))]}; fi
   D=$(jq -r ".arms[$i].deck" $REQ); C=$(jq -r ".arms[$i].card" $REQ)
   AUD=""; [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
-  # play this arm's per-process quota of games (precision-sized runs), or until the time cap for older requests
-  Q=$(jq -r ".quota[$i] // 1000" $REQ); [ "$Q" -gt 0 ] 2>/dev/null || Q=1000
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC $AUD -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES $Q $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
+  # precision-sized runs: this runner's processes on the same arm share one pool of games (quota x processes),
+  # so the runner finishes together instead of waiting on whichever process drew the slowest games
+  Q=$(jq -r ".quota[$i] // 0" $REQ); POOL=""
+  if [ "$Q" -gt 0 ] 2>/dev/null; then
+    M=0; for q in 0 1 2 3; do kk=$((S*4+q)); [ "$(jq -r ".procs[$kk] // -1" $REQ)" = "$i" ] && M=$((M+1)); done
+    POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
+  fi
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
 done
 wait

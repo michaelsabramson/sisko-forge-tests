@@ -1,6 +1,12 @@
 import forge.*; import forge.ai.*; import forge.deck.*; import forge.deck.io.DeckSerializer; import forge.game.*; import forge.game.player.*;
 import forge.util.*; import java.io.File; import java.util.*; import java.util.concurrent.*;
 public class Run {
+  /** Take one game from the shared pool; false once the pool's games are all taken. */
+  static boolean claimGame(String file,int max){
+    try(java.io.RandomAccessFile f=new java.io.RandomAccessFile(file,"rw"); java.nio.channels.FileLock lk=f.getChannel().lock()){
+      int used=f.length()>=4?f.readInt():0; if(used>=max) return false; f.seek(0); f.writeInt(used+1); return true;
+    }catch(Exception e){ return true; }   // if the pool file fails, fall back to the process's own game count
+  }
   static int CardLists_count(Player p){ int n=0; for(var c:p.getCardsIn(forge.game.zone.ZoneType.Battlefield)) if(c.getType().hasCreatureType("Officer")) n++; return n; }
   public static void main(String[] a) throws Exception {
     String res=a[0]; int n=Integer.parseInt(a[1]); long seed=Long.parseLong(a[2]); int timeout=Integer.parseInt(a[3]); boolean log=a[4].equals("log");
@@ -25,7 +31,10 @@ public class Run {
       for(var e:dk.getMain()) { } }
     Map<String,Integer> wins=new LinkedHashMap<>(); for(Deck d:ds) wins.put(d.getName(),0); wins.put("Draw",0);
     final Runnable[] dmgHook={null};
-    int g0=Integer.getInteger("start",0); for(int g=g0; g<g0+n; g++){ dmgHook[0]=null;
+    // shared quota: the processes on one runner that play the same arm draw games from one pool (a counter file),
+    // so a process that gets slow games doesn't hold the runner up while its neighbours sit idle
+    final String poolFile=System.getProperty("pool"); final int poolMax=Integer.getInteger("poolMax",0);
+    int g0=Integer.getInteger("start",0); for(int g=g0; g<g0+n; g++){ if(poolFile!=null && !claimGame(poolFile,poolMax)) break; dmgHook[0]=null;
       // rotate seating so the first-player advantage is spread out
       Random gr=new Random(seed*100003L+g); MyRandom.setRandom(new Random(seed*7919L+g));
       int fixedN=Integer.getInteger("fixed",1); List<Deck> pod=new ArrayList<>(ds.subList(0,fixedN)); List<Deck> pool=new ArrayList<>(ds.subList(fixedN,ds.size())); Collections.shuffle(pool,gr); pod.addAll(pool.subList(0,Math.min(4-fixedN,pool.size())));
