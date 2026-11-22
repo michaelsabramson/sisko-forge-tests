@@ -460,6 +460,15 @@
   ],
   "wins": 957
  },
+ "32434645260cb19f18f0": {
+  "card": "Delighted Halfling",
+  "deck": "SiskoFinal__DelightedHalfling__for__Counterspell",
+  "games": 5262,
+  "runs": [
+   "delighted_halfling_for_counterspell:45070976368"
+  ],
+  "wins": 1060
+ },
  "461daaa28ec674a7f928": {
   "card": "Impossible Choice",
   "deck": "SiskoFinal",
@@ -2513,5 +2522,14 @@
    "audit_of_siskofinal_with_ai_hints:44876008584"
   ],
   "wins": 4274
+ },
+ "fbdc945eadf575e24f03": {
+  "card": "Counterspell",
+  "deck": "SiskoFinal",
+  "games": 5262,
+  "runs": [
+   "delighted_halfling_for_counterspell:45070976368"
+  ],
+  "wins": 1053
  }
 }

@@ -7,13 +7,13 @@
   [
    5253,
    264805571
+  ],
+  [
+   5262,
+   243793193
   ]
  ],
  "*": [
-  [
-   5320,
-   252839807
-  ],
   [
    5320,
    251092926
@@ -29,6 +29,14 @@
   [
    5289,
    247200139
+  ],
+  [
+   5262,
+   243793193
+  ],
+  [
+   5262,
+   240628557
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -47,6 +55,12 @@
   [
    5289,
    247200139
+  ]
+ ],
+ "SiskoFinal__DelightedHalfling__for__Counterspell|Atraxa,Prossh,UrDragon,Edgar,Meren": [
+  [
+   5262,
+   240628557
   ]
  ]
 }
