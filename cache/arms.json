@@ -1574,6 +1574,15 @@
   ],
   "wins": 1293
  },
+ "7d0bf4dfb0a01a07cec3": {
+  "card": "Caesar, Legion's Emperor",
+  "deck": "SiskoFinal__CaesarLegionsEmperor__for__AssassinsTrophy",
+  "games": 5830,
+  "runs": [
+   "caesar_for_assassin_s_trophy:44988977132"
+  ],
+  "wins": 1201
+ },
  "8170b90ddd75b2062e31": {
   "card": "Manamorphose",
   "deck": "SiskoFinal",
