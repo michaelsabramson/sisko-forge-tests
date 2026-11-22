@@ -1,0 +1,23 @@
+{
+  "mode": "swap",
+  "base": "SiskoFinal",
+  "slots": [
+    {
+      "out": "Impossible Choice",
+      "ins": [
+        "Worldly Tutor"
+      ]
+    }
+  ],
+  "name": "Worldly Tutor for Impossible Choice",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-22T19:50:42.120112+00:00"
+}
