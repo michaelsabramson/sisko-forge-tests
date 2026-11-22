@@ -1592,6 +1592,15 @@
   ],
   "wins": 753
  },
+ "9e8243cf324f1bbf4225": {
+  "card": "Shattering Spree",
+  "deck": "NorinB3__ShatteringSpree__for__Pandemonium",
+  "games": 4966,
+  "runs": [
+   "shattering_spree_for_pandemonium:44962650180"
+  ],
+  "wins": 924
+ },
  "a5a4f5e4776e3c1a1b19": {
   "card": "Assassin's Trophy",
   "deck": "SiskoFinal",
@@ -1627,6 +1636,15 @@
    "grand_abolisher_vs_cultivate_and_manamorphose:44815372817"
   ],
   "wins": 809
+ },
+ "ba72a263f33c48b441d8": {
+  "card": "Pandemonium",
+  "deck": "NorinB3",
+  "games": 7292,
+  "runs": [
+   "shattering_spree_for_pandemonium:44962650180"
+  ],
+  "wins": 850
  },
  "e20a5cca13932ba46b6e": {
   "card": "@audit",
