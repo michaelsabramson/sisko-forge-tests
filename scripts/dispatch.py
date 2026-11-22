@@ -239,6 +239,10 @@ def main():
             # each process stops once it has played its share of its arm's games, so a run ends when the games are done;
             # the minutes are only a safety cap (generous, in case this run is slower than the measured speed)
             req["quota"] = [math.ceil(need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
+            # batches: games are handed out in small batches while the run plays (scripts/claimbatch.sh), so fast runners
+            # take on more and the run ends within about one batch of its last game; ~200 batches keeps API calls modest
+            req["batch"] = max(8, math.ceil(sum(need[i] for i in todo) / 200))
+            req["batches"] = [math.ceil(need[i] / req["batch"]) if need[i] > 0 else 0 for i in range(len(arms))]
             mins = max(need[i] / (per[i] * gpm[i]) for i in todo) + STARTUP_MIN
             req["minutes"] = max(8, min(MAX_MIN, math.ceil(mins * 1.4)))
             req["capped"] = mins * 1.12 > MAX_MIN

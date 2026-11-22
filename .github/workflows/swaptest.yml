@@ -64,6 +64,8 @@ jobs:
         with: { name: build }
       - run: tar xzf build.tgz
       - name: Start games
+        env:
+          GH_TOKEN: ${{ github.token }}   # batches are claimed through the GitHub API (scripts/claimbatch.sh)
         run: nohup setsid scripts/shard.sh ${{ matrix.s }} $(jq -r '.minutes // 40' tests/request.json) > shard.out 2>&1 &
       - name: Checkpoint 1
         if: ${{ !cancelled() }}
@@ -254,6 +256,13 @@ jobs:
           git add results/ cache/ 2>/dev/null || git add results/
           git commit -m "Results: $(jq -r .name tests/request.json)" || true
           git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}
+      - name: Remove this run's batch markers
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/git/matching-refs/batches/${{ github.run_id }}/" --paginate -q '.[].ref' 2>/dev/null \
+            | while read r; do gh api -X DELETE "repos/${{ github.repository }}/git/${r}" --silent || true; done; true
       - name: Start the next queued test
         if: always()
         env:

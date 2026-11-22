@@ -1,10 +1,22 @@
 import forge.*; import forge.ai.*; import forge.deck.*; import forge.deck.io.DeckSerializer; import forge.game.*; import forge.game.player.*;
 import forge.util.*; import java.io.File; import java.util.*; import java.util.concurrent.*;
 public class Run {
-  /** Take one game from the shared pool; false once the pool's games are all taken. */
+  /** Take one game from this runner's pool for the arm. The pool file holds {played, granted}: with batches on
+   *  (-DbatchArm/-DbatchRunner), an empty pool claims another batch of -Dbatch games from the run (scripts/claimbatch.sh);
+   *  otherwise the pool is the fixed -DpoolMax. False once there are no games left to play. */
   static boolean claimGame(String file,int max){
+    final String arm=System.getProperty("batchArm"), runner=System.getProperty("batchRunner");
+    final String cmd=arm!=null&&runner!=null ? "scripts/claimbatch.sh "+arm+" "+runner : null; final int batch=Integer.getInteger("batch",0);
     try(java.io.RandomAccessFile f=new java.io.RandomAccessFile(file,"rw"); java.nio.channels.FileLock lk=f.getChannel().lock()){
-      int used=f.length()>=4?f.readInt():0; if(used>=max) return false; f.seek(0); f.writeInt(used+1); return true;
+      int used=f.length()>=8?f.readInt():0; int granted=f.length()>=8?f.readInt():(cmd!=null?0:max);
+      if(used>=granted){
+        if(cmd==null || batch<=0) return false;
+        Process p=new ProcessBuilder("bash","-c",cmd).redirectErrorStream(true).start();
+        String outp=new String(p.getInputStream().readAllBytes()).trim(); p.waitFor();
+        if(!outp.endsWith("1")) return false;
+        granted+=batch;
+      }
+      f.seek(0); f.writeInt(used+1); f.writeInt(granted); return true;
     }catch(Exception e){ return true; }   // if the pool file fails, fall back to the process's own game count
   }
   static int CardLists_count(Player p){ int n=0; for(var c:p.getCardsIn(forge.game.zone.ZoneType.Battlefield)) if(c.getType().hasCreatureType("Officer")) n++; return n; }
