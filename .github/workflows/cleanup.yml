@@ -1,0 +1,18 @@
+name: cleanup-batches
+# Deletes a finished run's batch markers (refs/batches/<run>/...). Runs as its own workflow, outside the swap-test
+# queue, so the next test starts right away instead of waiting minutes for the deletes (paced for GitHub's limits).
+on:
+  workflow_dispatch:
+    inputs:
+      run: { description: 'swap-test run id', required: true }
+permissions:
+  contents: write
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${{ github.repository }}/git/matching-refs/batches/${{ inputs.run }}" --paginate -q '.[].ref' 2>/dev/null \
+            | while read r; do gh api -X DELETE "repos/${{ github.repository }}/git/${r}" --silent || true; sleep 1; done; true

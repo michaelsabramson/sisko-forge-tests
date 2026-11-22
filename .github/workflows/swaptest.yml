@@ -256,13 +256,11 @@ jobs:
           git add results/ cache/ 2>/dev/null || git add results/
           git commit -m "Results: $(jq -r .name tests/request.json)" || true
           git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}
-      - name: Remove this run's batch markers
+      - name: Remove this run's batch markers (in the background, so the next test isn't held up)
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          gh api "repos/${{ github.repository }}/git/matching-refs/batches/${{ github.run_id }}" --paginate -q '.[].ref' 2>/dev/null \
-            | while read r; do gh api -X DELETE "repos/${{ github.repository }}/git/${r}" --silent || true; sleep 1; done; true
+        run: gh workflow run cleanup.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run=${{ github.run_id }} || true
       - name: Start the next queued test
         if: always()
         env:
