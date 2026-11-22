@@ -460,6 +460,15 @@
   ],
   "wins": 957
  },
+ "461daaa28ec674a7f928": {
+  "card": "Impossible Choice",
+  "deck": "SiskoFinal",
+  "games": 5253,
+  "runs": [
+   "worldly_tutor_for_impossible_choice:45063058504"
+  ],
+  "wins": 1045
+ },
  "47e3c83b370fac4eda3f": {
   "card": "Grand Abolisher",
   "deck": "SiskoFinal__GrandAbolisher__for__Manamorphose",
@@ -2088,6 +2097,15 @@
    "audit_of_siskofinal_with_pact_hint:44921390553"
   ],
   "wins": 1075
+ },
+ "eafaff28eccc73e61eeb": {
+  "card": "Worldly Tutor",
+  "deck": "SiskoFinal__WorldlyTutor__for__ImpossibleChoice",
+  "games": 5289,
+  "runs": [
+   "worldly_tutor_for_impossible_choice:45063058504"
+  ],
+  "wins": 1172
  },
  "f88375c0c117ae3acd61": {
   "card": "@audit",

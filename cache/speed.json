@@ -3,6 +3,10 @@
   [
    5320,
    252839807
+  ],
+  [
+   5253,
+   264805571
   ]
  ],
  "*": [
@@ -17,6 +21,14 @@
   [
    5320,
    263202435
+  ],
+  [
+   5253,
+   264805571
+  ],
+  [
+   5289,
+   247200139
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -29,6 +41,12 @@
   [
    5320,
    263202435
+  ]
+ ],
+ "SiskoFinal__WorldlyTutor__for__ImpossibleChoice|Atraxa,Prossh,UrDragon,Edgar,Meren": [
+  [
+   5289,
+   247200139
   ]
  ]
 }
