@@ -1,28 +1,28 @@
 {
-  "name": "worldly_tutor_for_impossible_choice",
-  "title": "Worldly Tutor for Impossible Choice",
+  "name": "delighted_halfling_for_counterspell",
+  "title": "Delighted Halfling for Counterspell",
   "arms": [
     {
       "deck": "SiskoFinal",
-      "card": "Impossible Choice",
-      "key": "461daaa28ec674a7f928",
+      "card": "Counterspell",
+      "key": "fbdc945eadf575e24f03",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 5256,
       "cached": false
     },
     {
-      "deck": "SiskoFinal__WorldlyTutor__for__ImpossibleChoice",
-      "card": "Worldly Tutor",
+      "deck": "SiskoFinal__DelightedHalfling__for__Counterspell",
+      "card": "Delighted Halfling",
       "swap": {
         "out": [
-          "Impossible Choice"
+          "Counterspell"
         ],
         "in": [
-          "Worldly Tutor"
+          "Delighted Halfling"
         ]
       },
-      "key": "eafaff28eccc73e61eeb",
+      "key": "32434645260cb19f18f0",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 5255,
@@ -36,11 +36,11 @@
     ]
   ],
   "band": 0,
-  "minutes": 80,
+  "minutes": 82,
   "shards": 38,
   "mode": "swap",
-  "queued_from": "20261122T195042-worldly-tutor-for-impossible-choice.json",
-  "started": "2026-11-22T19:50:50Z",
+  "queued_from": "20261122T204215-delighted-halfling-for-counterspell.json",
+  "started": "2026-11-22T21:14:21Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -204,19 +204,26 @@
     1
   ],
   "gpm": [
-    1.262,
-    1.248
+    1.226,
+    1.243
   ],
   "quota": [
     70,
     70
   ],
-  "batch": 53,
+  "first": [
+    41,
+    41
+  ],
+  "batch": [
+    29,
+    29
+  ],
   "batches": [
-    100,
-    100
+    74,
+    74
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184600000
+  "seedbase": 184616800
 }
