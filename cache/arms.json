@@ -433,6 +433,15 @@
   ],
   "wins": 1380
  },
+ "204917c963529d057136": {
+  "card": "Shattering Spree",
+  "deck": "SiskoFinal__ShatteringSpree__for__PactOfNegation",
+  "games": 5320,
+  "runs": [
+   "shattering_spree_for_pact_of_negation:45049826375"
+  ],
+  "wins": 1004
+ },
  "243a987199add13ca9be": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoFinal__CaesarLegionsEmperor__for__Manamorphose",
@@ -441,6 +450,15 @@
    "manamorphose_slot_retest_with_ai_hints:44867356632"
   ],
   "wins": 1198
+ },
+ "280f3ac1fc92e1c08915": {
+  "card": "Pact of Negation",
+  "deck": "SiskoFinal",
+  "games": 5320,
+  "runs": [
+   "shattering_spree_for_pact_of_negation:45049826375"
+  ],
+  "wins": 957
  },
  "47e3c83b370fac4eda3f": {
   "card": "Grand Abolisher",
