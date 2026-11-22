@@ -1673,6 +1673,15 @@
   ],
   "wins": 5485
  },
+ "b80ddc91c61979d08970": {
+  "card": "Imperial Recruiter",
+  "deck": "SiskoFinal__ImperialRecruiter__for__PactOfNegation",
+  "games": 5320,
+  "runs": [
+   "imperial_recruiter_for_pact_of_negation:45058426145"
+  ],
+  "wins": 1109
+ },
  "e20a5cca13932ba46b6e": {
   "card": "@audit",
   "cards": {
