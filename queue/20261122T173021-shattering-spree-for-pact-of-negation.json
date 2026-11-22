@@ -1,0 +1,23 @@
+{
+  "mode": "swap",
+  "base": "SiskoFinal",
+  "slots": [
+    {
+      "out": "Pact of Negation",
+      "ins": [
+        "Shattering Spree"
+      ]
+    }
+  ],
+  "name": "Shattering Spree for Pact of Negation",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-22T17:30:21.489661Z"
+}
