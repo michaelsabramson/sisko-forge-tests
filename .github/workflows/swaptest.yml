@@ -262,7 +262,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh api "repos/${{ github.repository }}/git/matching-refs/batches/${{ github.run_id }}" --paginate -q '.[].ref' 2>/dev/null \
-            | while read r; do gh api -X DELETE "repos/${{ github.repository }}/git/${r}" --silent || true; done; true
+            | while read r; do gh api -X DELETE "repos/${{ github.repository }}/git/${r}" --silent || true; sleep 1; done; true
       - name: Start the next queued test
         if: always()
         env:

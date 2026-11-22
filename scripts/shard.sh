@@ -18,12 +18,14 @@ for p in 0 1 2 3; do
   AUD=""; [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
   # precision-sized runs: this runner's processes on the same arm share one pool of games (quota x processes),
   # so the runner finishes together instead of waiting on whichever process drew the slowest games
-  Q=$(jq -r ".quota[$i] // 0" $REQ); POOL=""; B=$(jq -r ".batch // 0" $REQ)
+  Q=$(jq -r ".quota[$i] // 0" $REQ); POOL=""; B=$(jq -r ".batch[$i] // 0" $REQ 2>/dev/null || echo 0)
+  M=0; for q in 0 1 2 3; do kk=$((S*4+q)); [ "$(jq -r ".procs[$kk] // -1" $REQ)" = "$i" ] && M=$((M+1)); done
   if [ "$B" -gt 0 ] 2>/dev/null && [ -n "${GITHUB_RUN_ID:-}" ]; then
-    # batches: the runner's processes on this arm share a pool that claims batches from the whole run as it runs dry
-    POOL="-Dpool=out/pool_$i -Dbatch=$B -DbatchArm=$i -DbatchRunner=$S"
+    # batches: the runner's processes on this arm share a pool that starts with their first-round games and
+    # claims small batches from the whole run as it runs dry
+    FIRST=$(jq -r ".first[$i] // 0" $REQ)
+    POOL="-Dpool=out/pool_$i -DpoolMax=$((FIRST*M)) -Dbatch=$B -DbatchArm=$i -DbatchRunner=$S"
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
-    M=0; for q in 0 1 2 3; do kk=$((S*4+q)); [ "$(jq -r ".procs[$kk] // -1" $REQ)" = "$i" ] && M=$((M+1)); done
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
   timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
