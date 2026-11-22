@@ -3,7 +3,8 @@
    Reads everything from GitHub; writes (decks, queued tests) through the GitHub API with a token kept in localStorage. */
 const REPO = 'michaelsabramson/sisko-forge-tests', BR = 'main';
 const OPP_DEFAULT = ['Atraxa', 'Prossh', 'UrDragon', 'Edgar', 'Meren'];
-const SHARDS = 38, GPM = 1.1;           // runners per test, games per process-minute (measured)
+const SHARDS = 38, GPM_FALLBACK = 1.1;  // runners per test; games per process-minute until runs have measured it
+let GPM = GPM_FALLBACK;                 // replaced by the measured speed (cache/speed.json) once loaded
 const BASE_P = 0.19;                    // typical win rate for precision estimates
 
 const S = {
@@ -571,6 +572,14 @@ async function saveDeck(as) {
 
 /* ---------- card pages: AI status, history, notes ---------- */
 async function loadCardMeta() {
+  if (!S.speedLoaded) {
+    S.speedLoaded = true;
+    if (S.tree.includes('cache/speed.json')) {
+      try { const rows = JSON.parse(await raw('cache/speed.json'))['*'] || [];
+        const g = rows.reduce((t, r) => t + r[0], 0), ms = rows.reduce((t, r) => t + r[1], 0);
+        if (g >= 50 && ms > 0) GPM = g / (ms / 60000); } catch {}
+    }
+  }
   if (!S.hints) { try { S.hints = (await (await fetch('ai-hints.json', { cache: 'no-store' })).json()).cards; } catch { S.hints = {}; } }
   if (!S.cardNotes) { S.cardNotes = {}; if (S.tree.includes('decks/card-notes.json')) { try { S.cardNotes = JSON.parse(await raw('decks/card-notes.json')); } catch {} } }
 }
@@ -793,9 +802,10 @@ const PRECISION = [[2.0, 'Quick'], [1.5, 'Standard'], [1.0, 'Careful']];
 function estimate(arms, precision) {
   // worst case: nothing reused from earlier tests
   const n = Math.ceil(2 * BASE_P * (1 - BASE_P) * (196 / precision) ** 2);
-  const total = Math.min(170, Math.ceil(arms * n / (SHARDS * 4 * GPM) * 1.12)) + 15; return { n, total };
+  const total = Math.min(170, Math.ceil(arms * n / (SHARDS * 4 * GPM) + 1.5)) + 12; return { n, total };   // runs now stop when their games are done
 }
 async function viewTest(v) {
+  await loadCardMeta();   // also loads the measured game speed used by the time estimate
   const T = S.test; const mine = [...primary(), ...myDecks().filter(n => !primary().includes(n))];
   if (!T.base || !mine.includes(T.base)) T.base = primary()[0] || mine[0];
   if (!T.oppsTouched && POOLS()[deckBracket(T.base)]) T.opps = [...POOLS()[deckBracket(T.base)].decks];

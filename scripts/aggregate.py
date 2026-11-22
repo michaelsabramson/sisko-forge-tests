@@ -5,6 +5,7 @@ import cache
 PEEK = bool(os.environ.get("PEEK"))
 req = json.load(open('tests/request.json')); arms = req['arms']
 new = [[0, 0] for _ in arms]   # wins, games played in this run
+speed = [[0, 0] for _ in arms]   # games, total game milliseconds (per process, so games per process-minute)
 usage_rows = None
 usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
@@ -22,6 +23,8 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             continue
         m = re.match(r'G\d+ winner=(\S+)', l)
         if m:
+            t = re.search(r' (\d+)ms', l)
+            if t: speed[i][0] += 1; speed[i][1] += int(t.group(1))
             won = m.group(1) == me
             if arms[i]['card'] == '@audit' and top is None: top = None; continue   # no draw log: skip the game for audits
             new[i][1] += 1; new[i][0] += won
@@ -86,6 +89,7 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
                   "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "compare": pairs, "opponents": req.get('opponents'),
+        "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
         **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped'))}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
@@ -102,3 +106,14 @@ if not PEEK:
         e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}"); changed = True
         if audit and i == 0: e["cards"] = audit["tallies"]
     if changed: cache.save(c)
+    # remember how fast games actually ran (games per process-minute), so the dispatcher sizes future runs from it
+    try:
+        sp = json.load(open('cache/speed.json'))
+    except Exception:
+        sp = {}
+    opps = ",".join(req.get('opponents') or cache.DEFAULT_OPP)
+    for i, a in enumerate(arms):
+        if speed[i][0] < 20: continue
+        for k in (a['deck'] + "|" + opps, "*"):
+            sp[k] = (sp.get(k, []) + [speed[i]])[-6:]   # recent measurements only: the engine and decks change
+    json.dump(sp, open('cache/speed.json', 'w'), indent=1)

@@ -50,9 +50,23 @@ def swap_deck(base, out_card, in_card):
     write_deck(name, d)
     return name
 
-GPM = 1.1        # games per process-minute (measured on GitHub runners)
+GPM = 1.1        # fallback games per process-minute, used until runs have measured the real speed
 MAX_MIN = 170    # keep inside the 200-minute job limit
 P_DEFAULT = 0.19
+STARTUP_MIN = 1.5   # loading Forge's card database before the first game
+
+
+def measured_gpm(deck, opps):
+    """Games per process-minute from recent runs (cache/speed.json, written by aggregate.py):
+    this deck against these opponents if measured, else the average of all recent runs, else the fallback."""
+    try:
+        sp = json.load(open("cache/speed.json"))
+    except Exception:
+        return GPM
+    def rate(rows):
+        g = sum(r[0] for r in rows); ms = sum(r[1] for r in rows)
+        return g / (ms / 60000) if g >= 50 and ms > 0 else None
+    return rate(sp.get(deck + "|" + ",".join(opps), [])) or rate(sp.get("*", [])) or GPM
 
 
 def _p(a):
@@ -220,8 +234,13 @@ def main():
         if todo:
             req["procs"] = allocate(need, todo, procs_total)
             per = [req["procs"].count(i) for i in range(len(arms))]
-            mins = max(need[i] / (per[i] * GPM) for i in todo)
-            req["minutes"] = max(8, min(MAX_MIN, math.ceil(mins * 1.12)))   # 12% margin for slow games
+            gpm = [measured_gpm(a["deck"], opps) for a in arms]
+            req["gpm"] = [round(g, 3) for g in gpm]
+            # each process stops once it has played its share of its arm's games, so a run ends when the games are done;
+            # the minutes are only a safety cap (generous, in case this run is slower than the measured speed)
+            req["quota"] = [math.ceil(need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
+            mins = max(need[i] / (per[i] * gpm[i]) for i in todo) + STARTUP_MIN
+            req["minutes"] = max(8, min(MAX_MIN, math.ceil(mins * 1.4)))
             req["capped"] = mins * 1.12 > MAX_MIN
         else:
             req["minutes"] = 0
