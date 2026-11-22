@@ -1,3 +1,19 @@
+diff --git a/forge-ai/src/main/java/forge/ai/AiBlockController.java b/forge-ai/src/main/java/forge/ai/AiBlockController.java
+index 4dfcdd59..a98cff4d 100644
+--- a/forge-ai/src/main/java/forge/ai/AiBlockController.java
++++ b/forge-ai/src/main/java/forge/ai/AiBlockController.java
+@@ -1073,6 +1073,11 @@ public class AiBlockController {
+         }
+     }
+     public void assignBlockersForCombat(final Combat combat, final CardCollection excludedBlockers) {
++        CombatUtil.beginBlockMemo(ai.getGame());   // test hook (speed): token grouping while planning blocks
++        try { assignBlockersForCombatInner(combat, excludedBlockers); } finally { CombatUtil.endBlockMemo(); }
++    }
++
++    private void assignBlockersForCombatInner(final Combat combat, final CardCollection excludedBlockers) {
+         // TODO plan blocks together with teammates (CR 805.10d)
+         List<Card> possibleBlockers = ai.getCreaturesInPlay();
+         if (excludedBlockers != null && !excludedBlockers.isEmpty()) {
 diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
 index 2d74bcf6..748922e4 100644
 --- a/forge-ai/src/main/java/forge/ai/AiController.java
@@ -261,6 +277,21 @@ index 265d1549..635e4fb4 100644
          if (sa.usesTargeting()) {
              sa.resetTargets();
              if (!sa.canTarget(opp)) {
+diff --git a/forge-game/src/main/java/forge/game/Game.java b/forge-game/src/main/java/forge/game/Game.java
+index 90e80e71..b0d4b37f 100644
+--- a/forge-game/src/main/java/forge/game/Game.java
++++ b/forge-game/src/main/java/forge/game/Game.java
+@@ -679,6 +679,10 @@ public class Game {
+         if (zones == null) {
+             return CardCollection.EMPTY;
+         }
++        if (zones == ZoneType.STATIC_ABILITIES_SOURCE_ZONES) {   // test hook (speed): frozen while the AI plans combat
++            final CardCollectionView frozen = forge.game.combat.CombatUtil.frozenStaticZoneCards(this);
++            if (frozen != null) return frozen;
++        }
+ 
+         final PlayerCollection players = getPlayers();
+         final int playerCount = players.size();
 diff --git a/forge-game/src/main/java/forge/game/ability/effects/CharmEffect.java b/forge-game/src/main/java/forge/game/ability/effects/CharmEffect.java
 index a014ee56..46cd2f14 100644
 --- a/forge-game/src/main/java/forge/game/ability/effects/CharmEffect.java
@@ -276,6 +307,153 @@ index a014ee56..46cd2f14 100644
          final Map<AbilityKey, Object> runParams = AbilityKey.mapFromPlayer(chooser);
          if (random) {
              runParams.put(AbilityKey.Random, true);
+diff --git a/forge-game/src/main/java/forge/game/combat/CombatUtil.java b/forge-game/src/main/java/forge/game/combat/CombatUtil.java
+index 0ed53a7d..f22cc235 100644
+--- a/forge-game/src/main/java/forge/game/combat/CombatUtil.java
++++ b/forge-game/src/main/java/forge/game/combat/CombatUtil.java
+@@ -20,6 +20,7 @@ package forge.game.combat;
+ import com.google.common.collect.Lists;
+ import forge.card.mana.ManaCost;
+ import forge.game.Game;
++import forge.game.card.CardCollectionView;
+ import forge.game.GameEntity;
+ import forge.game.ability.AbilityKey;
+ import forge.game.card.*;
+@@ -763,6 +764,10 @@ public class CombatUtil {
+         if (blocker == null || combat == null) {
+             return false;
+         }
++        // exact shortcut: requirements only come from attackers' "must be blocked" keywords or the blocker's must-block cards
++        if (blocker.getMustBlockCards().isEmpty() && !anyLure(combat)) {
++            return false;
++        }
+ 
+         final CardCollectionView attackers = combat.getAttackers();
+ 
+@@ -921,7 +926,123 @@ public class CombatUtil {
+      *            a {@link forge.game.combat.Combat} object.
+      * @return a boolean.
+      */
++    // ---- test hook (speed): token grouping for AI combat planning ----
++    // While the AI plans blocks the board doesn't change, and identical tokens (same name, controller, power,
++    // toughness, keywords, counters, damage, tapped/sick status, no attachments or changed characteristics,
++    // not referenced by any effect) get identical answers from canBlock as long as neither card is involved in
++    // combat yet and no block has been assigned since. Remember those answers per group pair.
++    private static final class BlockMemo {
++        int depth;
++        java.util.Set<Card> referenced;
++        final Map<Card, String> keys = new java.util.IdentityHashMap<>();
++        final Map<String, Boolean> answers = new HashMap<>();
++        Combat combat;
++        long blockersSig;
++        Game game;
++        CardCollectionView staticCards;
++        boolean buildingStatic;
++        final Map<Combat, long[]> lure = new java.util.IdentityHashMap<>();   // combat -> {attackersSig, anyLure}
++    }
++
++    /** While the AI plans (board frozen), the cards in the static-ability zones are gathered once instead of per check. */
++    public static CardCollectionView frozenStaticZoneCards(final Game g) {
++        final BlockMemo m = blockMemo.get();
++        if (m == null || m.game != g || m.buildingStatic) return null;
++        if (m.staticCards == null) {
++            m.buildingStatic = true;
++            try { m.staticCards = g.getCardsIn(ZoneType.STATIC_ABILITIES_SOURCE_ZONES); } finally { m.buildingStatic = false; }
++        }
++        return m.staticCards;
++    }
++
++    private static boolean hasLureKeyword(final Card a) {
++        if (a.hasStartOfKeyword("All creatures able to block CARDNAME do so.")
++                || a.hasStartOfKeyword("CARDNAME must be blocked if able.")
++                || a.hasStartOfKeyword("CARDNAME must be blocked by exactly one creature if able.")
++                || a.hasStartOfKeyword("CARDNAME must be blocked by two or more creatures if able.")) return true;
++        for (final KeywordInterface inst : a.getKeywords()) if (inst.getOriginal().startsWith("MustBeBlockedBy")) return true;
++        return false;
++    }
++    /** Does any attacker in this combat carry a "must be blocked" requirement? (cached per combat while planning) */
++    private static boolean anyLure(final Combat combat) {
++        final CardCollectionView attackers = combat.getAttackers();
++        final BlockMemo m = blockMemo.get();
++        long sig = attackers.size();
++        if (m != null) {
++            for (final Card a : attackers) { long x = a.getId() * 0x9E3779B97F4A7C15L; sig += x ^ (x >>> 31); }
++            final long[] c = m.lure.get(combat);
++            if (c != null && c[0] == sig) return c[1] != 0;
++        }
++        boolean any = false;
++        for (final Card a : attackers) if (hasLureKeyword(a)) { any = true; break; }
++        if (m != null) m.lure.put(combat, new long[] { sig, any ? 1 : 0 });
++        return any;
++    }
++    private static final ThreadLocal<BlockMemo> blockMemo = new ThreadLocal<>();
++    private static final String NO_KEY = "";
++
++    public static void beginBlockMemo(final Game game) {
++        BlockMemo m = blockMemo.get();
++        if (m == null) { m = new BlockMemo(); blockMemo.set(m); }
++        if (m.depth++ == 0) {
++            m.keys.clear(); m.answers.clear(); m.combat = null; m.lure.clear(); m.staticCards = null; m.game = game;
++            final java.util.Set<Card> ref = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
++            for (final Card c : game.getCardsInGame()) {
++                for (final Object o : c.getRemembered()) if (o instanceof Card) ref.add((Card) o);
++                for (final Card o : c.getImprintedCards()) ref.add(o);
++                for (final Card o : c.getEncodedCards()) ref.add(o);
++                for (final Card o : c.getAttachedCards()) ref.add(o);
++                if (c.isAttachedToEntity() && c.getEntityAttachedTo() instanceof Card) ref.add((Card) c.getEntityAttachedTo());
++            }
++            m.referenced = ref;
++        }
++    }
++    public static void endBlockMemo() {
++        final BlockMemo m = blockMemo.get();
++        if (m != null && --m.depth <= 0) blockMemo.remove();
++    }
++    private static String groupKey(final BlockMemo m, final Card c) {
++        String k = m.keys.get(c);
++        if (k != null) return k;
++        k = NO_KEY;
++        if (c.isToken() && !c.isFaceDown() && !c.isPhasedOut() && !m.referenced.contains(c)
++                && !c.isAttachedToEntity() && c.getAttachedCards().isEmpty()) {
++            final StringBuilder sb = new StringBuilder(c.getName()).append('|').append(c.getController().getId())
++                    .append('|').append(c.getOwner().getId()).append('|').append(c.getNetPower()).append('/').append(c.getNetToughness())
++                    .append('|').append(c.isTapped()).append(c.isSick()).append(c.getDamage())
++                    .append('|').append(c.getCounters()).append('|').append(c.getType()).append('|').append(c.getColor());
++            for (final KeywordInterface inst : c.getKeywords()) sb.append('|').append(inst.getOriginal());
++            // changes granted by effects: identical only if granted by the same effects (timestamp + static id)
++            sb.append("|K"); for (final com.google.common.collect.Table.Cell<Long, Long, ?> x : c.getChangedCardKeywords().cellSet()) sb.append(x.getRowKey()).append(':').append(x.getColumnKey()).append(',');
++            sb.append("|T"); for (final com.google.common.collect.Table.Cell<Long, Long, ?> x : c.getChangedCardTraits().cellSet()) sb.append(x.getRowKey()).append(':').append(x.getColumnKey()).append(',');
++            sb.append("|S"); for (final forge.game.staticability.StaticAbility st : c.getStaticAbilities()) { if (st.isIntrinsic()) sb.append(st.getOriginalMapParams()); else sb.append(st.getId()); sb.append(','); }
++            k = sb.toString();
++        }
++        m.keys.put(c, k);
++        return k;
++    }
++
+     public static boolean canBlock(final Card attacker, final Card blocker, final Combat combat) {
++        final BlockMemo m = blockMemo.get();
++        if (m == null || combat == null || attacker == null || blocker == null
++                || !combat.getBlockers(attacker).isEmpty() || combat.isBlocking(blocker)) {
++            return canBlockUncached(attacker, blocker, combat);
++        }
++        final String ka = groupKey(m, attacker), kb = groupKey(m, blocker);
++        if (ka == NO_KEY || kb == NO_KEY) {
++            return canBlockUncached(attacker, blocker, combat);
++        }
++        long sig = 0;
++        for (final Card b : combat.getAllBlockers()) { long x = b.getId() * 0x9E3779B97F4A7C15L; sig += x ^ (x >>> 29); }
++        if (m.combat != combat || m.blockersSig != sig) { m.answers.clear(); m.combat = combat; m.blockersSig = sig; }
++        final GameEntity def = combat.getDefenderByAttacker(attacker);
++        final String key = ka + '\u0001' + kb + '\u0001' + (def == null ? "-" : def.getId() + def.getClass().getSimpleName());
++        Boolean r = m.answers.get(key);
++        if (r == null) { r = canBlockUncached(attacker, blocker, combat); m.answers.put(key, r); }
++        return r;
++    }
++
++    private static boolean canBlockUncached(final Card attacker, final Card blocker, final Combat combat) {
+         if (attacker == null || blocker == null) {
+             return false;
+         }
 diff --git a/forge-game/src/main/java/forge/game/player/Player.java b/forge-game/src/main/java/forge/game/player/Player.java
 index bc17c7f4..4729654d 100644
 --- a/forge-game/src/main/java/forge/game/player/Player.java
@@ -307,6 +485,61 @@ index bc17c7f4..4729654d 100644
          }
  
          if (isCombat) {
+diff --git a/forge-game/src/main/java/forge/game/staticability/StaticAbilityCantAttackBlock.java b/forge-game/src/main/java/forge/game/staticability/StaticAbilityCantAttackBlock.java
+index f0554b1e..eb03e2a3 100644
+--- a/forge-game/src/main/java/forge/game/staticability/StaticAbilityCantAttackBlock.java
++++ b/forge-game/src/main/java/forge/game/staticability/StaticAbilityCantAttackBlock.java
+@@ -206,19 +206,38 @@ public class StaticAbilityCantAttackBlock {
+ 
+     public static boolean cantBlockBy(final Card attacker, final Card blocker) {
+         // add attacker and blocker first in case of LKI
+-        CardCollection list = new CardCollection(attacker);
+-        if (blocker != null) {
+-            list.add(blocker);
++        // test hook (speed): same cards in the same order as before (attacker, blocker, then every other card in the
++        // static zones, each id once) without building a new collection for every attacker/blocker pair
++        if (cantBlockByCard(attacker, attacker, blocker)) {
++            return true;
+         }
+-        list.addAll(attacker.getGame().getCardsIn(ZoneType.STATIC_ABILITIES_SOURCE_ZONES));
+-        for (final Card ca : list) {
+-            for (final StaticAbility stAb : ca.getStaticAbilities()) {
+-                if (!stAb.checkConditions(StaticAbilityMode.CantBlockBy)) {
+-                    continue;
+-                }
+-                if (applyCantBlockByAbility(stAb, attacker, blocker)) {
+-                    return true;
+-                }
++        if (blocker != null && blocker.getId() != attacker.getId() && cantBlockByCard(blocker, attacker, blocker)) {
++            return true;
++        }
++        for (final Card ca : attacker.getGame().getCardsIn(ZoneType.STATIC_ABILITIES_SOURCE_ZONES)) {
++            if (ca.getId() == attacker.getId() || (blocker != null && ca.getId() == blocker.getId())) {
++                continue;
++            }
++            if (cantBlockByCard(ca, attacker, blocker)) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    private static boolean cantBlockByCard(final Card ca, final Card attacker, final Card blocker) {
++        for (final StaticAbility stAb : ca.getStaticAbilities()) {
++            // a rule about its own card ("Creature.Self"/"Card.Self", e.g. flying) can only apply when that card attacks
++            final String va = stAb.getParam("ValidAttacker");
++            if (("Creature.Self".equals(va) || "Card.Self".equals(va)) && stAb.getHostCard() != null
++                    && stAb.getHostCard().getId() != attacker.getId()) {
++                continue;
++            }
++            if (!stAb.checkConditions(StaticAbilityMode.CantBlockBy)) {
++                continue;
++            }
++            if (applyCantBlockByAbility(stAb, attacker, blocker)) {
++                return true;
+             }
+         }
+         return false;
 diff --git a/forge-game/src/main/java/forge/game/trigger/Trigger.java b/forge-game/src/main/java/forge/game/trigger/Trigger.java
 index 7f5a1939..eb5893da 100644
 --- a/forge-game/src/main/java/forge/game/trigger/Trigger.java

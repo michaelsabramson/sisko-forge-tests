@@ -11,3 +11,25 @@ Stop a test once the answer is clear instead of always running the planned lengt
 - Signal: the check commits a stop marker; runners poll it, save their games and exit; final aggregation runs as usual.
 - Label results "stopped early: clear at 99%" and note that early-stopped gaps run slightly high (winner's curse).
 - Expected gain: clear-cut swaps finish in ~30-40 min instead of ~70; close calls run full length.
+
+## Engine speed: what was learned (2026-11-21/22)
+Shipped 2026-11-22 (exact, same decisions, cache carried over):
+- Ending a game once the tracked deck is eliminated (~8%).
+- Combat-planning speedups in forge.patch: lure-check shortcut, token grouping for block checks, static-zone card list
+  frozen while the AI plans, "this creature" can't-block-by rules (flying etc.) checked only for their own attacker.
+  Verified on 33 same-seed replays with the AI's 5-second thinking budget switched off (games are only reproducible
+  that way). Clean benchmark: ~10% faster on ordinary games, ~20% on slow games; the 32-dragon game that always timed
+  out now finishes.
+
+Tried and dropped:
+- Forking games at the swapped card: paired games are uncorrelated (63% same outcome = chance), no variance saved.
+- Caching mana-payment checks during combat (~3%) and caching per-card replacement flags (~7%, unproven): not worth it.
+- Shortening the AI thinking deadline: no decision ever hit it in normal games.
+
+Still open:
+- Stall cutoff (held): end a game when one turn runs past ~20 s; toss stalled/timed-out games out of results and show
+  the stall rate per test. Also fixes timeouts handing a "win" to the first surviving player (Forge marks all survivors
+  as winners on a forced end).
+- Rules upkeep on monster boards (~13% there): StaticAbilityContinuous.getAffectedCards re-matching every lord effect
+  against every card after each action. Core rules code: higher risk.
+- Note: with the 5-second budget, Forge's AI plays slightly differently depending on machine speed on big boards.
