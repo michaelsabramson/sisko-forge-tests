@@ -54,6 +54,7 @@ jobs:
           n=$(jq -r .name tests/request.json)
           [ -f results/$n.md ] || { echo "no games yet"; exit 0; }
           mv results/$n.md results/${n}_peek.md
+          git checkout HEAD -- results/$n.md 2>/dev/null || true   # a run adding games to an existing result keeps it in place
           sed -i "1s/\$/ (early read, run still going)/" results/${n}_peek.md
           git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
           git add results/ && git commit -m "Early read: $n" || exit 0
