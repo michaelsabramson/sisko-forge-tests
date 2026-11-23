@@ -491,11 +491,12 @@
  "371d3b48ef245723af07": {
   "card": "",
   "deck": "NorinB3",
-  "games": 1144,
+  "games": 5220,
   "runs": [
-   "pilot_test_norinb3_default_vs_hard_ai:45125863239"
+   "pilot_test_norinb3_default_vs_hard_ai:45125863239",
+   "pilot_test_norinb3_default_vs_hard_ai:45206535295"
   ],
-  "wins": 227
+  "wins": 1027
  },
  "461daaa28ec674a7f928": {
   "card": "Impossible Choice",
