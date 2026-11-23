@@ -1005,14 +1005,14 @@ async function viewTest(v) {
     : T.mode === 'package' ? `
       <label class="fld"><span>Base deck</span><select id="tbase">${mine.map(n => `<option ${n === T.base ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       ${T.packages.map((pk, i) => `<div class="slot stack">
-        <div class="row"><b>Package ${i + 1}</b><span class="small ${pk.out.length === pk.in.length ? 'muted' : ''}" style="${pk.out.length === pk.in.length ? '' : 'color:var(--bad)'}">${pk.out.length} out · ${pk.in.length} in</span><span class="grow"></span>${T.packages.length > 1 ? `<button class="sm ghost danger" data-delpk="${i}">Remove</button>` : ''}</div>
+        <div class="row"><span class="small ${pk.out.length === pk.in.length ? 'muted' : ''}" style="${pk.out.length === pk.in.length ? '' : 'color:var(--bad)'}">${pk.out.length} out · ${pk.in.length} in${pk.out.length === pk.in.length ? '' : ' (should match)'}</span><span class="grow"></span>${T.packages.length > 1 ? `<button class="sm ghost danger" data-delpk="${i}">Remove</button>` : ''}</div>
         <div class="grid2">
           <div class="fld"><span>Take out</span><div class="ac"><input data-pkout="${i}" placeholder="Cards in ${esc(T.base)}…"></div>
             <div class="row" style="margin-top:8px">${pk.out.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)}<button data-delpo="${i}:${j}" aria-label="Remove">×</button></span>`).join('')}</div></div>
           <div class="fld"><span>Put in</span><div class="ac"><input data-pkin="${i}" placeholder="Search Forge's card list…"></div>
             <div class="row" style="margin-top:8px">${pk.in.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)} ${flagPill(c)}<button data-delpi="${i}:${j}" aria-label="Remove">×</button></span>`).join('')}</div></div>
         </div></div>`).join('')}
-      <div><button class="sm" id="addPk">+ Another package</button> <span class="muted small">Each package is its own version. Each game forces one package card into the opening hand, rotating through them; the baseline forces the matching card being cut. Order the two lists so cards pair up (first out ↔ first in).</span></div>`
+      <p class="muted small" style="margin:0">Cards pair up in order: first out ↔ first in.</p>`
     : `<div class="grid2">${T.decks.map((dn, i) => `<label class="fld"><span>${i ? (T.decks.length > 2 ? 'Deck ' + (i + 1) : 'Versus') : 'Deck 1'}</span><select data-dk="${i}"><option value="">${i > 1 ? '(none)' : 'Choose…'}</option>
         <optgroup label="Decks">${primary().map(n => `<option value="${esc(n)}" ${n === dn ? 'selected' : ''}>${esc(deckTitle(n))}</option>`).join('')}</optgroup>
         <optgroup label="Other lists">${mine.filter(n => !primary().includes(n)).map(n => `<option ${n === dn ? 'selected' : ''}>${esc(n)}</option>`).join('')}</optgroup></select></label>`).join('')}</div>
@@ -1051,7 +1051,7 @@ async function viewTest(v) {
     $$('[data-delpo]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delpo.split(':').map(Number); T.packages[i].out.splice(j, 1); viewTest(v); });
     $$('[data-delpi]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delpi.split(':').map(Number); T.packages[i].in.splice(j, 1); viewTest(v); });
     $$('[data-delpk]').forEach(b => b.onclick = () => { T.packages.splice(+b.dataset.delpk, 1); viewTest(v); });
-    $('#addPk').onclick = () => { T.packages.push({ out: [], in: [] }); viewTest(v); };
+    $('#addPk') && ($('#addPk').onclick = () => { T.packages.push({ out: [], in: [] }); viewTest(v); });
   } else {
     $$('[data-dk]').forEach(s => s.onchange = () => { T.decks[+s.dataset.dk] = s.value; viewTest(v); });
     $('#addDk') && ($('#addDk').onclick = () => { T.decks.push(''); viewTest(v); });
