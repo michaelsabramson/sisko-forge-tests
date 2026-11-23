@@ -17,7 +17,8 @@ def _h(b):
 
 def deck_sig(name):
     sec, cards = None, []
-    for line in open(f"decks/{name}.dck", encoding="utf-8"):
+    path = f"decks/{name}.dck" if os.path.exists(f"decks/{name}.dck") else f"decks/ref/{name}.dck"   # reference decks (power ladder)
+    for line in open(path, encoding="utf-8"):
         m = re.match(r"\[(\w+)\]", line)
         if m:
             sec = m.group(1); continue

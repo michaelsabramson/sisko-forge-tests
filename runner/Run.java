@@ -58,7 +58,7 @@ public class Run {
       Match mc=new Match(rules,pp,"T"); Game game=mc.createGame(); game.setNoGUIUser();
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
-      { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());
+      if(!Boolean.getBoolean("full")) { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());   /* -Dfull=true: play every game to the end (power ladder needs every winner) */
         game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void endIfOut(forge.game.event.GameEventTurnBegan e){
           if(game.isGameOver()) return; boolean any=false, alive=false;
           for(Player x:game.getRegisteredPlayers()) if(mine.contains(x.getName())){ any=true; if(!x.hasLost()) alive=true; }

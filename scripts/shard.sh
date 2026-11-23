@@ -9,7 +9,10 @@ RUN=($(jq -r '.arms|to_entries[]|select(.value.cached!=true)|.key' $REQ)); N=${#
 SB=$(jq -r '.seedbase // 7000' $REQ)
 [ $N -eq 0 ] && exit 0
 RES=forge/forge-gui/res; CP="runner-classes:lib/*"
-OPP=$(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"]) | map("decks/"+.+".dck") | join(" ")' $REQ)
+# a deck name resolves to decks/<name>.dck, or decks/ref/<name>.dck for reference decks (power ladder)
+dk() { for n in "$@"; do [ -f "decks/$n.dck" ] && echo "decks/$n.dck" || echo "decks/ref/$n.dck"; done | tr '\n' ' '; }
+OPP=$(dk $(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"])[]' $REQ))
+FULL=""; [ "$(jq -r '.full // false' $REQ)" = "true" ] && FULL="-Dfull=true"
 mkdir -p out
 if [ "$(jq -r '.earlystop // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
   # early stop: an early read marks the run settled with the ref refs/stop/<run>; poll it over plain git (public repo,
@@ -23,7 +26,8 @@ for p in 0 1 2 3; do
   k=$((S*4+p))
   if [ "$(jq '.procs|length' $REQ)" -gt "$k" ] 2>/dev/null; then i=$(jq -r ".procs[$k]" $REQ); else i=${RUN[$((k % N))]}; fi
   D=$(jq -r ".arms[$i].deck" $REQ); C=$(jq -r ".arms[$i].card" $REQ)
-  PROF=$(jq -r ".arms[$i].profile // .profile // \"Default\"" $REQ)   # tested deck's AI settings (forge-gui/res/ai/<profile>.ai)
+  PROF=$(jq -r ".arms[$i].profile // .profile // \"Default\"" $REQ)
+  AO=$OPP; [ -n "$(jq -r ".arms[$i].opponents // empty | length" $REQ)" ] && AO=$(dk $(jq -r ".arms[$i].opponents[]" $REQ))   # per-deck opponents (ladder)   # tested deck's AI settings (forge-gui/res/ai/<profile>.ai)
   AUD=""; [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
   # precision-sized runs: this runner's processes on the same arm share one pool of games (quota x processes),
   # so the runner finishes together instead of waiting on whichever process drew the slowest games
@@ -37,6 +41,6 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>/dev/null &
 done
 wait

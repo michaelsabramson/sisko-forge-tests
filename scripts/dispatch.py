@@ -11,6 +11,7 @@ import cache
 
 def read_deck(name):
     path = f"decks/{name}.dck"
+    if not os.path.exists(path) and os.path.exists(f"decks/ref/{name}.dck"): path = f"decks/ref/{name}.dck"   # reference decks
     if not os.path.exists(path):
         sys.exit(f"missing deck {path}")
     sec, out = None, {"Commander": [], "Main": []}
@@ -161,7 +162,12 @@ def main():
     src = q[0]
     r = json.load(open(src, encoding="utf-8"))
     arms, compare = [], []
-    if r.get("mode") == "pilot":
+    if r.get("mode") == "ladder":
+        # backend only: power ladder calibration. Every listed deck plays full-length games against random pods of the
+        # others (no early end), so every game's winner is known for the rating fit (scripts/ladder.py).
+        for d in r["decks"]:
+            arms.append({"deck": d, "card": "", "opponents": [o for o in r["decks"] if o != d]})
+    elif r.get("mode") == "pilot":
         # backend only (no app button): the same list piloted by different Forge AI profiles, opponents on Default,
         # nothing forced. Measures how much a profile's extra thinking is worth with this deck.
         for p in r.get("profiles", ["Default", "Hard"]):
@@ -225,6 +231,8 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
+    if r.get("mode") == "ladder":
+        req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
     if r.get("hidden"):
         req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
     if r.get("profile") and r["profile"] != "Default":
