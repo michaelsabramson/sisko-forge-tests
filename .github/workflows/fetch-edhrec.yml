@@ -1,0 +1,54 @@
+name: fetch-edhrec
+# Pulls EDHREC average decks (by bracket) into decks/ref/ as candidate reference decks for the power ladder.
+on:
+  workflow_dispatch:
+    inputs:
+      commanders: { description: 'space-separated EDHREC slugs', required: true }
+      brackets: { description: 'space-separated: exhibition core upgraded optimized', required: true, default: 'core optimized' }
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch
+        run: |
+          mkdir -p decks/ref
+          python3 - <<'PY'
+          import json, re, time, urllib.request
+          B = {"exhibition": 1, "core": 2, "upgraded": 3, "optimized": 4}
+          forge = set(l.split('\t')[0].strip() for l in open('docs/forge-cards.txt', encoding='utf-8'))
+          rep = []
+          for slug in "${{ inputs.commanders }}".split():
+              for br in "${{ inputs.brackets }}".split():
+                  url = f"https://json.edhrec.com/pages/average-decks/{slug}/{br}.json"
+                  try:
+                      j = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "sisko-forge-tests/1.0"}), timeout=30))
+                  except Exception as e:
+                      rep.append(f"{slug} {br}: fetch failed ({e})"); continue
+                  lines = None
+                  def walk(o):
+                      global lines
+                      if lines: return
+                      if isinstance(o, list) and len(o) > 50 and all(isinstance(x, str) and re.match(r'^\d+ ', x) for x in o): lines = o; return
+                      if isinstance(o, dict): [walk(v) for v in o.values()]
+                      elif isinstance(o, list): [walk(v) for v in o]
+                  walk(j)
+                  if not lines: rep.append(f"{slug} {br}: no deck list found; keys {list(j)[:12]}"); continue
+                  cards = [(int(x.split(' ', 1)[0]), x.split(' ', 1)[1].strip()) for x in lines]
+                  cmd = j.get("header", "") or slug
+                  cmdr = cards[0][1]   # EDHREC lists the commander first
+                  name = re.sub(r'[^A-Za-z0-9]', '', cmdr.split(',')[0]) + f"_B{B[br]}"
+                  miss = [c for _, c in cards if c not in forge and c.split(' // ')[0] not in forge]
+                  with open(f"decks/ref/{name}.dck", "w") as f:
+                      f.write(f"[metadata]\nName={name}\n[Commander]\n1 {cmdr}\n[Main]\n" + "\n".join(f"{n} {c}" for n, c in cards[1:]) + "\n")
+                  rep.append(f"{name}: {sum(n for n, _ in cards)} cards, {j.get('num_decks_avg') or j.get('deck_count') or '?'} decks averaged; not in Forge: {miss[:6]}")
+                  time.sleep(1)
+          open("decks/ref/FETCH_REPORT.txt", "w").write("\n".join(rep) + "\n"); print("\n".join(rep))
+          PY
+      - name: Save
+        run: |
+          git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          git add decks/ref && git commit -qm "Reference deck candidates from EDHREC (${{ inputs.brackets }})" || exit 0
+          for i in 1 2 3 4; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 7; done
