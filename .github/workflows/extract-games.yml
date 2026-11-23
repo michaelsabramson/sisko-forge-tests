@@ -1,0 +1,41 @@
+name: extract-games
+# One line per game from a run's stored logs (kept 7 days) into analysis/games_<run>.tsv.gz, for offline analysis:
+# arm, pod, winner, turn, round, ms, end-of-game life totals, and the opening hand + 3 draws when logged.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: 'swap-test run id', required: true }
+permissions:
+  contents: write
+  actions: read
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: out-*, path: out, run-id: '${{ inputs.run_id }}', github-token: '${{ github.token }}' }
+      - name: Extract
+        run: |
+          mkdir -p analysis
+          python3 - <<'PY'
+          import glob, gzip, os, re
+          n = 0
+          with gzip.open("analysis/games_${{ inputs.run_id }}.tsv.gz", 'wt') as out:
+              out.write("arm\tpod\twinner\tturn\tround\tms\tlife\ttop\n")
+              for f in glob.glob('out/**/arm*_*.log', recursive=True):
+                  arm = re.match(r'arm(\d+)_', os.path.basename(f)).group(1); top = pod = None
+                  for l in open(f, errors='ignore'):
+                      if l.startswith('TOP '): top = l[4:].rstrip('\n'); continue
+                      if l.startswith('POD '): pod = l[4:].strip(); continue
+                      m = re.match(r'G\d+ winner=(\S+) turn=(\d+) \(round ([\d.]+)\) (\d+)ms\s+(.*)$', l.rstrip('\n'))
+                      if m and pod:
+                          out.write("\t".join([arm, pod, m.group(1), m.group(2), m.group(3), m.group(4), m.group(5).strip(), top or ""]) + "\n")
+                          n += 1; top = pod = None
+          print(n, "games")
+          PY
+      - name: Save
+        run: |
+          git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          git add analysis/ && git commit -qm "Games extract: run ${{ inputs.run_id }}" || exit 0
+          for i in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep $((RANDOM % 15 + 5)); done
