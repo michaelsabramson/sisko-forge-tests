@@ -1,0 +1,7 @@
+run 45070976368: 10524 games
+  knocked out (ended early)      4466 ( 42.4%)  median turn 31  median 28s  slowest 120s
+  opponent win                   3941 ( 37.4%)  median turn 35  median 42s  slowest 121s
+  our win                        2113 ( 20.1%)  median turn 35  median 45s  slowest 124s
+  draw/stall                        4 (  0.0%)  median turn 39  median 93s  slowest 100s
+  opponent wins by deck: {'UrDragon': 1298, 'Edgar': 1142, 'Prossh': 774, 'Meren': 532, 'Atraxa': 195}
+  draws at the 120s limit: 0
