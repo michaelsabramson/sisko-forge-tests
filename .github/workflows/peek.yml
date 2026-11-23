@@ -37,7 +37,7 @@ jobs:
           path: out
           repository: ${{ steps.helper.outputs.repo }}
           run-id: ${{ steps.helper.outputs.id }}
-          github-token: ${{ secrets.HELPER_TOKEN }}
+          github-token: ${{ env.HELPER_CLEAN }}
       - run: python3 scripts/aggregate.py
         env:
           PEEK: '1'

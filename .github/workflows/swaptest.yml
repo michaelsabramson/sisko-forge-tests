@@ -25,6 +25,7 @@ jobs:
           # the helper organization's runners play the remaining shards (helper.json); without them the run still
           # finishes, just with fewer games
           H=$(jq -r '.helper // empty' tests/request.json); [ -n "$H" ] || exit 0
+          export GH_TOKEN=$(printf '%s' "$GH_TOKEN" | tr -d '[:space:]')   # a pasted secret may carry a stray newline
           gh api -X POST "repos/$H/actions/workflows/helper.yml/dispatches" -f ref=main \
             -f "inputs[repo]=${{ github.repository }}" -f "inputs[run]=${{ github.run_id }}" -f "inputs[sha]=${{ github.sha }}" \
             -f "inputs[first]=$(jq -r .main_shards tests/request.json)" || echo "::warning::helper runners could not be started"
@@ -281,7 +282,7 @@ jobs:
           path: out
           repository: ${{ steps.helper.outputs.repo }}
           run-id: ${{ steps.helper.outputs.id }}
-          github-token: ${{ secrets.HELPER_TOKEN }}
+          github-token: ${{ env.HELPER_CLEAN }}
       - name: Tally results
         run: |
           # stopped early? (an early read found the answer settled and left the ref refs/stop/<run>)

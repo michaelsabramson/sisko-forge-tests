@@ -2,6 +2,8 @@
 # Find the helper organization's run for main run $1 and print repo=/id= for $GITHUB_OUTPUT.
 # With "wait", first wait for it to finish (up to 40 minutes; 5 if it never started).
 H=$(jq -r '.helper // empty' tests/request.json); [ -n "$H" ] && [ -n "${GH_TOKEN:-}" ] || exit 0
+export GH_TOKEN=$(printf '%s' "$GH_TOKEN" | tr -d '[:space:]')   # a pasted secret may carry a stray newline
+[ -n "${GITHUB_ENV:-}" ] && { echo "::add-mask::$GH_TOKEN" >&2; echo "HELPER_CLEAN=$GH_TOKEN" >> "$GITHUB_ENV"; }
 look() { gh api "repos/$H/actions/runs?event=workflow_dispatch&per_page=30" \
            -q ".workflow_runs[] | select(.display_title == \"helper for $1\") | \"\(.id) \(.status)\"" 2>/dev/null | head -1; }
 while :; do
