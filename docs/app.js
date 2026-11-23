@@ -209,7 +209,7 @@ function parseResult(path, md) {
     for (const [b, i] of d.compare) {
       const A = arms[b], B = arms[i]; const p0 = A.wins / Math.max(1, A.games), p1 = B.wins / Math.max(1, B.games);
       const se = Math.sqrt(p0 * (1 - p0) / Math.max(1, A.games) + p1 * (1 - p1) / Math.max(1, B.games));
-      gaps.push({ label: lab(B), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games, swap: B.swap, other: B.deck, pool, aswap: A.swap, agames: A.games });
+      gaps.push({ label: lab(B) + (d.profile && d.profile !== 'Default' ? ` (${d.profile} AI)` : ''), vs: lab(A), diff: 100 * (p1 - p0), ci: 196 * se, base: A.deck, mode: d.mode || 'swap', games: B.games, swap: B.swap, other: B.deck, pool, aswap: A.swap, agames: A.games });
     }
   } else {
     for (const m of md.matchAll(/^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*([\d.]+)%\s*\|$/gm)) arms.push({ deck: m[1], card: m[2], games: +m[3], wins: +m[4] });

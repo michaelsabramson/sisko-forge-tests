@@ -7,6 +7,7 @@ REQ=tests/request.json
 BAND=$(jq -r '.band // 0' $REQ)
 RUN=($(jq -r '.arms|to_entries[]|select(.value.cached!=true)|.key' $REQ)); N=${#RUN[@]}
 SB=$(jq -r '.seedbase // 7000' $REQ)
+PROF=$(jq -r '.profile // "Default"' $REQ)   # AI settings for the tested Sisko* decks (forge-gui/res/ai/<profile>.ai)
 [ $N -eq 0 ] && exit 0
 RES=forge/forge-gui/res; CP="runner-classes:lib/*"
 OPP=$(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"]) | map("decks/"+.+".dck") | join(" ")' $REQ)
@@ -36,6 +37,6 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog decks/$D.dck $OPP > out/arm${i}_${k}.log 2>/dev/null &
 done
 wait

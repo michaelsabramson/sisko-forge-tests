@@ -56,7 +56,7 @@ P_DEFAULT = 0.19
 STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 
 
-def measured_gpm(deck, opps):
+def measured_gpm(deck, opps, profile=None):
     """Games per process-minute from recent runs (cache/speed.json, written by aggregate.py):
     this deck against these opponents if measured, else the average of all recent runs, else the fallback."""
     try:
@@ -66,6 +66,10 @@ def measured_gpm(deck, opps):
     def rate(rows):
         g = sum(r[0] for r in rows); ms = sum(r[1] for r in rows)
         return g / (ms / 60000) if g >= 50 and ms > 0 else None
+    if profile and profile != "Default":
+        # a stronger AI profile thinks longer: use its own measurements, else assume ~2.5x slower until measured
+        return (rate(sp.get(deck + "|" + ",".join(opps) + "|" + profile, [])) or rate(sp.get("*|" + profile, []))
+                or (rate(sp.get("*", [])) or GPM) / 2.5)
     return rate(sp.get(deck + "|" + ",".join(opps), [])) or rate(sp.get("*", [])) or GPM
 
 
@@ -215,6 +219,8 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
+    if r.get("profile") and r["profile"] != "Default":
+        req["profile"] = r["profile"]   # AI settings for the tested (Sisko*) decks; opponents stay on Default
     # helper.json: a second account's runners (its own job limit) play shards main_shards..shards-1 of every run
     if os.path.exists("helper.json") and not r.get("no_helper"):
         h = json.load(open("helper.json"))
@@ -225,7 +231,7 @@ def main():
     opps = req.get("opponents") or cache.DEFAULT_OPP
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
-        a["key"] = cache.arm_key(a, opps, req["band"], eng)
+        a["key"] = cache.arm_key(a, opps, req["band"], eng, req.get("profile"))
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4
@@ -239,7 +245,7 @@ def main():
         if todo:
             req["procs"] = allocate(need, todo, procs_total)
             per = [req["procs"].count(i) for i in range(len(arms))]
-            gpm = [measured_gpm(a["deck"], opps) for a in arms]
+            gpm = [measured_gpm(a["deck"], opps, req.get("profile")) for a in arms]
             req["gpm"] = [round(g, 3) for g in gpm]
             # each process stops once it has played its share of its arm's games, so a run ends when the games are done;
             # the minutes are only a safety cap (generous, in case this run is slower than the measured speed)
@@ -254,7 +260,7 @@ def main():
             req["earlystop"] = req["mode"] in ("swap", "package") and not r.get("full")
             if req["earlystop"]:
                 # about five looks per run: every 5 minutes for short runs, every 10 for the longest
-                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps)) for i in todo)
+                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, req.get("profile"))) for i in todo)
                 req["checkpoint"] = int(min(10, max(5, math.ceil(est / 5))))
             frac = 0.3 if req["earlystop"] else 0.6
             first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]

@@ -37,10 +37,12 @@ def engine_sig():
     return _h(b"\0".join(parts) + RUNNER_VERSION.encode() + SETTINGS.encode())[:16]
 
 
-def arm_key(arm, opponents, band, engine=None):
-    blob = json.dumps({"deck": deck_sig(arm["deck"]), "card": arm.get("card", ""), "band": band,
-                       "opp": sorted(deck_sig(o) for o in opponents), "engine": engine or engine_sig()},
-                      sort_keys=True)
+def arm_key(arm, opponents, band, engine=None, profile=None):
+    k = {"deck": deck_sig(arm["deck"]), "card": arm.get("card", ""), "band": band,
+         "opp": sorted(deck_sig(o) for o in opponents), "engine": engine or engine_sig()}
+    if profile and profile != "Default":
+        k["profile"] = profile   # the tested deck's AI settings (forge-gui/res/ai/<profile>.ai); Default keeps old keys
+    blob = json.dumps(k, sort_keys=True)
     return _h(blob.encode())[:20]
 
 
