@@ -1,0 +1,15 @@
+{
+  "mode": "audit",
+  "base": "KW-Najeela-1123",
+  "name": "Ranking of KW-Najeela-1123",
+  "precision": 2,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-23T20:46:18.369Z"
+}
