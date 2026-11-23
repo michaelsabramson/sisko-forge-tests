@@ -290,7 +290,7 @@ function isRamp(name) {
   const s = S.sf[name]; if (!s || s.type.includes('Land')) return false;
   return (s.produces && /Creature|Artifact|Enchantment/.test(s.type)) || /search your library for[^.]{0,60}land[^.]{0,80}onto the battlefield/i.test(s.text || '');
 }
-function manaBalance(rows, games, curve) {
+function manaBalance(rows, games, curve, only) {
   const avg = g => { if (!g.length) return null; const w = g.map(c => 1 / Math.max(0.01, (c.ci / 1.96) ** 2));
     const W = w.reduce((s, x) => s + x, 0); return { n: g.length, diff: g.reduce((s, c, i) => s + c.diff * w[i], 0) / W, ci: 1.96 / Math.sqrt(W) }; };
   const allLand = rows.filter(c => (S.sf[c.card]?.type || '').includes('Land'));
@@ -316,6 +316,7 @@ function manaBalance(rows, games, curve) {
     : rc ? ['warn', 'Needs ramp', `The land count looks fine, but ramp (${f(R.diff)}) beats a typical spell (${f(O.diff)}): the deck wants to be faster. Try 1–2 more ramp pieces, cutting from the weakest spells.`]
     : gap + gci < 0 ? ['warn', 'Heavy on lands', `A typical spell (${f(O.diff)}) beats one more land (${f(L.diff)}). Try 1–2 fewer lands for spells.`]
     : ['good', 'Balanced', 'Lands, ramp and spells score about the same: the mana looks right.'];
+  if (only) return { cls, head, say: `One more land ${f(L.diff)}${R ? `, ramp ${f(R.diff)}` : ''}, a typical spell ${f(O.diff)}.` };
   const gaps = [{ label: landLabel, diff: L.diff, ci: L.ci, cls: '' }, ...(R ? [{ label: `Ramp (${R.n})`, diff: R.diff, ci: R.ci, cls: '' }] : []), { label: `Typical spell (${O.n})`, diff: O.diff, ci: O.ci, cls: '' }];
   let bars = '';
   if (curve) {
@@ -327,7 +328,7 @@ function manaBalance(rows, games, curve) {
         <div style="height:${Math.round(8 + 52 * (x.p - lo) / Math.max(1, hi - lo))}px;background:var(--muted);opacity:.35;border-radius:4px 4px 0 0"></div></div>`).join('')}</div>
       <div style="display:flex;gap:6px;border-top:1px solid var(--line)">${pts.map(x => `<div style="flex:1;text-align:center" class="small"><b>${x.k}</b><div class="muted" style="font-size:11px">${Math.round(100 * x.g / N)}%</div></div>`).join('')}</div>`;
   }
-  return `<div class="sect">Mana balance</div>
+  return `<div class="sect" id="mana">Mana balance</div>
     <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span><span class="small muted">vs a typical spell: land ${f(gap)}${R ? `, ramp ${f(R.diff - O.diff)}` : ''}</span></div>
     <p class="small" style="margin:4px 0 6px">${say}</p>
     ${forestSVG(gaps)}${note}${bars}
@@ -335,7 +336,7 @@ function manaBalance(rows, games, curve) {
 }
 // Speed curve: share of games the deck has won by the end of each round, against the pool's par (the average
 // opponent's share, cache/par.json). Stalls count as no win on both sides.
-function speedCurve(pace, pool) {
+function speedCurve(pace, pool, only) {
   const par = S.par?.[pool]; if (!pace || !par) return '';
   const R = pace.rounds.filter(r => r >= 6 && r <= 13), me = R.map(r => pace.won[pace.rounds.indexOf(r)]), pr = R.map(r => par.par[par.rounds.indexOf(r)]);
   if (pr.some(v => v == null)) return '';
@@ -347,6 +348,7 @@ function speedCurve(pace, pool) {
     : late <= -2 ? 'Level with the table early, but wins far fewer long games: it needs more late-game closing power.'
     : late >= 2 ? 'Wins more of the long games than the table: its strength is the late game.'
     : end >= -1 ? 'Wins at the same rate as the table at every stage.' : 'A little behind the table throughout.';
+  if (only) return { cls, head: head + tail, say: `${early > 0 ? '+' : ''}${early.toFixed(1)} vs par by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end.`, win: me[me.length - 1], par: pr[pr.length - 1] };
   const W = 340, H = 150, pl = 34, pr2 = 10, pt = 10, pb = 26, ymax = Math.max(...me, ...pr) * 1.1;
   const x = i => pl + i * (W - pl - pr2) / (R.length - 1), y = v => pt + (1 - v / ymax) * (H - pt - pb);
   const line = vs => vs.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
@@ -357,7 +359,7 @@ function speedCurve(pace, pool) {
     <path d="${line(pr)}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
     <path d="${line(me)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
     ${me.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="var(--accent)"><title>Round ${R[i]}: ${v.toFixed(1)}% vs par ${pr[i].toFixed(1)}%</title></circle>`).join('')}</svg>`;
-  return `<div class="sect">Speed</div>
+  return `<div class="sect" id="speed">Speed</div>
     <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}${tail}</span><span class="small muted">vs par: ${early > 0 ? '+' : ''}${early.toFixed(1)} by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end</span></div>
     <p class="small" style="margin:4px 0 6px">${say}</p>
     ${svg}
@@ -474,14 +476,14 @@ async function viewHome(v) {
 }
 
 /* ---------- deck page ---------- */
-async function viewDeck(v, name, sub = 'tests') {
+async function viewDeck(v, name, sub = 'overview') {
   if (!deckNames().includes(name)) { v.innerHTML = `<div class="note bad">No deck called ${esc(name)}.</div>`; return; }
   if (S.deck?.name !== name || S.deck?.isNew) { S.deck = { name, d: null, isNew: false }; S.deckDirty = false; S.deckText = false; }
   const isOpp = poolDecks().includes(name) || OPP_DEFAULT.includes(name);
   v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
     <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
       ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
-    <div class="seg" style="margin-bottom:16px">${[['tests', 'Tests'], ['audit', 'Rank'], ['list', 'List'], ['notes', 'Notes'], ['history', 'History']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
+    <div class="seg" style="margin-bottom:16px">${[['overview', 'Overview'], ['tests', 'Tests'], ['audit', 'Cards'], ['list', 'List']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
     <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
   if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
   $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
@@ -490,8 +492,10 @@ async function viewDeck(v, name, sub = 'tests') {
   if (sub === 'list') { await loadCardMeta(); if (!S.results) await loadResults(); S.usageNow = usageFor(name); body.innerHTML = `<details class="info"><summary>ⓘ Tap a card for its AI status, test history and notes</summary><p class="small muted">Dots: <span class="sdot" style="background:var(--good)"></span>AI plays it normally <span class="sdot" style="background:var(--warn)"></span>often held or flagged <span class="sdot" style="background:var(--bad)"></span>AI rarely plays it <span class="sdot" style="background:var(--accent)"></span>hint added, not re-checked <span class="sdot" style="background:var(--line)"></span>not checked yet</p></details><div id="editor"></div>`; drawEditor(); const d = S.deck.d; await sfLoad([...d.commander, ...d.main.map(r => r.name)]); drawEditor(); }
   else if (sub === 'notes') await drawNotes(body, name);
   else if (sub === 'history') await drawHistory(body, name);
-  else if (sub === 'audit') await drawAudit(body, name);
-  else await drawDeckTests(body, name);
+  else if (sub === 'audit') { await drawAudit(body, name); if (S.goTo) { document.getElementById(S.goTo)?.scrollIntoView({ block: 'start' }); S.goTo = null; } }
+  else if (sub === 'tests') await drawDeckTests(body, name);
+  else await drawOverview(body, name);
+  if (sub === 'notes' || sub === 'history') body.insertAdjacentHTML('afterbegin', `<div class="small muted" style="margin:-6px 0 10px">${sub === 'notes' ? 'Notes' : 'History'} · <a href="#deck/${encodeURIComponent(name)}/${sub === 'notes' ? 'history' : 'notes'}">${sub === 'notes' ? 'History' : 'Notes'}</a></div>`);
 }
 async function drawDeckTests(body, name) {
   if (!S.results) await loadResults();
@@ -508,6 +512,7 @@ async function drawDeckTests(body, name) {
   if (!rows.length) h += `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${encodeURIComponent(name)}">Start one</a></div>`;
   else h += `<p class="muted small" style="margin:0 0 4px">${new Set(rows.map(r => r.label)).size} cards tested across ${slots.size} slots.${engineDate && rows.some(g => !g.date || g.date < engineDate) ? ' Some results predate the latest AI fixes (tagged inside Details).' : ''}</p><details class="info"><summary>ⓘ How to read this</summary><p class="small muted">Each row is the win-rate change from putting that card in place of the slot's card, with its 95% range. A range that crosses zero means no clear difference. Results tagged <b>older list</b> or <b>older engine</b> were measured before the deck or the AI changed, so treat them as approximate.</p></details><div class="results">`;
   const short = c => c.split(',')[0];
+  let hOld = '', nOld = 0;
   const latestBy = (list, keyf) => { const m = new Map(); for (const g of list) { const k = keyf(g), cur = m.get(k); if (!cur || (g.date || '') > (cur.date || '')) m.set(k, g); } return m; };
   for (let [key, gs] of slots) {
     const [slot, pool] = key.split('\u0002');
@@ -535,7 +540,7 @@ async function drawDeckTests(body, name) {
     const now = isDecks || isPkg ? '' : promoted ? '<span class="pill good">promoted</span>' : inList.has(slot) ? '' : '<span class="pill warn">no longer in the list</span>';
     const all = [...gs, ...direct].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
     const anyOld = engineDate && [...gs, ...direct].some(g => !g.date || g.date < engineDate);
-    h += `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(cur) + ' slot'}${promoted ? ` <span class="small muted" style="font-weight:500">(was ${esc(slot)})</span>` : ''}</div>
+    const part = `<article class="card"><div class="res-head"><div><div class="res-title">${isDecks ? 'Head to head' : isPkg ? 'Packages' : esc(cur) + ' slot'}${promoted ? ` <span class="small muted" style="font-weight:500">(was ${esc(slot)})</span>` : ''}</div>
         <div class="small muted">${pool === String(deckBracket(name)) ? '' : `<span class="pill accent">vs ${esc(poolName(pool))}</span> `}${all.length} result${all.length > 1 ? 's' : ''} · latest ${all[0]?.date ? esc(ago(all[0].date)) : 'date unknown'}</div></div>
         <div class="row">${now}${isDecks || isPkg || !inList.has(cur) ? '' : `<a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(cur)}&pool=${pool}">Test more here</a>`}</div></div>
       ${h2h.length ? `<div class="seg panes" style="margin-top:12px"><button class="on" data-pane="cur">vs current card</button><button data-pane="cvc">Challengers <span class="muted">${h2h.length}</span></button></div>` : ''}
@@ -555,7 +560,9 @@ async function drawDeckTests(body, name) {
         ${forestSVG(h2h)}
         <ul class="h2h">${h2h.map(g => { const [c] = verdict(g); return `<li><b>${esc(g.label)}</b>: ${c === 'good' ? `<span class="pill good">${esc(short(g.lead))} is better</span>` : '<span class="pill">no clear winner yet</span>'} <span class="small muted">${g.games && g.agames ? (g.games + g.agames).toLocaleString() + ' games · ' : ''}${g.date ? esc(ago(g.date)) : ''}</span>${g.peek ? ' <span class="pill gold">early read</span>' : ''}</li>`; }).join('')}</ul>
       </div>` : ''}</article>`;
+    if (isDecks || isPkg || inList.has(cur)) h += part; else { hOld += part; nOld++; }
   }
+  if (nOld) h += `<details class="more" style="margin-top:12px"><summary>Tests for ${nOld} card${nOld > 1 ? 's' : ''} no longer in the list</summary>${hOld}</details>`;
   body.innerHTML = h + (rows.length ? '</div>' : '');
   $$('[data-promote]', body).forEach(b => b.onclick = () => promote(name, S.rendered[+b.dataset.promote]));
   $$('[data-pane]', body).forEach(b => b.onclick = () => {
@@ -793,6 +800,47 @@ async function queueCardCheck(deck, cards, why) {
 
 /* ---------- deck audit (shown as "Rank") ---------- */
 const renameAudit = t => t && t.replace(/^Audit of /, 'Ranking of ').replace(/^audit_of_/, 'ranking_of_');
+// Overview: the deck's front page, one short screen of verdicts that each lead to the detail
+async function drawOverview(body, name) {
+  if (!S.results) await loadResults();
+  if (!S.runs) { try { await loadRuns(); } catch {} }
+  await loadCardMeta(); S.rendered = [];
+  const enc = encodeURIComponent(name), d = S.deck.d, inList = new Set(d.main.map(r => r.name));
+  const finals = new Set(S.results.filter(r => !r.peek).map(r => r.name));
+  const a = S.results.filter(r => r.audit?.deck === name && !(r.peek && finals.has(r.name.replace(/_peek$/, '')))).sort((x, y) => (y.date || '').localeCompare(x.date || ''))[0];
+  const tile = (title, href, inner) => `<a class="card ovtile" href="${href.replace(/#(mana|speed)$/, '')}" ${/#(mana|speed)$/.test(href) ? `data-go="${href.split('#').pop()}"` : ''} style="display:block;color:inherit;text-decoration:none"><div class="sect" style="margin:0 0 6px">${title}</div>${inner}</a>`;
+  const f = v => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+  let h = '';
+  const act = activeFor(name);
+  if (act.length) h += `<div class="note" style="margin-bottom:12px">${act.map(x => `${esc(x.state)}: ${esc(x.label)}`).join('<br>')} · <a href="#runs">Runs</a></div>`;
+  // upgrades: a challenger clearly beat a card that is still in the list
+  const tests = testsFor(name), seen = new Set(), ups = [];
+  for (const g of tests) {
+    if (g.mode === 'decks' || g.peek || !inList.has(g.vs) || inList.has(g.label) || verdict(g)[0] !== 'good') continue;
+    const k = g.vs; if (seen.has(k)) continue; seen.add(k); ups.push(g);
+  }
+  ups.sort((x, y) => y.diff - x.diff);
+  if (a) await sfLoad(a.audit.cards.map(c => c.card));
+  const rows = a ? a.audit.cards.filter(c => inList.has(c.card)) : [];
+  const spells = rows.filter(c => !(S.sf[c.card]?.type || '').includes('Land'));
+  const tier = a ? rankTiers(a.audit.cards) : new Map(), cuts = spells.filter(c => tier.get(c.card) === 'outlier').sort((x, y) => x.diff - y.diff);
+  const sp = a ? speedCurve(a.audit.pace, a.auditPool, true) : null, mb = a ? manaBalance(rows, a.arms?.[0]?.games, a.audit.lands, true) : null;
+  // power: win rate against the pool's par, plus head-to-heads
+  const h2h = tests.filter(g => g.mode === 'decks' && !g.peek);
+  const h2hLatest = [...new Map(h2h.map(g => [g.other, g])).values()];
+  if (sp || h2hLatest.length) h += tile('Power', `#deck/${enc}/tests`, `${sp ? `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.win - sp.par >= -1 ? 'good' : sp.win - sp.par <= -3 ? 'warn' : ''}">Wins ${sp.win.toFixed(1)}%</span><span class="small muted">par ${sp.par.toFixed(1)}% (average opponent)</span></div>` : ''}
+    ${h2hLatest.length ? `<div class="small" style="margin-top:6px">${h2hLatest.map(g => `${esc(g.label)}: <span class="pill ${verdict(g)[0]}">${f(g.diff)}</span>`).join(' · ')}</div>` : ''}`);
+  if (ups.length) h += tile('Upgrades found', `#deck/${enc}/tests`, `<table class="weak"><tbody>${ups.slice(0, 4).map(g => `<tr><td>${esc(g.label.split(',')[0])} <span class="small muted">for ${esc(g.vs.split(',')[0])}</span></td><td class="r num"><span class="pill good">${f(g.diff)}</span></td><td class="r" onclick="event.preventDefault();event.stopPropagation()">${promoteBtn(g, name)}</td></tr>`).join('')}</tbody></table>`);
+  if (cuts.length) h += tile('Cut candidates', `#deck/${enc}/audit`, `<table class="weak"><tbody>${cuts.slice(0, 3).map(c => `<tr><td>${esc(c.card.split(',')[0])}${S.forge?.get(c.card) === 'A' ? ' <span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill bad">${f(c.diff)}</span></td><td class="r"><span class="btn sm" onclick="event.preventDefault();event.stopPropagation();location.hash='#test/${enc}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}'">Replace</span></td></tr>`).join('')}</tbody></table>`);
+  if (mb) h += tile('Mana', `#deck/${enc}/audit#mana`, `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${mb.cls}">${mb.head}</span><span class="small muted">${mb.say}</span></div>`);
+  if (sp) h += tile('Speed', `#deck/${enc}/audit#speed`, `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.cls}">${sp.head}</span><span class="small muted">${sp.say}</span></div>`);
+  if (!a) h += `<div class="card"><div class="sect" style="margin:0 0 6px">Card scores</div><p class="small muted" style="margin:0">Run a ranking on the Cards tab to get cut candidates, mana and speed for this deck.</p><a class="btn sm" style="margin-top:8px;display:inline-block" href="#deck/${enc}/audit">Go to Cards</a></div>`;
+  if (!h) h = `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${enc}">Start one</a></div>`;
+  h += `<p class="small muted" style="margin:14px 0 0">${a ? `From the latest ranking (${a.audit.pace?.games?.toLocaleString() || ''} games, ${esc(ago(a.date))}) and tests. ` : ''}<a href="#deck/${enc}/notes">Notes</a> · <a href="#deck/${enc}/history">History</a></p>`;
+  body.innerHTML = `<div class="stack">${h}</div>`;
+  $$('[data-promote]', body).forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); promote(name, S.rendered[+b.dataset.promote]); });
+  $$('[data-go]', body).forEach(t => t.addEventListener('click', () => { S.goTo = t.dataset.go; }));
+}
 async function drawAudit(body, name) {
   if (!S.results) await loadResults();
   if (!S.runs) { try { await loadRuns(); } catch {} }
@@ -1143,7 +1191,7 @@ async function route() {
   const v = $('#view'); $('#preview').hidden = true; scrollTo(0, 0);
   try {
     if (page === 'runs') await viewRuns(v);
-    else if (page === 'deck') await viewDeck(v, r.arg, r.sub || 'tests');
+    else if (page === 'deck') await viewDeck(v, r.arg, r.sub || 'overview');
     else if (page === 'new') await viewNewDeck(v);
     else if (page === 'test') {
       if (r.arg && r.arg !== S.test.base) { S.test.base = r.arg; S.test.slots = [{ out: '', ins: [] }]; }
