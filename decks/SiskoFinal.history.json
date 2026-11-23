@@ -1,0 +1,18 @@
+[
+  {
+    "date": "2026-11-23T16:05:50.508Z",
+    "out": [
+      "Pact of Negation"
+    ],
+    "in": [
+      "Riku of Many Paths"
+    ],
+    "result": {
+      "diff": 4.5,
+      "ci": 1.84,
+      "games": 2882,
+      "test": "riku_of_many_paths_for_pact_of_negation",
+      "verdict": "Better"
+    }
+  }
+]
