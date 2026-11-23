@@ -1,0 +1,10 @@
+{
+  "mode": "swap",
+  "base": "SiskoFinal",
+  "slots": [{"out": "Sylvan Library", "ins": ["Seven of Nine, Unassimilated"]}],
+  "name": "Seven of Nine, Unassimilated for Sylvan Library",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
+  "submitted": "2026-11-23T20:31:00+00:00"
+}
