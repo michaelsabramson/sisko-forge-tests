@@ -33,3 +33,12 @@ Still open:
 - Rules upkeep on monster boards (~13% there): StaticAbilityContinuous.getAffectedCards re-matching every lord effect
   against every card after each action. Core rules code: higher risk.
 - Note: with the 5-second budget, Forge's AI plays slightly differently depending on machine speed on big boards.
+
+## Synergy views (held, 2026-11-23)
+From Rank opening hands (kept hand + 3 draws; `extract-hands` workflow pulls them into analysis/):
+- **Best partners** on each card: given card X early, which other cards raise win rate most (card's own score plus
+  its X-synergy, shrunk by noise). Doubles as a tutor/keep guide. Sisko + Norin the Wary: Purphoros +16, Impact
+  Tremors +7, Warleader's Call +6, Corpse Knight +5; reactive cards worst (Trophy, Boros Charm, Pact).
+- **Engines** summary on the Rank tab: only combinations that clearly stand out (Norin x damage-on-enter cards:
+  37% together vs ~23% apart, synergy +10.5 ± 3.5). Pairs are ~±6 pts each at ~34k games, so no full pair grid.
+- Needs each Rank to store its opening hands (~0.4 MB per Rank).
