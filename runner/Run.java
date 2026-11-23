@@ -54,7 +54,7 @@ public class Run {
       int fixedN=Integer.getInteger("fixed",1); List<Deck> pod=new ArrayList<>(ds.subList(0,fixedN)); List<Deck> pool=new ArrayList<>(ds.subList(fixedN,ds.size())); Collections.shuffle(pool,gr); pod.addAll(pool.subList(0,Math.min(4-fixedN,pool.size())));
       final Set<String> trackedNames=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) trackedNames.add(d.getName());
       List<RegisteredPlayer> pp=new ArrayList<>(); int k=pod.size();
-      for(int j=0;j<k;j++){ Deck d=pod.get((j+g)%k); RegisteredPlayer rp=RegisteredPlayer.forCommander(d); LobbyPlayerAi lp=new LobbyPlayerAi(d.getName(),null); lp.setAiProfile(trackedNames.contains(d.getName()) ? System.getProperty("sisko.profile","Default") : "Default");   // the tested deck's AI settings; opponents on Default rp.setPlayer(lp); pp.add(rp);}
+      for(int j=0;j<k;j++){ Deck d=pod.get((j+g)%k); RegisteredPlayer rp=RegisteredPlayer.forCommander(d); LobbyPlayerAi lp=new LobbyPlayerAi(d.getName(),null); lp.setAiProfile(trackedNames.contains(d.getName()) ? System.getProperty("sisko.profile","Default") : "Default"); /* the tested deck's AI settings; opponents on Default */ rp.setPlayer(lp); pp.add(rp);}
       Match mc=new Match(rules,pp,"T"); Game game=mc.createGame(); game.setNoGUIUser();
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
