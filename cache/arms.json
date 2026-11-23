@@ -903,6 +903,15 @@
   ],
   "wins": 3842
  },
+ "4bb9b8d1b741361a2667": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 5262,
+  "runs": [
+   "siskofinal_vs_norinb3:45105274164"
+  ],
+  "wins": 1110
+ },
  "4e497ac4b88d3239e29a": {
   "card": "Assassin's Trophy",
   "deck": "SiskoFinal",
@@ -2115,6 +2124,15 @@
    "audit_of_siskofinal_with_pact_hint:44921390553"
   ],
   "wins": 1075
+ },
+ "e8115078146a29ee460c": {
+  "card": "",
+  "deck": "NorinB3",
+  "games": 5262,
+  "runs": [
+   "siskofinal_vs_norinb3:45105274164"
+  ],
+  "wins": 947
  },
  "eafaff28eccc73e61eeb": {
   "card": "Worldly Tutor",
