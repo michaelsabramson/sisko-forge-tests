@@ -1,27 +1,27 @@
 {
-  "name": "pilot_test_siskofinal_default_vs_hard_ai",
-  "title": "Pilot test: SiskoFinal, Default vs Hard AI",
+  "name": "pilot_test_norinb3_default_vs_hard_ai",
+  "title": "Pilot test: NorinB3, Default vs Hard AI",
   "arms": [
     {
-      "deck": "SiskoFinal",
+      "deck": "NorinB3",
       "card": "",
       "profile": "Default",
       "label": "Default AI",
-      "key": "4bb9b8d1b741361a2667",
+      "key": "e8115078146a29ee460c",
       "prior_games": 5262,
-      "prior_wins": 1110,
+      "prior_wins": 947,
       "target_new": 0,
       "cached": true
     },
     {
-      "deck": "SiskoFinal",
+      "deck": "NorinB3",
       "card": "",
       "profile": "Hard",
       "label": "Hard AI",
-      "key": "231bc90d40c0776c76a1",
+      "key": "371d3b48ef245723af07",
       "prior_games": 0,
       "prior_wins": 0,
-      "target_new": 1175,
+      "target_new": 1143,
       "cached": false
     }
   ],
@@ -35,8 +35,8 @@
   "minutes": 11,
   "shards": 38,
   "mode": "pilot",
-  "queued_from": "20261123-045251-pilot-siskofinal.json",
-  "started": "2026-11-23T05:43:41Z",
+  "queued_from": "20261123-045252-pilot-norinb3.json",
+  "started": "2026-11-23T06:41:55Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -200,8 +200,8 @@
     1
   ],
   "gpm": [
-    1.291,
-    1.246
+    1.79,
+    1.251
   ],
   "quota": [
     0,
@@ -219,9 +219,9 @@
   ],
   "batches": [
     0,
-    109
+    105
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184718600
+  "seedbase": 184730200
 }
