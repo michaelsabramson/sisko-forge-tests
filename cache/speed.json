@@ -27,10 +27,6 @@
  ],
  "*": [
   [
-   5262,
-   176376110
-  ],
-  [
    426,
    18410279
   ],
@@ -49,6 +45,10 @@
   [
    5126,
    221145569
+  ],
+  [
+   4777,
+   220495857
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -157,6 +157,12 @@
   [
    5126,
    221145569
+  ]
+ ],
+ "KW-Najeela-1123|Atraxa,Prossh,UrDragon,Edgar,Meren": [
+  [
+   4777,
+   220495857
   ]
  ]
 }

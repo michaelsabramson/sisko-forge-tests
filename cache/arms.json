@@ -2191,6 +2191,15 @@
   ],
   "wins": 1109
  },
+ "cdaccf726c353099749f": {
+  "card": "@usage",
+  "deck": "KW-Najeela-1123",
+  "games": 4777,
+  "runs": [
+   "card_usage_in_kw_najeela_1123:45272039105"
+  ],
+  "wins": 558
+ },
  "e20a5cca13932ba46b6e": {
   "card": "@audit",
   "cards": {
