@@ -280,10 +280,16 @@ function manaBalance(rows, games, curve) {
     const skipped = allLand.filter(c => !land.includes(c)).map(c => S.deck.d.main.find(r => r.name === c.card)).filter(Boolean);
     if (skipped.length) note = `<p class="small muted" style="margin:4px 0 0">Based on the ${A.n} other lands: ${skipped.map(r => r.n > 1 ? `your ${r.n} ${esc(r.name)}s` : esc(r.name)).join(', ')} show up in almost every game, so this Rank can't score them.${A.n < 8 ? ' Few lands to go on, so treat this as rough.' : ''}</p>`;
   }
-  const gap = L.diff - O.diff, gci = Math.hypot(L.ci, O.ci);
-  const [cls, head, say] = gap - gci > 0 ? ['warn', 'Looks short on mana', `One more land early is worth ${gap.toFixed(1)} points more than a typical spell. Try 1–2 more lands${R && R.diff > (O.diff + L.diff) / 2 ? ' or ramp' : ''}, cutting from the weakest spells.`]
-    : gap + gci < 0 ? ['warn', 'Looks heavy on lands', `A typical spell is worth ${(-gap).toFixed(1)} points more than one more land. Try 1–2 fewer lands for spells.`]
-    : ['good', 'Balanced', 'One more land is worth about the same as a typical spell: the land count looks right.'];
+  // which of the three the deck wants: a group "wins" when its score is clearly above a typical spell's
+  const clear = X => X.diff - X.ci > 0;
+  const gap = L.diff - O.diff, gci = Math.hypot(L.ci, O.ci), f = v => `${v > 0 ? '+' : ''}${v.toFixed(1)}`;
+  const lc = clear({ diff: gap, ci: gci }) , rc = R && clear({ diff: R.diff - O.diff, ci: Math.hypot(R.ci, O.ci) });
+  const [cls, head, say] =
+      lc && rc ? ['warn', 'Short on mana', `More lands (${f(L.diff)}) and more ramp (${f(R.diff)}) both beat a typical spell (${f(O.diff)}). ${R.diff > L.diff + 0.5 ? 'Ramp scores higher: the deck also wants to be faster.' : L.diff > R.diff + 0.5 ? 'Lands score higher.' : 'Either works.'} Cut from the weakest spells.`]
+    : lc ? ['warn', 'Needs lands', `One more land (${f(L.diff)}) beats a typical spell (${f(O.diff)})${R ? `, and ramp (${f(R.diff)}) doesn't` : ''}. Try 1–2 more lands, cutting from the weakest spells.`]
+    : rc ? ['warn', 'Needs ramp', `The land count looks fine, but ramp (${f(R.diff)}) beats a typical spell (${f(O.diff)}): the deck wants to be faster. Try 1–2 more ramp pieces, cutting from the weakest spells.`]
+    : gap + gci < 0 ? ['warn', 'Heavy on lands', `A typical spell (${f(O.diff)}) beats one more land (${f(L.diff)}). Try 1–2 fewer lands for spells.`]
+    : ['good', 'Balanced', 'Lands, ramp and spells score about the same: the mana looks right.'];
   const gaps = [{ label: landLabel, diff: L.diff, ci: L.ci, cls: '' }, ...(R ? [{ label: `Ramp (${R.n})`, diff: R.diff, ci: R.ci, cls: '' }] : []), { label: `Typical spell (${O.n})`, diff: O.diff, ci: O.ci, cls: '' }];
   let bars = '';
   if (curve) {
@@ -296,7 +302,7 @@ function manaBalance(rows, games, curve) {
       <div style="display:flex;gap:6px;border-top:1px solid var(--line)">${pts.map(x => `<div style="flex:1;text-align:center" class="small"><b>${x.k}</b><div class="muted" style="font-size:11px">${Math.round(100 * x.g / N)}%</div></div>`).join('')}</div>`;
   }
   return `<div class="sect">Mana balance</div>
-    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span><span class="small muted">land − spell ${gap > 0 ? '+' : ''}${gap.toFixed(1)} ± ${gci.toFixed(1)}</span></div>
+    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span><span class="small muted">vs a typical spell: land ${f(gap)}${R ? `, ramp ${f(R.diff - O.diff)}` : ''}</span></div>
     <p class="small" style="margin:4px 0 6px">${say}</p>
     ${forestSVG(gaps)}${note}${bars}
     <p class="small muted" style="margin:6px 0 0">${curve ? 'One more land: how much win rate rises per extra land in the first 10 cards, basics included. ' : ''}Ramp and typical spell: average Rank score of those cards. Rank favours cheap, early cards, so this leans slightly toward lands.</p>`;
