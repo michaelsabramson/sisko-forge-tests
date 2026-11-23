@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       run_id: { description: 'swap-test run id of a Rank', required: true }
+      deck: { description: 'the ranked deck', required: true, default: 'SiskoFinal' }
 permissions:
   contents: write
   actions: read
@@ -16,19 +17,15 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { pattern: out-*, path: out, run-id: '${{ inputs.run_id }}', github-token: '${{ github.token }}' }
       - name: Extract
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          sha=$(gh api repos/${{ github.repository }}/actions/runs/${{ inputs.run_id }} -q .head_sha)
-          git show "$sha:tests/request.json" > /tmp/req.json
           mkdir -p analysis
           python3 - <<'PY'
           import glob, gzip, json, os, re
-          req = json.load(open('/tmp/req.json')); arms = req['arms']; n = 0
+          me = "${{ inputs.deck }}"; n = 0
           with gzip.open(f"analysis/hands_${{ inputs.run_id }}.tsv.gz", 'wt') as out:
-              out.write(f"# {req['name']}\n# hand+3 draws (|-separated), won, turn\n")
+              out.write(f"# Rank of {me}, run ${{ inputs.run_id }}\n# hand+3 draws (|-separated), won, turn\n")
               for f in glob.glob('out/**/arm*_*.log', recursive=True):
-                  i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
+                  top = None
                   for l in open(f, errors='ignore'):
                       if l.startswith('TOP '): top = l[4:].rstrip('\n'); continue
                       m = re.match(r'G\d+ winner=(\S+) turn=(\d+)', l)
