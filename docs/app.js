@@ -1001,8 +1001,7 @@ async function viewTest(v) {
         </div>
         <div class="row">${s.ins.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)} ${flagPill(c)}<button data-delin="${i}:${j}" aria-label="Remove">×</button></span>`).join('') || '<span class="muted small">No cards yet.</span>'}</div>
       </div>`).join('')}
-      <p class="muted small" style="margin:0">Each card you add is tried in that card's place and compared with it.</p>
-      <div><button class="sm" id="addSlot">+ Also replace another card</button></div>`
+      `
     : T.mode === 'package' ? `
       <label class="fld"><span>Base deck</span><select id="tbase">${mine.map(n => `<option ${n === T.base ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       ${T.packages.map((pk, i) => `<div class="slot stack">
@@ -1043,7 +1042,7 @@ async function viewTest(v) {
     $$('[data-in]').forEach(inp => attachAuto(inp, n => { const sl = T.slots[+inp.dataset.in]; if (inDeck.has(n)) { toast(`${n} is already in ${T.base}`, true); return; } if (!sl.ins.includes(n)) sl.ins.push(n); sfLoad([n]); viewTest(v).then(() => $(`[data-in="${inp.dataset.in}"]`)?.focus()); }, n => !inDeck.has(n)));
     $$('[data-delin]').forEach(b => b.onclick = () => { const [i, j] = b.dataset.delin.split(':').map(Number); T.slots[i].ins.splice(j, 1); viewTest(v); });
     $$('[data-delslot]').forEach(b => b.onclick = () => { T.slots.splice(+b.dataset.delslot, 1); viewTest(v); });
-    $('#addSlot').onclick = () => { T.slots.push({ out: '', ins: [] }); viewTest(v); };
+    $('#addSlot') && ($('#addSlot').onclick = () => { T.slots.push({ out: '', ins: [] }); viewTest(v); });
   } else if (T.mode === 'package') {
     $('#tbase').onchange = e => { T.base = e.target.value; T.packages = [{ out: [], in: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(T.base)); viewTest(v); };
     const deckCards = new Set(base.main.map(r => r.name));
