@@ -1,4 +1,4 @@
-# pilot_test_norinb3_default_vs_hard_ai
+# pilot_test_norinb3_default_vs_hard_ai (early read, run still going)
 
 Same list piloted by different Forge AI profiles (opponents on Default), nothing forced into the opening hand. Same opponents for every list. 5,262 games reused from earlier runs with identical settings.
 
