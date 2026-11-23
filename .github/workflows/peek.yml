@@ -24,6 +24,20 @@ jobs:
           sha=$(gh api repos/${{ github.repository }}/actions/runs/${{ inputs.run_id }} -q .head_sha)
           gh api "repos/${{ github.repository }}/contents/tests/request.json?ref=$sha" -H "Accept: application/vnd.github.raw" > tests/request.json
           cat tests/request.json
+      - name: Find the helper runners' run
+        id: helper
+        env:
+          GH_TOKEN: ${{ secrets.HELPER_TOKEN }}
+        run: scripts/helperrun.sh ${{ inputs.run_id }} >> $GITHUB_OUTPUT
+      - uses: actions/download-artifact@v4
+        if: ${{ steps.helper.outputs.id != '' }}
+        continue-on-error: true
+        with:
+          pattern: out-*
+          path: out
+          repository: ${{ steps.helper.outputs.repo }}
+          run-id: ${{ steps.helper.outputs.id }}
+          github-token: ${{ secrets.HELPER_TOKEN }}
       - run: python3 scripts/aggregate.py
         env:
           PEEK: '1'

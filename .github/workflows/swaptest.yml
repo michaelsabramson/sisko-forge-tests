@@ -17,7 +17,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: m
-        run: echo "shards=$(jq -c '[range(0; (.shards // 20))]' tests/request.json)" >> $GITHUB_OUTPUT
+        run: echo "shards=$(jq -c '[range(0; (.main_shards // .shards // 20))]' tests/request.json)" >> $GITHUB_OUTPUT
+      - name: Start the helper runners
+        env:
+          GH_TOKEN: ${{ secrets.HELPER_TOKEN }}
+        run: |
+          # the helper organization's runners play the remaining shards (helper.json); without them the run still
+          # finishes, just with fewer games
+          H=$(jq -r '.helper // empty' tests/request.json); [ -n "$H" ] || exit 0
+          gh api -X POST "repos/$H/actions/workflows/helper.yml/dispatches" -f ref=main \
+            -f "inputs[repo]=${{ github.repository }}" -f "inputs[run]=${{ github.run_id }}" -f "inputs[sha]=${{ github.sha }}" \
+            -f "inputs[first]=$(jq -r .main_shards tests/request.json)" || echo "::warning::helper runners could not be started"
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
       - name: Fetch Forge at pinned commit
@@ -258,6 +268,20 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { pattern: out-*, path: out }
+      - name: Wait for the helper runners
+        id: helper
+        env:
+          GH_TOKEN: ${{ secrets.HELPER_TOKEN }}
+        run: scripts/helperrun.sh ${{ github.run_id }} wait >> $GITHUB_OUTPUT
+      - uses: actions/download-artifact@v4
+        if: ${{ steps.helper.outputs.id != '' }}
+        continue-on-error: true
+        with:
+          pattern: out-*
+          path: out
+          repository: ${{ steps.helper.outputs.repo }}
+          run-id: ${{ steps.helper.outputs.id }}
+          github-token: ${{ secrets.HELPER_TOKEN }}
       - name: Tally results
         run: |
           # stopped early? (an early read found the answer settled and left the ref refs/stop/<run>)

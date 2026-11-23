@@ -15,7 +15,7 @@ if [ "$(jq -r '.earlystop // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-
   # early stop: an early read marks the run settled with the ref refs/stop/<run>; poll it over plain git (public repo,
   # outside the API's hourly limit) and tell the game processes to start no new games
   ( sleep 120; while pgrep -f "Run forge" >/dev/null; do
-      git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/stop/$GITHUB_RUN_ID" 2>/dev/null | grep -q . && { touch out/STOP; echo "$(date -u +%T) stop seen" >> out/claims.log; break; }
+      git ls-remote "https://github.com/${MAIN_REPO:-$GITHUB_REPOSITORY}" "refs/stop/${MAIN_RUN:-$GITHUB_RUN_ID}" 2>/dev/null | grep -q . && { touch out/STOP; echo "$(date -u +%T) stop seen" >> out/claims.log; break; }
       sleep 60
     done ) &
 fi

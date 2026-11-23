@@ -11,7 +11,8 @@
 # never worse than a fixed share.
 A=$1; S=$2; REQ=tests/request.json
 NB=$(jq -r ".batches[$A] // 0" $REQ); SH=$(jq -r '.shards // 38' $REQ)
-R=${GITHUB_REPOSITORY:?}; RUN=${GITHUB_RUN_ID:?}; SHA=${GITHUB_SHA:?}
+# on the helper organization's runners MAIN_* name the main repo's run (GitHub won't let a workflow override GITHUB_*)
+R=${MAIN_REPO:-${GITHUB_REPOSITORY:?}}; RUN=${MAIN_RUN:-${GITHUB_RUN_ID:?}}; SHA=${MAIN_SHA:-${GITHUB_SHA:?}}
 CUR=out/.home_$A; ERR=out/.claimerr_$A; LOG=out/claims.log
 
 create() { gh api -X POST "repos/$R/git/refs" -f ref="refs/batches/$RUN/$A-$1" -f sha="$SHA" --silent 2>"$ERR"; }

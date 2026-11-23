@@ -215,6 +215,11 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
+    # helper.json: a second account's runners (its own job limit) play shards main_shards..shards-1 of every run
+    if os.path.exists("helper.json") and not r.get("no_helper"):
+        h = json.load(open("helper.json"))
+        req["main_shards"], req["helper"] = req["shards"], h["repo"]
+        req["shards"] += int(h["shards"])
     # reuse cached games, then size the run: either to a precision target (points, 95% range on each gap)
     # or, for old-style requests, to a fixed number of minutes split evenly
     opps = req.get("opponents") or cache.DEFAULT_OPP
@@ -248,7 +253,9 @@ def main():
             # in batches, which runners stop claiming, and early reads come every 10 minutes instead of 20
             req["earlystop"] = req["mode"] in ("swap", "package") and not r.get("full")
             if req["earlystop"]:
-                req["checkpoint"] = 10
+                # about five looks per run: every 5 minutes for short runs, every 10 for the longest
+                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps)) for i in todo)
+                req["checkpoint"] = int(min(10, max(5, math.ceil(est / 5))))
             frac = 0.3 if req["earlystop"] else 0.6
             first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
             rest = [max(0, need[i] - first[i] * per[i]) for i in range(len(arms))]

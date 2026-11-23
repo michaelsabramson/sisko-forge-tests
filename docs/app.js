@@ -3,7 +3,7 @@
    Reads everything from GitHub; writes (decks, queued tests) through the GitHub API with a token kept in localStorage. */
 const REPO = 'michaelsabramson/sisko-forge-tests', BR = 'main';
 const OPP_DEFAULT = ['Atraxa', 'Prossh', 'UrDragon', 'Edgar', 'Meren'];
-const SHARDS = 38, GPM_FALLBACK = 1.1;  // runners per test; games per process-minute until runs have measured it
+const SHARDS = 38, HELPER_SHARDS = 58, GPM_FALLBACK = 1.1;  // runners per test (main account + helper organization); games per process-minute until runs have measured it
 let GPM = GPM_FALLBACK;                 // replaced by the measured speed (cache/speed.json) once loaded
 const BASE_P = 0.19;                    // typical win rate for precision estimates
 
@@ -802,7 +802,7 @@ const PRECISION = [[2.0, 'Quick'], [1.5, 'Standard'], [1.0, 'Careful']];
 function estimate(arms, precision) {
   // worst case: nothing reused from earlier tests
   const n = Math.ceil(2 * BASE_P * (1 - BASE_P) * (196 / precision) ** 2);
-  const total = Math.min(170, Math.ceil(arms * n / (SHARDS * 4 * GPM) + 1.5)) + 12; return { n, total };   // runs now stop when their games are done
+  const total = Math.min(170, Math.ceil(arms * n / ((SHARDS + HELPER_SHARDS) * 4 * GPM) + 1.5)) + 12; return { n, total };   // runs now stop when their games are done
 }
 async function viewTest(v) {
   await loadCardMeta();   // also loads the measured game speed used by the time estimate
