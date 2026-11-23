@@ -1,0 +1,17 @@
+name: probe-edhrec
+on: workflow_dispatch
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          python3 - <<'PY'
+          import json, urllib.request
+          j = json.load(urllib.request.urlopen(urllib.request.Request("https://json.edhrec.com/pages/average-decks/edgar-markov/core.json", headers={"User-Agent": "x"}), timeout=30))
+          def show(o, p="", d=0):
+              if d > 4: return
+              if isinstance(o, dict):
+                  for k, v in o.items(): print(p + "." + k, type(v).__name__, (str(v)[:90] if not isinstance(v, (dict, list)) else (len(v)))); show(v, p + "." + k, d + 1)
+              elif isinstance(o, list) and o: print(p + "[0]", str(o[0])[:160]); show(o[0], p + "[0]", d + 1)
+          show(j)
+          PY
