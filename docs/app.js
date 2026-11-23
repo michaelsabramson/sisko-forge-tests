@@ -994,14 +994,15 @@ async function viewTest(v) {
     ${T.mode === 'swap' ? `
       <label class="fld"><span>Base deck</span><select id="tbase">${mine.map(n => `<option ${n === T.base ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       ${T.slots.map((s, i) => `<div class="slot stack" data-slot="${i}">
-        <div class="row"><b>Slot ${i + 1}</b><span class="grow"></span>${T.slots.length > 1 ? `<button class="sm ghost danger" data-delslot="${i}">Remove slot</button>` : ''}</div>
+        ${T.slots.length > 1 ? `<div class="row"><b>${s.out ? 'Replacing ' + esc(s.out.split(',')[0]) : 'Card ' + (i + 1)}</b><span class="grow"></span><button class="sm ghost danger" data-delslot="${i}">Remove</button></div>` : ''}
         <div class="grid2">
-          <label class="fld"><span>Take out</span><select data-out="${i}"><option value="">Choose a card…</option>${[...base.main].sort((a, b) => a.name.localeCompare(b.name)).map(r => `<option ${r.name === s.out ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
-          <label class="fld"><span>Try instead (each is its own version)</span><div class="ac"><input data-in="${i}" placeholder="Search Forge's card list…"></div></label>
+          <label class="fld"><span>Card to replace</span><select data-out="${i}"><option value="">Choose a card…</option>${[...base.main].sort((a, b) => a.name.localeCompare(b.name)).map(r => `<option ${r.name === s.out ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
+          <label class="fld"><span>Cards to try in its place</span><div class="ac"><input data-in="${i}" placeholder="Search Forge's card list…"></div></label>
         </div>
         <div class="row">${s.ins.map((c, j) => `<span class="chip" data-card="${esc(c)}">${esc(c)} ${flagPill(c)}<button data-delin="${i}:${j}" aria-label="Remove">×</button></span>`).join('') || '<span class="muted small">No cards yet.</span>'}</div>
       </div>`).join('')}
-      <div><button class="sm" id="addSlot">+ Test another slot</button> <span class="muted small">Each slot also runs the original card as its baseline.</span></div>`
+      <p class="muted small" style="margin:0">Each card you add is tried in that card's place and compared with it.</p>
+      <div><button class="sm" id="addSlot">+ Also replace another card</button></div>`
     : T.mode === 'package' ? `
       <label class="fld"><span>Base deck</span><select id="tbase">${mine.map(n => `<option ${n === T.base ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></label>
       ${T.packages.map((pk, i) => `<div class="slot stack">
@@ -1018,10 +1019,12 @@ async function viewTest(v) {
         <optgroup label="Other lists">${mine.filter(n => !primary().includes(n)).map(n => `<option ${n === dn ? 'selected' : ''}>${esc(n)}</option>`).join('')}</optgroup></select></label>`).join('')}</div>
       ${T.decks.length < 4 ? '<div><button class="sm" id="addDk">+ Add another deck</button></div>' : ''}
       <p class="small muted">Each deck plays its own games against the same opponent pool and seats, as built, with nothing forced into the opening hand. Works across different commanders too. Small differences between similar lists need more games to show up than a single-card swap.</p>`}
+      <details class="more opp" ${S.oppOpen ? 'open' : ''}><summary>Opponents: <b>${poolOf(T.opps) === 'custom' ? 'custom mix' : 'bracket ' + poolOf(T.opps) + ' pool'}</b> <span class="muted small">· change</span></summary><div class="stack" style="margin-top:10px">
       <div class="fld"><span>Target bracket</span><div class="seg">${Object.keys(POOLS()).map(b => `<button data-pool="${b}" class="${poolOf(T.opps) === b ? 'on' : ''}">Bracket ${b}</button>`).join('')}${poolOf(T.opps) === 'custom' ? '<button class="on">Custom</button>' : ''}</div>
         <div class="small muted" style="margin-top:6px">${esc(POOLS()[poolOf(T.opps)]?.label || 'Custom opponent mix. Results won’t line up with the standard pools.')}</div></div>
       <div class="fld"><span>Opponents (${T.opps.length} selected, each pod draws 3)</span><div class="row">${[...new Set([...(POOLS()[poolOf(T.opps)]?.decks || []), ...T.opps])].map(n => `<label class="chk ${T.opps.includes(n) ? 'on' : ''}"><input type="checkbox" data-opp="${esc(n)}" ${T.opps.includes(n) ? 'checked' : ''}>${esc(n)}</label>`).join('')}
         <select id="addOpp" style="width:auto"><option value="">+ Add a deck…</option>${[...poolDecks(), ...oppList].filter((n, i, A) => A.indexOf(n) === i && !T.opps.includes(n)).map(n => `<option>${esc(n)}</option>`).join('')}</select></div></div>
+      </div></details>
       <div class="grid2">
         <label class="fld"><span>Precision</span><select id="tmin">${PRECISION.map(([v, l]) => `<option value="${v}" ${v === T.precision ? 'selected' : ''}>${l}: ±${v.toFixed(1)} points</option>`).join('')}</select></label>
         <label class="fld"><span>Name</span><input id="tname" placeholder="${esc(autoName || 'Test name')}" value="${esc(T.name)}"></label>
@@ -1032,6 +1035,7 @@ async function viewTest(v) {
       ${flagged.length ? `<div class="note">Forge's AI plays ${flagged.map(esc).join(', ')} poorly, so a loss here may mean the AI misplays it rather than the card being weak.</div>` : ''}
       <div class="row end"><span id="terr" class="small" style="color:var(--bad)"></span><button class="primary" id="queueBtn">Queue test</button></div>
     </div>`;
+  $('details.opp')?.addEventListener('toggle', e => { S.oppOpen = e.target.open; });
   $$('[data-mode]').forEach(b => b.onclick = () => { T.mode = b.dataset.mode; if (T.mode === 'decks' && !T.decks[0]) T.decks = [T.base, '']; viewTest(v); });
   if (T.mode === 'swap') {
     $('#tbase').onchange = e => { T.base = e.target.value; T.slots = [{ out: '', ins: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(T.base)); viewTest(v); };
