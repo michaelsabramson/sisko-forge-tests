@@ -264,25 +264,42 @@ function isRamp(name) {
   const s = S.sf[name]; if (!s || s.type.includes('Land')) return false;
   return (s.produces && /Creature|Artifact|Enchantment/.test(s.type)) || /search your library for[^.]{0,60}land[^.]{0,80}onto the battlefield/i.test(s.text || '');
 }
-function manaBalance(rows, games) {
+function manaBalance(rows, games, curve) {
   const avg = g => { if (!g.length) return null; const w = g.map(c => 1 / Math.max(0.01, (c.ci / 1.96) ** 2));
     const W = w.reduce((s, x) => s + x, 0); return { n: g.length, diff: g.reduce((s, c, i) => s + c.diff * w[i], 0) / W, ci: 1.96 / Math.sqrt(W) }; };
-  // a land entry that shows up in nearly every game (a stack of basics) can't be scored, so it is left out
-  const allLand = rows.filter(c => (S.sf[c.card]?.type || '').includes('Land')), land = allLand.filter(c => !games || c.seen < 0.9 * games);
+  const allLand = rows.filter(c => (S.sf[c.card]?.type || '').includes('Land'));
   const ramp = rows.filter(c => isRamp(c.card)), other = rows.filter(c => !allLand.includes(c) && !ramp.includes(c));
-  const L = avg(land), R = avg(ramp), O = avg(other); if (!L || !O || L.n < 3) return '';
-  const skipped = allLand.filter(c => !land.includes(c)).map(c => S.deck.d.main.find(r => r.name === c.card)).filter(Boolean);
+  const R = avg(ramp), O = avg(other); if (!O) return '';
+  // Land side: with the land curve (lands in the first 10 cards, basics counted by copies) the value of one more land;
+  // older Ranks without it fall back to the average score of the land cards that can be scored.
+  let L, landLabel, note = '';
+  if (curve) { L = { diff: curve.value, ci: curve.ci }; landLabel = 'One more land'; }
+  else {
+    const land = allLand.filter(c => !games || c.seen < 0.9 * games), A = avg(land); if (!A || A.n < 3) return '';
+    L = A; landLabel = `Lands (${A.n})`;
+    const skipped = allLand.filter(c => !land.includes(c)).map(c => S.deck.d.main.find(r => r.name === c.card)).filter(Boolean);
+    if (skipped.length) note = `<p class="small muted" style="margin:4px 0 0">Based on the ${A.n} other lands: ${skipped.map(r => r.n > 1 ? `your ${r.n} ${esc(r.name)}s` : esc(r.name)).join(', ')} show up in almost every game, so this Rank can't score them.${A.n < 8 ? ' Few lands to go on, so treat this as rough.' : ''}</p>`;
+  }
   const gap = L.diff - O.diff, gci = Math.hypot(L.ci, O.ci);
-  const [cls, head, say] = gap - gci > 0 ? ['warn', 'Looks short on mana', `Lands score ${gap.toFixed(1)} points above spells: an extra land early is worth more than an extra spell. Try 1–2 more lands${R && R.diff > O.diff ? ' or ramp' : ''}, cutting from the weakest spells.`]
-    : gap + gci < 0 ? ['warn', 'Looks heavy on lands', `Spells score ${(-gap).toFixed(1)} points above lands: try 1–2 fewer lands for spells.`]
-    : ['good', 'Balanced', 'Lands and spells score about the same: the land count looks right.'];
-  const gaps = [{ label: `Lands (${L.n})`, diff: L.diff, ci: L.ci, cls: '' }, ...(R ? [{ label: `Ramp (${R.n})`, diff: R.diff, ci: R.ci, cls: '' }] : []), { label: `Other spells (${O.n})`, diff: O.diff, ci: O.ci, cls: '' }];
+  const [cls, head, say] = gap - gci > 0 ? ['warn', 'Looks short on mana', `One more land early is worth ${gap.toFixed(1)} points more than a typical spell. Try 1–2 more lands${R && R.diff > (O.diff + L.diff) / 2 ? ' or ramp' : ''}, cutting from the weakest spells.`]
+    : gap + gci < 0 ? ['warn', 'Looks heavy on lands', `A typical spell is worth ${(-gap).toFixed(1)} points more than one more land. Try 1–2 fewer lands for spells.`]
+    : ['good', 'Balanced', 'One more land is worth about the same as a typical spell: the land count looks right.'];
+  const gaps = [{ label: landLabel, diff: L.diff, ci: L.ci, cls: '' }, ...(R ? [{ label: `Ramp (${R.n})`, diff: R.diff, ci: R.ci, cls: '' }] : []), { label: `Typical spell (${O.n})`, diff: O.diff, ci: O.ci, cls: '' }];
+  let bars = '';
+  if (curve) {
+    const pts = curve.curve.map(([k, g, w]) => ({ k, g, p: 100 * w / g })), N = pts.reduce((s, x) => s + x.g, 0);
+    const lo = Math.min(...pts.map(x => x.p)) - 2, hi = Math.max(...pts.map(x => x.p));
+    bars = `<div class="small muted" style="margin:10px 0 4px">Win rate by lands in the first 10 cards · usually ${curve.mean.toFixed(1)}</div>
+      <div style="display:flex;gap:6px;align-items:flex-end;height:92px">${pts.map(x => `<div style="flex:1;text-align:center">
+        <div class="small num" style="margin-bottom:2px">${x.p.toFixed(0)}%</div>
+        <div style="height:${Math.round(8 + 52 * (x.p - lo) / Math.max(1, hi - lo))}px;background:var(--muted);opacity:.35;border-radius:4px 4px 0 0"></div></div>`).join('')}</div>
+      <div style="display:flex;gap:6px;border-top:1px solid var(--line)">${pts.map(x => `<div style="flex:1;text-align:center" class="small"><b>${x.k}</b><div class="muted" style="font-size:11px">${Math.round(100 * x.g / N)}%</div></div>`).join('')}</div>`;
+  }
   return `<div class="sect">Mana balance</div>
-    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span><span class="small muted">lands − spells ${gap > 0 ? '+' : ''}${gap.toFixed(1)} ± ${gci.toFixed(1)}</span></div>
+    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span><span class="small muted">land − spell ${gap > 0 ? '+' : ''}${gap.toFixed(1)} ± ${gci.toFixed(1)}</span></div>
     <p class="small" style="margin:4px 0 6px">${say}</p>
-    ${forestSVG(gaps)}
-    ${skipped.length ? `<p class="small muted" style="margin:4px 0 0">Based on the ${L.n} other lands: ${skipped.map(r => r.n > 1 ? `your ${r.n} ${esc(r.name)}s` : esc(r.name)).join(', ')} show up in almost every game, so the Rank can't score them.${L.n < 8 ? ' Few lands to go on, so treat this as rough.' : ''}</p>` : ''}
-    <p class="small muted" style="margin:4px 0 0">Average Rank score of each group (how the deck does when one of these is in the first 10 cards). Rank favours cheap, early cards, so this leans slightly toward lands.</p>`;
+    ${forestSVG(gaps)}${note}${bars}
+    <p class="small muted" style="margin:6px 0 0">${curve ? 'One more land: how much win rate rises per extra land in the first 10 cards, basics included. ' : ''}Ramp and typical spell: average Rank score of those cards. Rank favours cheap, early cards, so this leans slightly toward lands.</p>`;
 }
 function forestSVG(gaps, link) {
   const nar = innerWidth < 640; const W = nar ? 360 : 900, rowH = nar ? 30 : 36, padL = nar ? 132 : 250, padR = nar ? 44 : 80, H = gaps.length * rowH + 26;
@@ -747,7 +764,7 @@ async function drawAudit(body, name) {
     <div class="sect">${outliers.length ? 'Next weakest' : 'Weakest slots'}</div>
     <p class="small muted" style="margin:4px 0 6px">${outliers.length ? '' : 'No outliers: nothing stands out from the deck\'s normal spread. '}Amber = below this deck's typical card; grey = within its normal spread or noise. Every deck has cards below zero, answers especially.</p>
     <table class="weak"><tbody>${weakest.map(weakRow).join('')}</tbody></table>
-    ${manaBalance(rows, a.arms?.[0]?.games)}
+    ${manaBalance(rows, a.arms?.[0]?.games, a.audit.lands)}
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
