@@ -245,6 +245,18 @@ function verdict(g) {
   if (Math.abs(g.diff) < 0.5) return ['', 'No difference'];
   return ['', g.diff > 0 ? 'Leans better' : 'Leans worse'];
 }
+// Rank tiers relative to the deck's own spread: every deck has cards that score below zero (answers drawn early
+// displace development), so "below zero" flags too much. Each score is first pulled toward the deck average in
+// proportion to its noise (empirical Bayes); an outlier sits more than 1.5 deck spreads below the typical card.
+function rankTiers(cards) {
+  const n = cards.length; if (n < 10) return new Map();
+  const se2 = cards.map(c => (c.ci / 1.96) ** 2), mu = cards.reduce((s, c) => s + c.diff, 0) / n;
+  const varObs = cards.reduce((s, c) => s + (c.diff - mu) ** 2, 0) / (n - 1), tau2 = Math.max(0, varObs - se2.reduce((s, v) => s + v, 0) / n);
+  const shrunk = cards.map((c, i) => mu + (tau2 > 0 ? tau2 / (tau2 + se2[i]) : 0) * (c.diff - mu));
+  const med = [...shrunk].sort((a, b) => a - b)[Math.floor(n / 2)], tau = Math.sqrt(tau2);
+  return new Map(cards.map((c, i) => [c.card, tau > 0 && shrunk[i] < med - 1.5 * tau ? 'outlier' : c.diff + c.ci < med ? 'below' : '']));
+}
+const tierCls = t => t === 'outlier' ? 'bad' : t === 'below' ? 'warn' : '';
 function forestSVG(gaps, link) {
   const nar = innerWidth < 640; const W = nar ? 360 : 900, rowH = nar ? 30 : 36, padL = nar ? 132 : 250, padR = nar ? 44 : 80, H = gaps.length * rowH + 26;
   const span = Math.max(4, ...gaps.map(g => Math.abs(g.diff) + g.ci)) * 1.1;
@@ -257,8 +269,8 @@ function forestSVG(gaps, link) {
   s += `<line class="zero" x1="${x(0)}" x2="${x(0)}" y1="0" y2="${H - 20}"/>`;
   gaps.forEach((g, i) => {
     const y = i * rowH + rowH / 2 + 2;
-    if (link) s += `<a href="${esc(link(g))}" class="frow"><title>Test replacements for ${esc(g.label)}</title><rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" rx="6"/>`; const [cls] = verdict(g);
-    const col = cls === 'good' ? 'var(--good)' : cls === 'bad' ? 'var(--bad)' : 'var(--muted)';
+    if (link) s += `<a href="${esc(link(g))}" class="frow"><title>Test replacements for ${esc(g.label)}</title><rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" rx="6"/>`; const [cls] = g.cls !== undefined ? [g.cls] : verdict(g);
+    const col = cls === 'good' ? 'var(--good)' : cls === 'bad' ? 'var(--bad)' : cls === 'warn' ? 'var(--warn)' : 'var(--muted)';
     const L = nar ? 19 : 34; const early = g.label.endsWith(' (early)'); const base0 = early ? g.label.slice(0, -8) : g.label; const sh = base0.split(' vs ').map(x => x.includes(' for ') ? x : x.split(',')[0]).join(' vs ') + (early ? ' (early)' : ''); const lab = sh.length > L ? sh.slice(0, L - 1) + '…' : sh;
     s += `<text x="0" y="${y + 4}"><title>${esc(g.label)} vs ${esc(g.vs)}</title>${esc(lab)}</text>`;
     s += `<line x1="${x(g.diff - g.ci)}" x2="${x(g.diff + g.ci)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="4" stroke-linecap="round" opacity=".45"/>`;
@@ -692,16 +704,22 @@ async function drawAudit(body, name) {
   const isLand = c => (S.sf[c]?.type || '').includes('Land');
   const rows = a.audit.cards.filter(c => inList.has(c.card));
   const spells = rows.filter(c => !isLand(c.card)).sort((x, y) => y.diff - x.diff), lands = rows.filter(c => isLand(c.card)).sort((x, y) => y.diff - x.diff);
-  const weakest = [...spells].sort((x, y) => x.diff - y.diff).slice(0, 8);
-  const toGap = c => ({ label: c.card, diff: c.diff, ci: c.ci });
+  const tier = rankTiers(a.audit.cards);
+  const byDiff = [...spells].sort((x, y) => x.diff - y.diff);
+  const outliers = byDiff.filter(c => tier.get(c.card) === 'outlier'), weakest = byDiff.filter(c => tier.get(c.card) !== 'outlier').slice(0, Math.max(3, 8 - outliers.length));
+  const toGap = c => ({ label: c.card, diff: c.diff, ci: c.ci, cls: tierCls(tier.get(c.card)) || (c.diff - c.ci > 0 ? 'good' : '') });
+  const weakRow = c => { const tr = tier.get(c.card), cls = tierCls(tr); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card.split(',')[0])} ${S.forge?.get(c.card) === 'A' ? '<span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)}</span></td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Replace</a></td></tr>`; };
   const testLink = g => `#test/${encodeURIComponent(name)}?out=${encodeURIComponent(g.label)}&pool=${a.auditPool}`;
   const N = a.arms[0]?.games || 0;
   h += `<div class="card"><div class="res-head"><div><div class="res-title">Card rank</div>
       <div class="small muted"><span class="pill">vs ${esc(poolName(a.auditPool))}</span> ${N.toLocaleString()} games${a.date ? ' · ' + esc(ago(a.date)) : ''}${(() => { const ed = Object.values(S.hints || {}).map(h => h.since).sort().pop() || ''; return ed && (a.date || '') < ed && !a.peek ? ' · <span class="pill" title="Measured before the latest AI fixes; a fresh ranking will replace it">older engine</span>' : ''; })()}${a.peek ? ' · <span class="pill gold">still running · early read, refreshes every ~20 min</span>' : a.audit.partial ? ' · <span class="pill gold">more games coming</span>' : ''}</div></div></div>
 <details class="info"><summary>ⓘ How to read this</summary><p class="small muted">Each card's change in win rate when the shuffle put it in your kept opening hand or next three draws, compared with games where it didn't. Cards that matter late (finishers, answers to specific threats) can score lower than their real value, and with this many cards a few will look bad by chance. Confirm a weak slot with a swap test before cutting it.</p></details>
-    <div class="sect">Weakest slots</div>
-    <p class="small muted" style="margin:4px 0 6px">Red = clearly below average; grey = could be noise.</p>
-    <table class="weak"><tbody>${weakest.map(c => { const [cls] = verdict(c); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card.split(',')[0])} ${S.forge?.get(c.card) === 'A' ? '<span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)}</span></td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Replace</a></td></tr>`; }).join('')}</tbody></table>
+    ${outliers.length ? `<div class="sect">Outliers <span style="text-transform:none;font-weight:500;letter-spacing:0">· test a replacement first</span></div>
+    <p class="small muted" style="margin:4px 0 6px">Far below the rest of this deck, beyond its normal spread and noise.</p>
+    <table class="weak"><tbody>${outliers.map(weakRow).join('')}</tbody></table>` : ''}
+    <div class="sect">${outliers.length ? 'Next weakest' : 'Weakest slots'}</div>
+    <p class="small muted" style="margin:4px 0 6px">${outliers.length ? '' : 'No outliers: nothing stands out from the deck\'s normal spread. '}Amber = below this deck's typical card; grey = within its normal spread or noise. Every deck has cards below zero, answers especially.</p>
+    <table class="weak"><tbody>${weakest.map(weakRow).join('')}</tbody></table>
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
