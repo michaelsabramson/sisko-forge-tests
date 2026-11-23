@@ -451,6 +451,15 @@
   ],
   "wins": 1004
  },
+ "231bc90d40c0776c76a1": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 1176,
+  "runs": [
+   "pilot_test_siskofinal_default_vs_hard_ai:45127055326"
+  ],
+  "wins": 267
+ },
  "243a987199add13ca9be": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoFinal__CaesarLegionsEmperor__for__Manamorphose",
