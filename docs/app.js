@@ -830,16 +830,14 @@ async function drawOverview(body, name) {
   const h2hLatest = [...new Map(h2h.map(g => [g.other, g])).values()];
   if (sp || h2hLatest.length) h += tile('Power', `#deck/${enc}/tests`, `${sp ? `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.win - sp.par >= -1 ? 'good' : sp.win - sp.par <= -3 ? 'warn' : ''}">Wins ${sp.win.toFixed(1)}%</span><span class="small muted">par ${sp.par.toFixed(1)}% (average opponent)</span></div>` : ''}
     ${h2hLatest.length ? `<div class="small" style="margin-top:6px">${h2hLatest.map(g => `${esc(g.label)}: <span class="pill ${verdict(g)[0]}">${f(g.diff)}</span>`).join(' · ')}</div>` : ''}`);
-  if (mb) h += tile('Mana', `#deck/${enc}/audit#mana`, `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${mb.cls}">${mb.head}</span><span class="small muted">${mb.say}</span></div>`);
-  if (sp) h += tile('Speed', `#deck/${enc}/audit#speed`, `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.cls}">${sp.head}</span><span class="small muted">${sp.say}</span></div>`);
-  if (ups.length) h += tile('Upgrades found', `#deck/${enc}/tests`, `<table class="weak"><tbody>${ups.slice(0, 4).map(g => `<tr><td>${esc(g.label.split(',')[0])} <span class="small muted">for ${esc(g.vs.split(',')[0])}</span></td><td class="r num"><span class="pill good">${f(g.diff)}</span></td><td class="r" onclick="event.preventDefault();event.stopPropagation()">${promoteBtn(g, name)}</td></tr>`).join('')}</tbody></table>`);
-  if (cuts.length) h += tile('Cut candidates', `#deck/${enc}/audit`, `<table class="weak"><tbody>${cuts.slice(0, 3).map(c => `<tr><td>${esc(c.card.split(',')[0])}${S.forge?.get(c.card) === 'A' ? ' <span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill bad">${f(c.diff)}</span></td><td class="r"><span class="btn sm" onclick="event.preventDefault();event.stopPropagation();location.hash='#test/${enc}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}'">Replace</span></td></tr>`).join('')}</tbody></table>`);
+  // mana and speed in full, with their charts (the same sections as on the Cards tab)
+  if (a) { const m = manaBalance(rows, a.arms?.[0]?.games, a.audit.lands), s = speedCurve(a.audit.pace, a.auditPool);
+    if (m) h += `<div class="card">${m}</div>`; if (s) h += `<div class="card">${s}</div>`; }
   if (!a) h += `<div class="card"><div class="sect" style="margin:0 0 6px">Card scores</div><p class="small muted" style="margin:0">Run a ranking on the Cards tab to get cut candidates, mana and speed for this deck.</p><a class="btn sm" style="margin-top:8px;display:inline-block" href="#deck/${enc}/audit">Go to Cards</a></div>`;
   if (!h) h = `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${enc}">Start one</a></div>`;
   h += `<p class="small muted" style="margin:14px 0 0">${a ? `From the latest ranking (${a.audit.pace?.games?.toLocaleString() || ''} games, ${esc(ago(a.date))}) and tests. ` : ''}<a href="#deck/${enc}/notes">Notes</a> · <a href="#deck/${enc}/history">History</a></p>`;
   body.innerHTML = `<div class="stack">${h}</div>`;
   $$('[data-promote]', body).forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); promote(name, S.rendered[+b.dataset.promote]); });
-  $$('[data-go]', body).forEach(t => t.addEventListener('click', () => { S.goTo = t.dataset.go; }));
 }
 async function drawAudit(body, name) {
   if (!S.results) await loadResults();
@@ -877,8 +875,6 @@ async function drawAudit(body, name) {
     <div class="sect">${outliers.length ? 'Next weakest' : 'Weakest slots'}</div>
     <p class="small muted" style="margin:4px 0 6px">${outliers.length ? '' : 'No outliers: nothing stands out from the deck\'s normal spread. '}Amber = below this deck's typical card; grey = within its normal spread or noise. Every deck has cards below zero, answers especially.</p>
     <table class="weak"><tbody>${weakest.map(weakRow).join('')}</tbody></table>
-    ${manaBalance(rows, a.arms?.[0]?.games, a.audit.lands)}
-    ${speedCurve(a.audit.pace, a.auditPool)}
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
