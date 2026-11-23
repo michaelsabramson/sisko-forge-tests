@@ -10,6 +10,8 @@ usage_rows = None
 usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
 tops = []                      # audit: (first 10 cards, won) per game, for the land curve
+paced = []                     # audit: (won, round, stall) per game, for the speed curve (scripts/pace.py)
+import pace
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
     i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
     for l in open(f, errors='ignore'):
@@ -28,6 +30,9 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             if t: speed[i][0] += 1; speed[i][1] += int(t.group(1))
             won = m.group(1) == me
             if arms[i]['card'] == '@audit' and top is None: top = None; continue   # no draw log: skip the game for audits
+            if arms[i]['card'] == '@audit':
+                pg = pace.game(l, me)
+                if pg: paced.append(pg)
             new[i][1] += 1; new[i][0] += won
             if top is not None:
                 for c in top: e = seen.setdefault(c, [0, 0]); e[0] += 1; e[1] += won
@@ -92,6 +97,9 @@ if req.get('mode') == 'audit':
     if L is not None:
         lt = landcurve.tally(tops, L, {k: list(v) for k, v in prior_l.items()})
         audit["land_tallies"] = lt; audit["lands"] = landcurve.summarize(lt)
+    prior_p = cache.load().get(a0.get('key'), {}).get('pace')
+    pt = pace.tally(paced, {"games": prior_p["games"], "stalls": prior_p["stalls"], "won": list(prior_p["won"])} if prior_p else None)
+    audit["pace_tallies"] = pt; audit["pace"] = pace.summarize(pt)
     t.append(f"\nDeck audit: {N:,} games, {100*W/max(1,N):.1f}% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):\n")
     t.append("| Card | Games seen | Win rate seen | Change | ± |"); t.append("|---|---|---|---|---|")
     for r in rows: t.append(f"| {r['card']} | {r['seen']} | {100*r['wins']/r['seen']:.1f}% | {r['diff']:+.1f} | {r['ci']:.1f} |")
@@ -123,7 +131,8 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
         **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped')),
-                      **({"lands": audit["lands"]} if audit.get("lands") else {})}} if audit else {})}
+                      **({"lands": audit["lands"]} if audit.get("lands") else {}),
+                      **({"pace": audit["pace"]} if audit.get("pace") else {})}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"
 if all(res[i][1] for pr in pairs for i in pr):
@@ -142,6 +151,7 @@ if not PEEK:
         if audit and i == 0:
             e["cards"] = audit["tallies"]
             if audit.get("land_tallies"): e["lands"] = audit["land_tallies"]
+            if audit.get("pace_tallies"): e["pace"] = audit["pace_tallies"]
     if changed: cache.save(c)
     # remember how fast games actually ran (games per process-minute), so the dispatcher sizes future runs from it
     try:
