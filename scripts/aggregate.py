@@ -38,7 +38,8 @@ if PEEK and sum(g for _, g in new) == 0:
     print("no games saved yet; skipping early read"); sys.exit(0)
 
 def p(i): w, n = res[i]; return w / max(1, n), n
-intro = ("Whole lists compared, nothing forced into the opening hand." if req.get('mode') == 'decks'
+intro = ("Same list piloted by different Forge AI profiles (opponents on Default), nothing forced into the opening hand." if req.get('mode') == 'pilot'
+         else "Whole lists compared, nothing forced into the opening hand." if req.get('mode') == 'decks'
          else "Package swap: each game forces one card of the package (or of the cards it replaces) into the opening hand, rotating through them." if req.get('mode') == 'package'
          else f"Swapped card forced into opening hand (band {req.get('band', 0)}).")
 reused = sum(a.get('prior_games', 0) for a in arms)
@@ -106,7 +107,7 @@ if logs:
 data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
-                  "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
+                  "reused": a.get('prior_games', 0), **({"profile": a['profile']} if a.get('profile') else {}), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"stopped": True} if STOPPED else {}),
         "compare": pairs, "opponents": req.get('opponents'),
@@ -138,7 +139,8 @@ if not PEEK:
     opps = ",".join(req.get('opponents') or cache.DEFAULT_OPP)
     for i, a in enumerate(arms):
         if speed[i][0] < 20: continue
-        prof = req.get('profile')
+        prof = a.get('profile') or req.get('profile')
+        prof = None if prof == "Default" else prof
         for k in ((a['deck'] + "|" + opps + "|" + prof, "*|" + prof) if prof else (a['deck'] + "|" + opps, "*")):
             sp[k] = (sp.get(k, []) + [speed[i]])[-6:]   # recent measurements only: the engine and decks change
     json.dump(sp, open('cache/speed.json', 'w'), indent=1)

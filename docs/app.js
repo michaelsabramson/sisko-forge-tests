@@ -200,6 +200,7 @@ document.addEventListener('mouseover', e => {
 
 /* ---------- results ---------- */
 function parseResult(path, md) {
+  if (md.includes('"mode": "pilot"')) return null;   // AI pilot comparisons are backend experiments, not deck results
   const name = path.slice(8, -3); const peek = name.endsWith('_peek');
   const dm = md.match(/<!-- data (\{.*\}) -->/);
   let arms = [], gaps = [];
@@ -275,7 +276,7 @@ async function loadResults() {
     for (const c of cs) { const m = c.commit.message.match(/^(?:Results|Early read): (\S+)/); const k = m ? m[1] + (c.commit.message.startsWith('Early') ? '_peek' : '') : null; if (k && !dates[k]) dates[k] = c.commit.author.date; }
     for (const c of cs) for (const f of files) { const n = f.slice(8, -3); if (!dates[n] && c.commit.message.toLowerCase().includes(n.replace(/_/g, ' ').slice(0, 12))) dates[n] = c.commit.author.date; }
   } catch {}
-  const out = await Promise.all(files.map(async f => { try { const r = parseResult(f, await raw(f)); r.date = dates[r.name]; return r; } catch { return null; } }));
+  const out = await Promise.all(files.map(async f => { try { const r = parseResult(f, await raw(f)); if (!r) return null; r.date = dates[r.name]; return r; } catch { return null; } }));
   S.results = out.filter(r => r && (r.arms.length || r.audit || r.usage)).sort((a, b) => (b.date || '').localeCompare(a.date || '') || a.name.localeCompare(b.name));
 }
 /* ---------- deck manifest ---------- */

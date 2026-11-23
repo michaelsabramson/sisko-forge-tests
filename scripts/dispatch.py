@@ -161,7 +161,13 @@ def main():
     src = q[0]
     r = json.load(open(src, encoding="utf-8"))
     arms, compare = [], []
-    if r.get("mode", "swap") == "swap":
+    if r.get("mode") == "pilot":
+        # backend only (no app button): the same list piloted by different Forge AI profiles, opponents on Default,
+        # nothing forced. Measures how much a profile's extra thinking is worth with this deck.
+        for p in r.get("profiles", ["Default", "Hard"]):
+            arms.append({"deck": r["base"], "card": "", "profile": p, "label": f"{p} AI"})
+        compare = [[0, i] for i in range(1, len(arms))]
+    elif r.get("mode", "swap") == "swap":
         base = r["base"]
         for s in r["slots"]:
             b = len(arms)
@@ -231,7 +237,7 @@ def main():
     opps = req.get("opponents") or cache.DEFAULT_OPP
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
-        a["key"] = cache.arm_key(a, opps, req["band"], eng, req.get("profile"))
+        a["key"] = cache.arm_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"))
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4
@@ -245,7 +251,7 @@ def main():
         if todo:
             req["procs"] = allocate(need, todo, procs_total)
             per = [req["procs"].count(i) for i in range(len(arms))]
-            gpm = [measured_gpm(a["deck"], opps, req.get("profile")) for a in arms]
+            gpm = [measured_gpm(a["deck"], opps, a.get("profile") or req.get("profile")) for a in arms]
             req["gpm"] = [round(g, 3) for g in gpm]
             # each process stops once it has played its share of its arm's games, so a run ends when the games are done;
             # the minutes are only a safety cap (generous, in case this run is slower than the measured speed)
@@ -257,10 +263,10 @@ def main():
             sh = req["shards"]
             # slot tests can stop early once settled (scripts/aggregate.py): a smaller first round leaves more of the run
             # in batches, which runners stop claiming, and early reads come every 10 minutes instead of 20
-            req["earlystop"] = req["mode"] in ("swap", "package") and not r.get("full")
+            req["earlystop"] = req["mode"] in ("swap", "package", "pilot") and not r.get("full")
             if req["earlystop"]:
                 # about five looks per run: every 5 minutes for short runs, every 10 for the longest
-                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, req.get("profile"))) for i in todo)
+                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, arms[i].get("profile") or req.get("profile"))) for i in todo)
                 req["checkpoint"] = int(min(10, max(5, math.ceil(est / 5))))
             frac = 0.3 if req["earlystop"] else 0.6
             first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]

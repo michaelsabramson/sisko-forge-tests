@@ -7,7 +7,6 @@ REQ=tests/request.json
 BAND=$(jq -r '.band // 0' $REQ)
 RUN=($(jq -r '.arms|to_entries[]|select(.value.cached!=true)|.key' $REQ)); N=${#RUN[@]}
 SB=$(jq -r '.seedbase // 7000' $REQ)
-PROF=$(jq -r '.profile // "Default"' $REQ)   # AI settings for the tested Sisko* decks (forge-gui/res/ai/<profile>.ai)
 [ $N -eq 0 ] && exit 0
 RES=forge/forge-gui/res; CP="runner-classes:lib/*"
 OPP=$(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"]) | map("decks/"+.+".dck") | join(" ")' $REQ)
@@ -24,6 +23,7 @@ for p in 0 1 2 3; do
   k=$((S*4+p))
   if [ "$(jq '.procs|length' $REQ)" -gt "$k" ] 2>/dev/null; then i=$(jq -r ".procs[$k]" $REQ); else i=${RUN[$((k % N))]}; fi
   D=$(jq -r ".arms[$i].deck" $REQ); C=$(jq -r ".arms[$i].card" $REQ)
+  PROF=$(jq -r ".arms[$i].profile // .profile // \"Default\"" $REQ)   # tested deck's AI settings (forge-gui/res/ai/<profile>.ai)
   AUD=""; [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
   # precision-sized runs: this runner's processes on the same arm share one pool of games (quota x processes),
   # so the runner finishes together instead of waiting on whichever process drew the slowest games
