@@ -4,111 +4,111 @@ Swapped card forced into opening hand (band 0). Same opponents for every list.
 
 | List | Card | Games | Wins | Win rate | Reused |
 |---|---|---|---|---|---|
-| KW-Najeela-1123 | Audit of KW-Najeela-1123 | 3601 | 512 | 14.2% | 0 |
+| KW-Najeela-1123 | Audit of KW-Najeela-1123 | 7860 | 1128 | 14.4% | 0 |
 
 Gaps (95% interval):
 
 
-Deck audit: 3,601 games, 14.2% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
+Deck audit: 7,860 games, 14.4% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
 
 | Card | Games seen | Win rate seen | Change | ± |
 |---|---|---|---|---|
-| Swiftfoot Boots | 325 | 7.7% | -7.2 | 3.1 |
-| Skullclamp | 375 | 9.3% | -5.5 | 3.2 |
-| Monastery Mentor | 332 | 9.9% | -4.7 | 3.4 |
-| Banner of Kinship | 338 | 10.4% | -4.3 | 3.5 |
-| Godless Shrine | 401 | 10.7% | -3.9 | 3.3 |
-| Stroke of Midnight | 318 | 10.7% | -3.9 | 3.6 |
-| Anguished Unmaking | 305 | 10.8% | -3.7 | 3.7 |
-| Breeding Pool | 415 | 11.1% | -3.5 | 3.3 |
-| Voice of Victory | 352 | 11.1% | -3.5 | 3.5 |
-| Boros Signet | 350 | 11.1% | -3.4 | 3.5 |
-| Curse of Opulence | 314 | 11.5% | -3.0 | 3.7 |
-| Talisman of Curiosity | 364 | 11.5% | -3.0 | 3.5 |
-| Orzhov Signet | 361 | 11.6% | -2.9 | 3.5 |
-| Nature's Claim | 357 | 11.8% | -2.7 | 3.5 |
-| Pongify | 297 | 11.8% | -2.6 | 3.9 |
-| Zack Fair | 335 | 11.9% | -2.5 | 3.7 |
-| Recruiter of the Guard | 309 | 12.0% | -2.5 | 3.8 |
-| Shalai, Voice of Plenty | 323 | 12.1% | -2.4 | 3.8 |
-| Great Train Heist | 314 | 12.1% | -2.3 | 3.8 |
-| Boros Charm | 330 | 12.4% | -2.0 | 3.8 |
-| Counterspell | 336 | 12.5% | -1.9 | 3.7 |
-| Dreamroot Cascade | 398 | 12.6% | -1.9 | 3.5 |
-| Tymna the Weaver | 335 | 12.5% | -1.9 | 3.7 |
-| Professional Face-Breaker | 336 | 12.8% | -1.6 | 3.8 |
-| Fellwar Stone | 359 | 12.8% | -1.6 | 3.7 |
-| Veil of Summer | 304 | 12.8% | -1.5 | 4.0 |
-| Opulent Palace | 454 | 13.0% | -1.4 | 3.3 |
-| City of Brass | 392 | 13.0% | -1.4 | 3.5 |
-| Mirari's Wake | 331 | 13.0% | -1.4 | 3.8 |
-| Swords to Plowshares | 344 | 13.1% | -1.3 | 3.8 |
-| Sylvan Safekeeper | 326 | 13.2% | -1.1 | 3.9 |
-| Shock Brigade | 333 | 13.2% | -1.1 | 3.8 |
-| Flare of Fortitude | 322 | 13.4% | -0.9 | 3.9 |
-| Talisman of Progress | 329 | 13.4% | -0.9 | 3.9 |
-| Nightblade Brigade | 309 | 13.6% | -0.7 | 4.0 |
-| Canopy Vista | 410 | 13.7% | -0.6 | 3.5 |
-| Giver of Runes | 315 | 13.7% | -0.6 | 4.0 |
-| Orim's Chant | 344 | 13.7% | -0.6 | 3.8 |
-| Winternight Stories | 338 | 13.9% | -0.3 | 3.9 |
-| Farseek | 338 | 13.9% | -0.3 | 3.9 |
-| Windswept Heath | 409 | 13.9% | -0.3 | 3.6 |
-| Blooming Marsh | 413 | 14.0% | -0.2 | 3.6 |
-| Zurgo's Vanguard | 342 | 14.0% | -0.2 | 3.9 |
-| Despark | 352 | 14.2% | -0.0 | 3.8 |
-| Force of Vigor | 338 | 14.2% | -0.0 | 3.9 |
-| Exotic Orchard | 428 | 14.3% | +0.0 | 3.5 |
-| Path of Ancestry | 412 | 14.3% | +0.1 | 3.6 |
-| Faeburrow Elder | 341 | 14.4% | +0.2 | 3.9 |
-| Mardu Siegebreaker | 319 | 14.4% | +0.2 | 4.0 |
-| Mystic Monastery | 416 | 14.4% | +0.2 | 3.6 |
-| Sylvan Library | 353 | 14.4% | +0.2 | 3.9 |
-| Bloodstained Mire | 400 | 14.5% | +0.3 | 3.7 |
-| Third Path Iconoclast | 371 | 14.6% | +0.4 | 3.8 |
-| Mountain | 417 | 14.6% | +0.5 | 3.6 |
-| Prairie Stream | 424 | 14.6% | +0.5 | 3.6 |
-| An Offer You Can't Refuse | 327 | 14.7% | +0.5 | 4.0 |
-| Arcane Signet | 361 | 14.7% | +0.5 | 3.8 |
-| Dragonlord Dromoka | 312 | 14.7% | +0.6 | 4.1 |
-| Sandsteppe Citadel | 418 | 14.8% | +0.7 | 3.6 |
-| Reprieve | 323 | 14.9% | +0.7 | 4.1 |
-| Sidar Kondo of Jamuraa | 323 | 14.9% | +0.7 | 4.1 |
-| Plains | 805 | 14.8% | +0.7 | 2.8 |
-| Ash Barrens | 409 | 14.9% | +0.8 | 3.7 |
-| High Market | 395 | 14.9% | +0.8 | 3.7 |
-| Swamp | 387 | 15.0% | +0.9 | 3.8 |
-| Noble Hierarch | 351 | 15.1% | +1.0 | 3.9 |
-| Concealed Courtyard | 400 | 15.2% | +1.2 | 3.7 |
-| Steam Vents | 432 | 15.3% | +1.2 | 3.6 |
-| Wooded Foothills | 424 | 15.3% | +1.3 | 3.6 |
-| Imperial Recruiter | 305 | 15.4% | +1.3 | 4.2 |
-| Polluted Delta | 396 | 15.4% | +1.3 | 3.8 |
-| Selesnya Signet | 356 | 15.4% | +1.4 | 3.9 |
-| Island | 387 | 15.5% | +1.4 | 3.8 |
-| Sundown Pass | 406 | 15.5% | +1.5 | 3.7 |
-| Chronicle of Victory | 328 | 15.5% | +1.5 | 4.1 |
-| Land Tax | 347 | 15.6% | +1.5 | 4.0 |
-| Scalding Tarn | 399 | 15.5% | +1.5 | 3.8 |
-| Aurelia, the Warleader | 338 | 15.7% | +1.6 | 4.1 |
-| Grove of the Burnwillows | 406 | 15.8% | +1.7 | 3.7 |
-| White Orchid Phantom | 329 | 15.8% | +1.8 | 4.1 |
-| Forest | 825 | 15.6% | +1.8 | 2.8 |
-| Grim Hireling | 349 | 16.0% | +2.0 | 4.0 |
-| Talisman of Creativity | 353 | 16.1% | +2.1 | 4.0 |
-| Laelia, the Blade Reforged | 315 | 16.2% | +2.2 | 4.2 |
-| Aven Interrupter | 325 | 16.3% | +2.3 | 4.2 |
-| Esper Sentinel | 352 | 16.5% | +2.5 | 4.0 |
-| Azorius Signet | 346 | 16.5% | +2.5 | 4.1 |
-| Heroic Intervention | 348 | 16.7% | +2.7 | 4.1 |
-| Command Tower | 427 | 16.6% | +2.7 | 3.7 |
-| Deathcap Glade | 402 | 16.7% | +2.8 | 3.8 |
-| Sol Ring | 344 | 17.2% | +3.2 | 4.2 |
-| Mana Confluence | 411 | 17.3% | +3.5 | 3.9 |
-| Misty Rainforest | 403 | 17.4% | +3.5 | 3.9 |
-| Defense of the Heart | 297 | 17.5% | +3.6 | 4.5 |
-| Nature's Will | 324 | 18.2% | +4.4 | 4.4 |
-| Yavimaya, Cradle of Growth | 302 | 18.9% | +5.1 | 4.6 |
-| All-Out Assault | 320 | 19.7% | +6.0 | 4.5 |
+| Swiftfoot Boots | 719 | 9.5% | -5.4 | 2.3 |
+| Anguished Unmaking | 687 | 10.5% | -4.2 | 2.4 |
+| Monastery Mentor | 688 | 11.5% | -3.1 | 2.5 |
+| Orzhov Signet | 760 | 11.6% | -3.1 | 2.4 |
+| Sylvan Safekeeper | 732 | 11.6% | -3.0 | 2.5 |
+| Stroke of Midnight | 749 | 11.7% | -2.9 | 2.5 |
+| Skullclamp | 767 | 11.9% | -2.8 | 2.4 |
+| Winternight Stories | 709 | 12.0% | -2.6 | 2.5 |
+| Boros Charm | 698 | 12.0% | -2.5 | 2.5 |
+| Breeding Pool | 897 | 12.2% | -2.5 | 2.3 |
+| Godless Shrine | 856 | 12.1% | -2.5 | 2.3 |
+| Recruiter of the Guard | 692 | 12.1% | -2.4 | 2.6 |
+| Voice of Victory | 750 | 12.3% | -2.3 | 2.5 |
+| Great Train Heist | 734 | 12.4% | -2.1 | 2.5 |
+| Boros Signet | 763 | 12.5% | -2.1 | 2.5 |
+| Curse of Opulence | 689 | 12.5% | -2.0 | 2.6 |
+| Zack Fair | 773 | 12.5% | -2.0 | 2.5 |
+| Force of Vigor | 726 | 12.5% | -2.0 | 2.5 |
+| Arcane Signet | 753 | 12.6% | -1.9 | 2.5 |
+| Banner of Kinship | 697 | 12.6% | -1.9 | 2.6 |
+| Ash Barrens | 867 | 12.7% | -1.9 | 2.4 |
+| Concealed Courtyard | 895 | 12.7% | -1.8 | 2.3 |
+| High Market | 866 | 12.8% | -1.7 | 2.4 |
+| Shalai, Voice of Plenty | 719 | 12.8% | -1.7 | 2.6 |
+| Tymna the Weaver | 708 | 12.9% | -1.6 | 2.6 |
+| Windswept Heath | 891 | 13.2% | -1.2 | 2.4 |
+| Talisman of Curiosity | 784 | 13.3% | -1.2 | 2.5 |
+| Sylvan Library | 732 | 13.3% | -1.2 | 2.6 |
+| Faeburrow Elder | 696 | 13.5% | -0.9 | 2.7 |
+| Polluted Delta | 908 | 13.5% | -0.9 | 2.4 |
+| City of Brass | 891 | 13.6% | -0.9 | 2.4 |
+| Selesnya Signet | 743 | 13.6% | -0.8 | 2.6 |
+| Opulent Palace | 937 | 13.7% | -0.8 | 2.4 |
+| Fellwar Stone | 751 | 13.7% | -0.7 | 2.6 |
+| White Orchid Phantom | 719 | 13.8% | -0.6 | 2.6 |
+| Dragonlord Dromoka | 740 | 13.8% | -0.6 | 2.6 |
+| Imperial Recruiter | 747 | 13.8% | -0.6 | 2.6 |
+| An Offer You Can't Refuse | 723 | 13.8% | -0.6 | 2.6 |
+| Bloodstained Mire | 915 | 13.9% | -0.5 | 2.4 |
+| Noble Hierarch | 771 | 13.9% | -0.5 | 2.6 |
+| Despark | 752 | 14.0% | -0.4 | 2.6 |
+| Dreamroot Cascade | 908 | 14.0% | -0.4 | 2.4 |
+| Talisman of Progress | 736 | 14.0% | -0.4 | 2.6 |
+| Nature's Claim | 728 | 14.1% | -0.2 | 2.7 |
+| Mountain | 889 | 14.2% | -0.2 | 2.4 |
+| Pongify | 691 | 14.2% | -0.2 | 2.7 |
+| Mardu Siegebreaker | 705 | 14.2% | -0.2 | 2.7 |
+| Mirari's Wake | 712 | 14.2% | -0.2 | 2.7 |
+| Shock Brigade | 696 | 14.2% | -0.1 | 2.7 |
+| Giver of Runes | 686 | 14.3% | -0.1 | 2.7 |
+| Zurgo's Vanguard | 714 | 14.3% | -0.1 | 2.7 |
+| Farseek | 724 | 14.4% | +0.0 | 2.7 |
+| Sandsteppe Citadel | 911 | 14.4% | +0.0 | 2.4 |
+| Orim's Chant | 708 | 14.4% | +0.1 | 2.7 |
+| Talisman of Creativity | 776 | 14.4% | +0.1 | 2.6 |
+| Chronicle of Victory | 741 | 14.6% | +0.2 | 2.7 |
+| Swords to Plowshares | 699 | 14.6% | +0.3 | 2.7 |
+| Exotic Orchard | 963 | 14.6% | +0.3 | 2.4 |
+| Esper Sentinel | 771 | 14.7% | +0.3 | 2.6 |
+| Aurelia, the Warleader | 748 | 14.7% | +0.4 | 2.7 |
+| Canopy Vista | 870 | 14.7% | +0.4 | 2.5 |
+| Flare of Fortitude | 713 | 14.7% | +0.4 | 2.7 |
+| Third Path Iconoclast | 739 | 14.7% | +0.4 | 2.7 |
+| Azorius Signet | 790 | 14.9% | +0.7 | 2.6 |
+| Counterspell | 718 | 15.0% | +0.8 | 2.7 |
+| Deathcap Glade | 921 | 15.1% | +0.8 | 2.5 |
+| Plains | 1751 | 15.0% | +0.9 | 1.9 |
+| Veil of Summer | 678 | 15.2% | +0.9 | 2.8 |
+| Wooded Foothills | 902 | 15.2% | +0.9 | 2.5 |
+| Prairie Stream | 941 | 15.2% | +1.0 | 2.4 |
+| Path of Ancestry | 887 | 15.2% | +1.0 | 2.5 |
+| Mystic Monastery | 915 | 15.3% | +1.1 | 2.5 |
+| Sidar Kondo of Jamuraa | 690 | 15.4% | +1.1 | 2.8 |
+| Grim Hireling | 751 | 15.4% | +1.2 | 2.7 |
+| Blooming Marsh | 901 | 15.4% | +1.2 | 2.5 |
+| Swamp | 860 | 15.5% | +1.2 | 2.5 |
+| Aven Interrupter | 761 | 15.5% | +1.3 | 2.7 |
+| Scalding Tarn | 922 | 15.6% | +1.4 | 2.5 |
+| Island | 888 | 15.7% | +1.5 | 2.5 |
+| Forest | 1770 | 15.5% | +1.5 | 1.9 |
+| Grove of the Burnwillows | 886 | 15.8% | +1.6 | 2.5 |
+| Sundown Pass | 886 | 15.8% | +1.6 | 2.5 |
+| Heroic Intervention | 721 | 16.0% | +1.8 | 2.8 |
+| Nightblade Brigade | 700 | 16.0% | +1.8 | 2.8 |
+| Steam Vents | 926 | 16.0% | +1.9 | 2.5 |
+| Land Tax | 719 | 16.4% | +2.3 | 2.8 |
+| Laelia, the Blade Reforged | 722 | 16.5% | +2.4 | 2.8 |
+| Mana Confluence | 894 | 16.4% | +2.4 | 2.6 |
+| Reprieve | 706 | 16.6% | +2.4 | 2.9 |
+| Command Tower | 905 | 16.7% | +2.6 | 2.6 |
+| Misty Rainforest | 879 | 16.8% | +2.8 | 2.6 |
+| Professional Face-Breaker | 715 | 16.9% | +2.8 | 2.9 |
+| Sol Ring | 716 | 17.0% | +3.0 | 2.9 |
+| Defense of the Heart | 696 | 17.4% | +3.3 | 2.9 |
+| Yavimaya, Cradle of Growth | 675 | 18.4% | +4.4 | 3.0 |
+| All-Out Assault | 722 | 18.8% | +4.9 | 3.0 |
+| Nature's Will | 745 | 20.5% | +6.8 | 3.0 |
 
-<!-- data {"name": "ranking_of_kw_najeela_1123", "title": "Ranking of KW-Najeela-1123", "mode": "audit", "run_id": "45281207507", "finished": "2026-11-23T22:36:12Z", "arms": [{"deck": "KW-Najeela-1123", "card": "@audit", "games": 3601, "wins": 512, "reused": 0, "label": "Audit of KW-Najeela-1123"}], "batching": null, "compare": [], "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"], "speed": 1.229, "audit": {"deck": "KW-Najeela-1123", "cards": [{"card": "Swiftfoot Boots", "seen": 325, "wins": 25, "diff": -7.17, "ci": 3.14}, {"card": "Skullclamp", "seen": 375, "wins": 35, "diff": -5.45, "ci": 3.19}, {"card": "Monastery Mentor", "seen": 332, "wins": 33, "diff": -4.71, "ci": 3.44}, {"card": "Banner of Kinship", "seen": 338, "wins": 35, "diff": -4.26, "ci": 3.47}, {"card": "Godless Shrine", "seen": 401, "wins": 43, "diff": -3.93, "ci": 3.27}, {"card": "Stroke of Midnight", "seen": 318, "wins": 34, "diff": -3.87, "ci": 3.6}, {"card": "Anguished Unmaking", "seen": 305, "wins": 33, "diff": -3.71, "ci": 3.69}, {"card": "Breeding Pool", "seen": 415, "wins": 46, "diff": -3.54, "ci": 3.26}, {"card": "Voice of Victory", "seen": 352, "wins": 39, "diff": -3.48, "ci": 3.5}, {"card": "Boros Signet", "seen": 350, "wins": 39, "diff": -3.41, "ci": 3.51}, {"card": "Curse of Opulence", "seen": 314, "wins": 36, "diff": -3.02, "ci": 3.72}, {"card": "Talisman of Curiosity", "seen": 364, "wins": 42, "diff": -2.98, "ci": 3.5}, {"card": "Orzhov Signet", "seen": 361, "wins": 42, "diff": -2.87, "ci": 3.52}, {"card": "Nature's Claim", "seen": 357, "wins": 42, "diff": -2.72, "ci": 3.55}, {"card": "Pongify", "seen": 297, "wins": 35, "diff": -2.65, "ci": 3.86}, {"card": "Zack Fair", "seen": 335, "wins": 40, "diff": -2.51, "ci": 3.68}, {"card": "Recruiter of the Guard", "seen": 309, "wins": 37, "diff": -2.45, "ci": 3.81}, {"card": "Shalai, Voice of Plenty", "seen": 323, "wins": 39, "diff": -2.36, "ci": 3.75}, {"card": "Great Train Heist", "seen": 314, "wins": 38, "diff": -2.32, "ci": 3.8}, {"card": "Boros Charm", "seen": 330, "wins": 41, "diff": -1.98, "ci": 3.76}, {"card": "Counterspell", "seen": 336, "wins": 42, "diff": -1.9, "ci": 3.74}, {"card": "Dreamroot Cascade", "seen": 398, "wins": 50, "diff": -1.86, "ci": 3.48}, {"card": "Tymna the Weaver", "seen": 335, "wins": 42, "diff": -1.85, "ci": 3.74}, {"card": "Professional Face-Breaker", "seen": 336, "wins": 43, "diff": -1.57, "ci": 3.77}, {"card": "Fellwar Stone", "seen": 359, "wins": 46, "diff": -1.56, "ci": 3.66}, {"card": "Veil of Summer", "seen": 304, "wins": 39, "diff": -1.52, "ci": 3.95}, {"card": "Opulent Palace", "seen": 454, "wins": 59, "diff": -1.4, "ci": 3.33}, {"card": "City of Brass", "seen": 392, "wins": 51, "diff": -1.36, "ci": 3.54}, {"card": "Mirari's Wake", "seen": 331, "wins": 43, "diff": -1.35, "ci": 3.82}, {"card": "Swords to Plowshares", "seen": 344, "wins": 45, "diff": -1.26, "ci": 3.76}, {"card": "Sylvan Safekeeper", "seen": 326, "wins": 43, "diff": -1.13, "ci": 3.86}, {"card": "Shock Brigade", "seen": 333, "wins": 44, "diff": -1.11, "ci": 3.83}, {"card": "Flare of Fortitude", "seen": 322, "wins": 43, "diff": -0.95, "ci": 3.9}, {"card": "Talisman of Progress", "seen": 329, "wins": 44, "diff": -0.93, "ci": 3.87}, {"card": "Nightblade Brigade", "seen": 309, "wins": 42, "diff": -0.68, "ci": 4.0}, {"card": "Canopy Vista", "seen": 410, "wins": 56, "diff": -0.63, "ci": 3.54}, {"card": "Giver of Runes", "seen": 315, "wins": 43, "diff": -0.62, "ci": 3.98}, {"card": "Orim's Chant", "seen": 344, "wins": 47, "diff": -0.61, "ci": 3.82}, {"card": "Winternight Stories", "seen": 338, "wins": 47, "diff": -0.35, "ci": 3.88}, {"card": "Farseek", "seen": 338, "wins": 47, "diff": -0.35, "ci": 3.88}, {"card": "Windswept Heath", "seen": 409, "wins": 57, "diff": -0.32, "ci": 3.57}, {"card": "Blooming Marsh", "seen": 413, "wins": 58, "diff": -0.2, "ci": 3.56}, {"card": "Zurgo's Vanguard", "seen": 342, "wins": 48, "diff": -0.2, "ci": 3.87}, {"card": "Despark", "seen": 352, "wins": 50, "diff": -0.02, "ci": 3.84}, {"card": "Force of Vigor", "seen": 338, "wins": 48, "diff": -0.02, "ci": 3.91}, {"card": "Exotic Orchard", "seen": 428, "wins": 61, "diff": 0.04, "ci": 3.53}, {"card": "Path of Ancestry", "seen": 412, "wins": 59, "diff": 0.12, "ci": 3.59}, {"card": "Faeburrow Elder", "seen": 341, "wins": 49, "diff": 0.17, "ci": 3.91}, {"card": "Mardu Siegebreaker", "seen": 319, "wins": 46, "diff": 0.22, "ci": 4.04}, {"card": "Mystic Monastery", "seen": 416, "wins": 60, "diff": 0.23, "ci": 3.59}, {"card": "Sylvan Library", "seen": 353, "wins": 51, "diff": 0.25, "ci": 3.86}, {"card": "Bloodstained Mire", "seen": 400, "wins": 58, "diff": 0.32, "ci": 3.66}, {"card": "Third Path Iconoclast", "seen": 371, "wins": 54, "diff": 0.38, "ci": 3.78}, {"card": "Mountain", "seen": 417, "wins": 61, "diff": 0.46, "ci": 3.6}, {"card": "Prairie Stream", "seen": 424, "wins": 62, "diff": 0.46, "ci": 3.58}, {"card": "An Offer You Can't Refuse", "seen": 327, "wins": 48, "diff": 0.51, "ci": 4.02}, {"card": "Arcane Signet", "seen": 361, "wins": 53, "diff": 0.51, "ci": 3.84}, {"card": "Dragonlord Dromoka", "seen": 312, "wins": 46, "diff": 0.58, "ci": 4.11}, {"card": "Sandsteppe Citadel", "seen": 418, "wins": 62, "diff": 0.69, "ci": 3.62}, {"card": "Reprieve", "seen": 323, "wins": 48, "diff": 0.71, "ci": 4.06}, {"card": "Sidar Kondo of Jamuraa", "seen": 323, "wins": 48, "diff": 0.71, "ci": 4.06}, {"card": "Plains", "seen": 805, "wins": 119, "diff": 0.73, "ci": 2.77}, {"card": "Ash Barrens", "seen": 409, "wins": 61, "diff": 0.79, "ci": 3.66}, {"card": "High Market", "seen": 395, "wins": 59, "diff": 0.81, "ci": 3.72}, {"card": "Swamp", "seen": 387, "wins": 58, "diff": 0.86, "ci": 3.75}, {"card": "Noble Hierarch", "seen": 351, "wins": 53, "diff": 0.98, "ci": 3.93}, {"card": "Concealed Courtyard", "seen": 400, "wins": 61, "diff": 1.16, "ci": 3.72}, {"card": "Steam Vents", "seen": 432, "wins": 66, "diff": 1.2, "ci": 3.6}, {"card": "Wooded Foothills", "seen": 424, "wins": 65, "diff": 1.26, "ci": 3.64}, {"card": "Imperial Recruiter", "seen": 305, "wins": 47, "diff": 1.3, "ci": 4.22}, {"card": "Polluted Delta", "seen": 396, "wins": 61, "diff": 1.33, "ci": 3.75}, {"card": "Selesnya Signet", "seen": 356, "wins": 55, "diff": 1.37, "ci": 3.94}, {"card": "Island", "seen": 387, "wins": 60, "diff": 1.44, "ci": 3.8}, {"card": "Sundown Pass", "seen": 406, "wins": 63, "diff": 1.46, "ci": 3.72}, {"card": "Chronicle of Victory", "seen": 328, "wins": 51, "diff": 1.46, "ci": 4.1}, {"card": "Land Tax", "seen": 347, "wins": 54, "diff": 1.49, "ci": 4.0}, {"card": "Scalding Tarn", "seen": 399, "wins": 62, "diff": 1.49, "ci": 3.75}, {"card": "Aurelia, the Warleader", "seen": 338, "wins": 53, "diff": 1.61, "ci": 4.06}, {"card": "Grove of the Burnwillows", "seen": 406, "wins": 64, "diff": 1.74, "ci": 3.74}, {"card": "White Orchid Phantom", "seen": 329, "wins": 52, "diff": 1.75, "ci": 4.12}, {"card": "Forest", "seen": 825, "wins": 129, "diff": 1.84, "ci": 2.79}, {"card": "Grim Hireling", "seen": 349, "wins": 56, "diff": 2.02, "ci": 4.03}, {"card": "Talisman of Creativity", "seen": 353, "wins": 57, "diff": 2.14, "ci": 4.02}, {"card": "Laelia, the Blade Reforged", "seen": 315, "wins": 51, "diff": 2.16, "ci": 4.24}, {"card": "Aven Interrupter", "seen": 325, "wins": 53, "diff": 2.3, "ci": 4.19}, {"card": "Esper Sentinel", "seen": 352, "wins": 58, "diff": 2.5, "ci": 4.05}, {"card": "Azorius Signet", "seen": 346, "wins": 57, "diff": 2.5, "ci": 4.09}, {"card": "Heroic Intervention", "seen": 348, "wins": 58, "diff": 2.71, "ci": 4.09}, {"card": "Command Tower", "seen": 427, "wins": 71, "diff": 2.73, "ci": 3.73}, {"card": "Deathcap Glade", "seen": 402, "wins": 67, "diff": 2.76, "ci": 3.84}, {"card": "Sol Ring", "seen": 344, "wins": 59, "diff": 3.24, "ci": 4.16}, {"card": "Mana Confluence", "seen": 411, "wins": 71, "diff": 3.45, "ci": 3.85}, {"card": "Misty Rainforest", "seen": 403, "wins": 70, "diff": 3.55, "ci": 3.89}, {"card": "Defense of the Heart", "seen": 297, "wins": 52, "diff": 3.59, "ci": 4.48}, {"card": "Nature's Will", "seen": 324, "wins": 59, "diff": 4.39, "ci": 4.37}, {"card": "Yavimaya, Cradle of Growth", "seen": 302, "wins": 57, "diff": 5.08, "ci": 4.57}, {"card": "All-Out Assault", "seen": 320, "wins": 63, "diff": 6.0, "ci": 4.51}], "chunk": null, "partial": false, "lands": {"curve": [["1-2", 371, 48], [3, 971, 101], [4, 1128, 176], [5, 746, 119], ["6-8", 385, 68]], "value": 1.6, "ci": 0.97, "mean": 3.97, "games": 3601}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.89, 2.3, 4.67, 6.25, 7.44, 8.55, 9.75, 10.22, 10.52, 10.61], "games": 3601, "stalls": 9.5}}} -->
+<!-- data {"name": "ranking_of_kw_najeela_1123", "title": "Ranking of KW-Najeela-1123", "mode": "audit", "run_id": "45284520517", "finished": "2026-11-23T22:57:53Z", "arms": [{"deck": "KW-Najeela-1123", "card": "@audit", "games": 7860, "wins": 1128, "reused": 0, "label": "Audit of KW-Najeela-1123"}], "batching": {"runners": 5, "claimed": 5, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"], "speed": 1.317, "audit": {"deck": "KW-Najeela-1123", "cards": [{"card": "Swiftfoot Boots", "seen": 719, "wins": 68, "diff": -5.39, "ci": 2.29}, {"card": "Anguished Unmaking", "seen": 687, "wins": 72, "diff": -4.24, "ci": 2.43}, {"card": "Monastery Mentor", "seen": 688, "wins": 79, "diff": -3.14, "ci": 2.52}, {"card": "Orzhov Signet", "seen": 760, "wins": 88, "diff": -3.07, "ci": 2.42}, {"card": "Sylvan Safekeeper", "seen": 732, "wins": 85, "diff": -3.02, "ci": 2.46}, {"card": "Stroke of Midnight", "seen": 749, "wins": 88, "diff": -2.88, "ci": 2.45}, {"card": "Skullclamp", "seen": 767, "wins": 91, "diff": -2.76, "ci": 2.43}, {"card": "Winternight Stories", "seen": 709, "wins": 85, "diff": -2.6, "ci": 2.53}, {"card": "Boros Charm", "seen": 698, "wins": 84, "diff": -2.54, "ci": 2.55}, {"card": "Breeding Pool", "seen": 897, "wins": 109, "diff": -2.48, "ci": 2.29}, {"card": "Godless Shrine", "seen": 856, "wins": 104, "diff": -2.47, "ci": 2.34}, {"card": "Recruiter of the Guard", "seen": 692, "wins": 84, "diff": -2.43, "ci": 2.57}, {"card": "Voice of Victory", "seen": 750, "wins": 92, "diff": -2.3, "ci": 2.49}, {"card": "Great Train Heist", "seen": 734, "wins": 91, "diff": -2.15, "ci": 2.52}, {"card": "Boros Signet", "seen": 763, "wins": 95, "diff": -2.1, "ci": 2.48}, {"card": "Curse of Opulence", "seen": 689, "wins": 86, "diff": -2.05, "ci": 2.6}, {"card": "Zack Fair", "seen": 773, "wins": 97, "diff": -2.0, "ci": 2.48}, {"card": "Force of Vigor", "seen": 726, "wins": 91, "diff": -2.0, "ci": 2.54}, {"card": "Arcane Signet", "seen": 753, "wins": 95, "diff": -1.92, "ci": 2.51}, {"card": "Banner of Kinship", "seen": 697, "wins": 88, "diff": -1.89, "ci": 2.6}, {"card": "Ash Barrens", "seen": 867, "wins": 110, "diff": -1.87, "ci": 2.36}, {"card": "Concealed Courtyard", "seen": 895, "wins": 114, "diff": -1.82, "ci": 2.34}, {"card": "High Market", "seen": 866, "wins": 111, "diff": -1.72, "ci": 2.37}, {"card": "Shalai, Voice of Plenty", "seen": 719, "wins": 92, "diff": -1.71, "ci": 2.57}, {"card": "Tymna the Weaver", "seen": 708, "wins": 91, "diff": -1.65, "ci": 2.6}, {"card": "Windswept Heath", "seen": 891, "wins": 118, "diff": -1.25, "ci": 2.37}, {"card": "Talisman of Curiosity", "seen": 784, "wins": 104, "diff": -1.21, "ci": 2.51}, {"card": "Sylvan Library", "seen": 732, "wins": 97, "diff": -1.21, "ci": 2.59}, {"card": "Faeburrow Elder", "seen": 696, "wins": 94, "diff": -0.93, "ci": 2.67}, {"card": "Polluted Delta", "seen": 908, "wins": 123, "diff": -0.91, "ci": 2.37}, {"card": "City of Brass", "seen": 891, "wins": 121, "diff": -0.87, "ci": 2.4}, {"card": "Selesnya Signet", "seen": 743, "wins": 101, "diff": -0.84, "ci": 2.6}, {"card": "Opulent Palace", "seen": 937, "wins": 128, "diff": -0.78, "ci": 2.35}, {"card": "Fellwar Stone", "seen": 751, "wins": 103, "diff": -0.7, "ci": 2.59}, {"card": "White Orchid Phantom", "seen": 719, "wins": 99, "diff": -0.64, "ci": 2.65}, {"card": "Dragonlord Dromoka", "seen": 740, "wins": 102, "diff": -0.63, "ci": 2.61}, {"card": "Imperial Recruiter", "seen": 747, "wins": 103, "diff": -0.62, "ci": 2.6}, {"card": "An Offer You Can't Refuse", "seen": 723, "wins": 100, "diff": -0.57, "ci": 2.65}, {"card": "Bloodstained Mire", "seen": 915, "wins": 127, "diff": -0.53, "ci": 2.39}, {"card": "Noble Hierarch", "seen": 771, "wins": 107, "diff": -0.52, "ci": 2.57}, {"card": "Despark", "seen": 752, "wins": 105, "diff": -0.43, "ci": 2.61}, {"card": "Dreamroot Cascade", "seen": 908, "wins": 127, "diff": -0.41, "ci": 2.4}, {"card": "Talisman of Progress", "seen": 736, "wins": 103, "diff": -0.39, "ci": 2.64}, {"card": "Nature's Claim", "seen": 728, "wins": 103, "diff": -0.22, "ci": 2.66}, {"card": "Mountain", "seen": 889, "wins": 126, "diff": -0.2, "ci": 2.44}, {"card": "Pongify", "seen": 691, "wins": 98, "diff": -0.19, "ci": 2.73}, {"card": "Mardu Siegebreaker", "seen": 705, "wins": 100, "diff": -0.18, "ci": 2.7}, {"card": "Mirari's Wake", "seen": 712, "wins": 101, "diff": -0.18, "ci": 2.69}, {"card": "Shock Brigade", "seen": 696, "wins": 99, "diff": -0.14, "ci": 2.72}, {"card": "Giver of Runes", "seen": 686, "wins": 98, "diff": -0.07, "ci": 2.74}, {"card": "Zurgo's Vanguard", "seen": 714, "wins": 102, "diff": -0.07, "ci": 2.69}, {"card": "Farseek", "seen": 724, "wins": 104, "diff": 0.01, "ci": 2.68}, {"card": "Sandsteppe Citadel", "seen": 911, "wins": 131, "diff": 0.03, "ci": 2.42}, {"card": "Orim's Chant", "seen": 708, "wins": 102, "diff": 0.06, "ci": 2.71}, {"card": "Talisman of Creativity", "seen": 776, "wins": 112, "diff": 0.09, "ci": 2.6}, {"card": "Chronicle of Victory", "seen": 741, "wins": 108, "diff": 0.25, "ci": 2.67}, {"card": "Swords to Plowshares", "seen": 699, "wins": 102, "diff": 0.26, "ci": 2.74}, {"card": "Exotic Orchard", "seen": 963, "wins": 141, "diff": 0.33, "ci": 2.38}, {"card": "Esper Sentinel", "seen": 771, "wins": 113, "diff": 0.34, "ci": 2.63}, {"card": "Aurelia, the Warleader", "seen": 748, "wins": 110, "diff": 0.39, "ci": 2.67}, {"card": "Canopy Vista", "seen": 870, "wins": 128, "diff": 0.41, "ci": 2.49}, {"card": "Flare of Fortitude", "seen": 713, "wins": 105, "diff": 0.41, "ci": 2.72}, {"card": "Third Path Iconoclast", "seen": 739, "wins": 109, "diff": 0.44, "ci": 2.68}, {"card": "Azorius Signet", "seen": 790, "wins": 118, "diff": 0.65, "ci": 2.62}, {"card": "Counterspell", "seen": 718, "wins": 108, "diff": 0.76, "ci": 2.74}, {"card": "Deathcap Glade", "seen": 921, "wins": 139, "diff": 0.84, "ci": 2.45}, {"card": "Plains", "seen": 1751, "wins": 263, "diff": 0.86, "ci": 1.89}, {"card": "Veil of Summer", "seen": 678, "wins": 103, "diff": 0.92, "ci": 2.82}, {"card": "Wooded Foothills", "seen": 902, "wins": 137, "diff": 0.95, "ci": 2.48}, {"card": "Prairie Stream", "seen": 941, "wins": 143, "diff": 0.96, "ci": 2.44}, {"card": "Path of Ancestry", "seen": 887, "wins": 135, "diff": 0.98, "ci": 2.5}, {"card": "Mystic Monastery", "seen": 915, "wins": 140, "diff": 1.07, "ci": 2.47}, {"card": "Sidar Kondo of Jamuraa", "seen": 690, "wins": 106, "diff": 1.11, "ci": 2.81}, {"card": "Grim Hireling", "seen": 751, "wins": 116, "diff": 1.21, "ci": 2.71}, {"card": "Blooming Marsh", "seen": 901, "wins": 139, "diff": 1.22, "ci": 2.5}, {"card": "Swamp", "seen": 860, "wins": 133, "diff": 1.25, "ci": 2.55}, {"card": "Aven Interrupter", "seen": 761, "wins": 118, "diff": 1.28, "ci": 2.7}, {"card": "Scalding Tarn", "seen": 922, "wins": 144, "diff": 1.44, "ci": 2.48}, {"card": "Island", "seen": 888, "wins": 139, "diff": 1.47, "ci": 2.53}, {"card": "Forest", "seen": 1770, "wins": 275, "diff": 1.53, "ci": 1.9}, {"card": "Grove of the Burnwillows", "seen": 886, "wins": 140, "diff": 1.63, "ci": 2.54}, {"card": "Sundown Pass", "seen": 886, "wins": 140, "diff": 1.63, "ci": 2.54}, {"card": "Heroic Intervention", "seen": 721, "wins": 115, "diff": 1.76, "ci": 2.79}, {"card": "Nightblade Brigade", "seen": 700, "wins": 112, "diff": 1.81, "ci": 2.83}, {"card": "Steam Vents", "seen": 926, "wins": 148, "diff": 1.85, "ci": 2.5}, {"card": "Land Tax", "seen": 719, "wins": 118, "diff": 2.27, "ci": 2.83}, {"card": "Laelia, the Blade Reforged", "seen": 722, "wins": 119, "diff": 2.35, "ci": 2.82}, {"card": "Mana Confluence", "seen": 894, "wins": 147, "diff": 2.36, "ci": 2.56}, {"card": "Reprieve", "seen": 706, "wins": 117, "diff": 2.44, "ci": 2.86}, {"card": "Command Tower", "seen": 905, "wins": 151, "diff": 2.64, "ci": 2.56}, {"card": "Misty Rainforest", "seen": 879, "wins": 148, "diff": 2.8, "ci": 2.6}, {"card": "Professional Face-Breaker", "seen": 715, "wins": 121, "diff": 2.83, "ci": 2.86}, {"card": "Sol Ring", "seen": 716, "wins": 122, "diff": 2.96, "ci": 2.87}, {"card": "Defense of the Heart", "seen": 696, "wins": 121, "diff": 3.33, "ci": 2.93}, {"card": "Yavimaya, Cradle of Growth", "seen": 675, "wins": 124, "diff": 4.4, "ci": 3.03}, {"card": "All-Out Assault", "seen": 722, "wins": 136, "diff": 4.94, "ci": 2.96}, {"card": "Nature's Will", "seen": 745, "wins": 153, "diff": 6.83, "ci": 3.01}], "chunk": null, "partial": false, "lands": {"curve": [["0-2", 785, 94], [3, 2084, 256], [4, 2480, 373], [5, 1655, 268], ["6-9", 856, 137]], "value": 1.09, "ci": 0.64, "mean": 3.99, "games": 7860}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [1.02, 2.51, 4.78, 6.56, 8.22, 9.48, 10.39, 10.95, 11.31, 11.4], "games": 7860, "stalls": 8.2}}} -->
