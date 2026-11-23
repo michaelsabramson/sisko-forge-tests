@@ -318,21 +318,12 @@ function manaBalance(rows, games, curve, only) {
     : ['good', 'Balanced', 'Lands, ramp and spells score about the same: the mana looks right.'];
   if (only) return { cls, head, say: `One more land ${f(L.diff)}${R ? `, ramp ${f(R.diff)}` : ''}, a typical spell ${f(O.diff)}.` };
   const gaps = [{ label: landLabel, diff: L.diff, ci: L.ci, cls: '' }, ...(R ? [{ label: `Ramp (${R.n})`, diff: R.diff, ci: R.ci, cls: '' }] : []), { label: `Typical spell (${O.n})`, diff: O.diff, ci: O.ci, cls: '' }];
-  let bars = '';
-  if (curve) {
-    const pts = curve.curve.map(([k, g, w]) => ({ k, g, p: 100 * w / g })), N = pts.reduce((s, x) => s + x.g, 0);
-    const lo = Math.min(...pts.map(x => x.p)) - 2, hi = Math.max(...pts.map(x => x.p));
-    bars = `<div class="small muted" style="margin:10px 0 4px">Win rate by lands in the first 10 cards · usually ${curve.mean.toFixed(1)}</div>
-      <div style="display:flex;gap:6px;align-items:flex-end;height:92px">${pts.map(x => `<div style="flex:1;text-align:center">
-        <div class="small num" style="margin-bottom:2px">${x.p.toFixed(0)}%</div>
-        <div style="height:${Math.round(8 + 52 * (x.p - lo) / Math.max(1, hi - lo))}px;background:var(--muted);opacity:.35;border-radius:4px 4px 0 0"></div></div>`).join('')}</div>
-      <div style="display:flex;gap:6px;border-top:1px solid var(--line)">${pts.map(x => `<div style="flex:1;text-align:center" class="small"><b>${x.k}</b><div class="muted" style="font-size:11px">${Math.round(100 * x.g / N)}%</div></div>`).join('')}</div>`;
-  }
+  const bars = '';
   return `<div class="sect" id="mana">Mana balance</div>
-    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span><span class="small muted">vs a typical spell: land ${f(gap)}${R ? `, ramp ${f(R.diff - O.diff)}` : ''}</span></div>
+    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}</span></div>
     <p class="small" style="margin:4px 0 6px">${say}</p>
     ${forestSVG(gaps)}${note}${bars}
-    <p class="small muted" style="margin:6px 0 0">${curve ? 'One more land: how much win rate rises per extra land in the first 10 cards, basics included. ' : ''}Ramp and typical spell: average Rank score of those cards. Rank favours cheap, early cards, so this leans slightly toward lands.</p>`;
+    <p class="small muted" style="margin:6px 0 0">${curve ? 'One more land: win-rate gain per extra land in the first 10 cards. ' : ''}Ramp and typical spell: average card score.</p>`;
 }
 // Speed curve: share of games the deck has won by the end of each round, against the pool's par (the average
 // opponent's share, cache/par.json). Stalls count as no win on both sides.
@@ -349,22 +340,21 @@ function speedCurve(pace, pool, only) {
     : late >= 2 ? 'Wins more of the long games than the table: its strength is the late game.'
     : end >= -1 ? 'Wins at the same rate as the table at every stage.' : 'A little behind the table throughout.';
   if (only) return { cls, head: head + tail, say: `${early > 0 ? '+' : ''}${early.toFixed(1)} vs par by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end.`, win: me[me.length - 1], par: pr[pr.length - 1] };
-  const W = 340, H = 150, pl = 34, pr2 = 10, pt = 10, pb = 26, ymax = Math.max(...me, ...pr) * 1.1;
+  const W = 340, H = 140, pl = 30, pr2 = 8, pt = 8, pb = 22, ymax = Math.max(10, Math.ceil(Math.max(...me, ...pr) / 10) * 10);
   const x = i => pl + i * (W - pl - pr2) / (R.length - 1), y = v => pt + (1 - v / ymax) * (H - pt - pb);
   const line = vs => vs.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
-  const ticks = [0, 5, 10, 15, 20, 25].filter(v => v <= ymax);
+  const ticks = []; for (let v = 0; v <= ymax; v += 10) ticks.push(v);
   const svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:520px;display:block" role="img" aria-label="Share of games won by each round, this deck vs par">
-    ${ticks.map(v => `<line x1="${pl}" x2="${W - pr2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="var(--muted)">${v}%</text>`).join('')}
-    ${R.map((r, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="var(--muted)">${r}</text>`).join('')}
-    <path d="${line(pr)}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+    ${ticks.map(v => `<line x1="${pl}" x2="${W - pr2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl - 5}" y="${y(v) + 3.5}" text-anchor="end" font-size="10" fill="var(--muted)">${v}%</text>`).join('')}
+    ${R.map((r, i) => i % 2 ? '' : `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="var(--muted)">${i ? '' : 'Round '}${r}</text>`).join('')}
+    <path d="${line(pr)}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>
     <path d="${line(me)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-    ${me.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="var(--accent)"><title>Round ${R[i]}: ${v.toFixed(1)}% vs par ${pr[i].toFixed(1)}%</title></circle>`).join('')}</svg>`;
+    <text x="${x(R.length - 1) - 2}" y="${y(pr[pr.length - 1]) - 5}" text-anchor="end" font-size="10" fill="var(--muted)">Par</text>
+    <text x="${x(R.length - 1) - 2}" y="${y(me[me.length - 1]) + 13}" text-anchor="end" font-size="10" fill="var(--accent)" font-weight="600">This deck</text></svg>`;
   return `<div class="sect" id="speed">Speed</div>
-    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}${tail}</span><span class="small muted">vs par: ${early > 0 ? '+' : ''}${early.toFixed(1)} by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end</span></div>
-    <p class="small" style="margin:4px 0 6px">${say}</p>
+    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 6px"><span class="pill ${cls}">${head}${tail}</span><span class="small muted">${early > 0 ? '+' : ''}${early.toFixed(1)} vs par by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end</span></div>
     ${svg}
-    <div class="small muted" style="display:flex;gap:14px;margin-top:2px"><span><span style="display:inline-block;width:14px;border-top:2.5px solid var(--accent);vertical-align:middle"></span> This deck</span><span><span style="display:inline-block;width:14px;border-top:2px dashed var(--muted);vertical-align:middle"></span> Par (average opponent)</span><span>by round</span></div>
-    <p class="small muted" style="margin:6px 0 0">Share of games won by the end of each round. ${pace.stalls ? `${pace.stalls}% of games stalled at the time limit and count as no win.` : ''}</p>`;
+    <p class="small muted" style="margin:4px 0 0">Share of games won by each round.</p>`;
 }
 function forestSVG(gaps, link) {
   const nar = innerWidth < 640; const W = nar ? 360 : 900, rowH = nar ? 30 : 36, padL = nar ? 132 : 250, padR = nar ? 44 : 80, H = gaps.length * rowH + 26;

@@ -216,3 +216,5 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
   #dname{max-width:none!important;flex-basis:100%}
   .preview{display:none}
 }
+
+.card > .sect:first-child { margin-top: 0; }
