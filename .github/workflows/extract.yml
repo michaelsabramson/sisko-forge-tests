@@ -1,0 +1,43 @@
+name: extract-hands
+# Pulls the opening-hand lines (kept hand + next 3 draws) and outcomes out of a Rank run's stored game logs into a
+# small file under analysis/, for offline analysis (e.g. land counts vs win rate). Logs are kept 7 days.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: 'swap-test run id of a Rank', required: true }
+permissions:
+  contents: write
+  actions: read
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: out-*, path: out, run-id: '${{ inputs.run_id }}', github-token: '${{ github.token }}' }
+      - name: Extract
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha=$(gh api repos/${{ github.repository }}/actions/runs/${{ inputs.run_id }} -q .head_sha)
+          git show "$sha:tests/request.json" > /tmp/req.json
+          mkdir -p analysis
+          python3 - <<'PY'
+          import glob, gzip, json, os, re
+          req = json.load(open('/tmp/req.json')); arms = req['arms']; n = 0
+          with gzip.open(f"analysis/hands_${{ inputs.run_id }}.tsv.gz", 'wt') as out:
+              out.write(f"# {req['name']}\n# hand+3 draws (|-separated), won, turn\n")
+              for f in glob.glob('out/**/arm*_*.log', recursive=True):
+                  i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
+                  for l in open(f, errors='ignore'):
+                      if l.startswith('TOP '): top = l[4:].rstrip('\n'); continue
+                      m = re.match(r'G\d+ winner=(\S+) turn=(\d+)', l)
+                      if m and top is not None:
+                          out.write(f"{top}\t{int(m.group(1) == me)}\t{m.group(2)}\n"); n += 1; top = None
+          print(n, "games")
+          PY
+      - name: Save
+        run: |
+          git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          git add analysis/ && git commit -qm "Hands extract: run ${{ inputs.run_id }}"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
