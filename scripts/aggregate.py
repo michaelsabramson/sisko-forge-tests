@@ -9,10 +9,11 @@ speed = [[0, 0] for _ in arms]   # games, total game milliseconds (per process, 
 usage_rows = None
 usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
+tops = []                      # audit: (first 10 cards, won) per game, for the land curve
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
     i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
     for l in open(f, errors='ignore'):
-        if l.startswith('TOP '): top = set(l[4:].rstrip('\n').split('|')); continue
+        if l.startswith('TOP '): topl = l[4:].rstrip('\n').split('|'); top = set(topl); continue
         if l.startswith('USE\t'):
             for ent in l.rstrip('\n').split('\t')[1:]:
                 nm, first, held, cast, cturn, inhand = ent.rsplit('~', 5)
@@ -30,6 +31,7 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             new[i][1] += 1; new[i][0] += won
             if top is not None:
                 for c in top: e = seen.setdefault(c, [0, 0]); e[0] += 1; e[1] += won
+                if arms[i]['card'] == '@audit': tops.append((topl, won))
             top = None
 # totals include games reused from the cache (recorded in the request when the run was dispatched)
 res = [[new[i][0] + a.get('prior_wins', 0), new[i][1] + a.get('prior_games', 0)] for i, a in enumerate(arms)]
@@ -83,6 +85,13 @@ if req.get('mode') == 'audit':
         rows.append({"card": k, "seen": n1, "wins": w1, "diff": round(100 * (p1 - p0), 2), "ci": round(196 * se, 2)})
     rows.sort(key=lambda r: r["diff"])
     audit = {"cards": rows, "tallies": cards}
+    # land curve: win rate by lands in the first 10 cards, basics counted by copies (scripts/landcurve.py)
+    import landcurve
+    prior_l = cache.load().get(a0.get('key'), {}).get('lands', {})
+    L = landcurve.land_names({n for tl, _ in tops for n in tl} | set(cards))
+    if L is not None:
+        lt = landcurve.tally(tops, L, {k: list(v) for k, v in prior_l.items()})
+        audit["land_tallies"] = lt; audit["lands"] = landcurve.summarize(lt)
     t.append(f"\nDeck audit: {N:,} games, {100*W/max(1,N):.1f}% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):\n")
     t.append("| Card | Games seen | Win rate seen | Change | ± |"); t.append("|---|---|---|---|---|")
     for r in rows: t.append(f"| {r['card']} | {r['seen']} | {100*r['wins']/r['seen']:.1f}% | {r['diff']:+.1f} | {r['ci']:.1f} |")
@@ -113,7 +122,8 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         "compare": pairs, "opponents": req.get('opponents'),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
-        **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped'))}} if audit else {})}
+        **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped')),
+                      **({"lands": audit["lands"]} if audit.get("lands") else {})}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"
 if all(res[i][1] for pr in pairs for i in pr):
@@ -129,7 +139,9 @@ if not PEEK:
         e = c.setdefault(a['key'], {"deck": a['deck'], "card": a['card'], "games": 0, "wins": 0, "runs": []})
         e["games"] += new[i][1]; e["wins"] += new[i][0]
         e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}"); changed = True
-        if audit and i == 0: e["cards"] = audit["tallies"]
+        if audit and i == 0:
+            e["cards"] = audit["tallies"]
+            if audit.get("land_tallies"): e["lands"] = audit["land_tallies"]
     if changed: cache.save(c)
     # remember how fast games actually ran (games per process-minute), so the dispatcher sizes future runs from it
     try:
