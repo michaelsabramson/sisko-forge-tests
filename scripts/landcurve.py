@@ -1,7 +1,7 @@
 """Land counts for Rank runs: win rate by how many lands were in the first 10 cards (kept hand + next 3 draws),
 and the value of one more land there. Basics are counted by copies, so a stack of 30 Mountains is scored too.
 Used by aggregate.py for every Rank, and by backfill_lands.py for Ranks run before this existed."""
-import json, math, re, urllib.request
+import json, math, re, time, urllib.request
 
 BASIC = re.compile(r'^(Snow-Covered )?(Plains|Island|Swamp|Mountain|Forest|Wastes)$')
 
@@ -15,7 +15,12 @@ def land_names(names):
             rq = urllib.request.Request("https://api.scryfall.com/cards/collection", body,
                                         {"Content-Type": "application/json", "Accept": "application/json",
                                          "User-Agent": "sisko-forge-tests/1.0"})
-            for c in json.load(urllib.request.urlopen(rq, timeout=30)).get("data", []):
+            for attempt in range(4):   # Scryfall occasionally times out: retry with a pause
+                try: data = json.load(urllib.request.urlopen(rq, timeout=30)).get("data", []); break
+                except Exception:
+                    if attempt == 3: raise
+                    time.sleep(5 * (attempt + 1))
+            for c in data:
                 front = c.get("type_line", "").split(" // ")[0]
                 if "Land" in front.split():
                     lands.add(c["name"]); lands.add(c["name"].split(" // ")[0])
