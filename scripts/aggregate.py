@@ -51,9 +51,21 @@ for i, a in enumerate(arms):
 pairs = req.get('compare') or [[0, i] for i in range(1, len(arms))]
 t.append("\nGaps (95% interval):\n")
 lab = lambda a: a.get('label') or a['card'] or a['deck']
+settled = bool(pairs)   # early stop: every gap clear of zero at 99%
 for b, i in pairs:
     p0, n0 = p(b); pi, n = p(i); se = math.sqrt(p0*(1-p0)/max(1, n0) + pi*(1-pi)/max(1, n))
     t.append(f"- **{lab(arms[i])} vs {lab(arms[b])}: {100*(pi-p0):+.1f} ± {196*se:.1f} points**")
+    settled = settled and abs(pi - p0) > 2.576 * se
+# slot tests stop early once the answer is settled: every gap clear at 99% (stricter than the 95% shown, because the run
+# is checked several times) and every arm at least a quarter of its planned games in. The early read leaves stop.flag;
+# peek.yml turns it into the ref refs/stop/<run>, which the runners watch for.
+STOPPED = bool(os.environ.get("STOPPED"))
+if PEEK and req.get('earlystop') and settled and all(new[i][1] >= 0.25 * a.get('target_new', 0) for i, a in enumerate(arms)):
+    open('stop.flag', 'w').write('1'); print("settled: asking the runners to stop")
+if STOPPED:
+    t[0] += (f"\nStopped early: every gap was clear at 99% confidence after {sum(r[1] for r in res):,} games"
+             f" ({100*sum(new[i][1] for i in range(len(arms)))/max(1, sum(a.get('target_new', 0) for a in arms)):.0f}% of the planned run)."
+             " The winner is settled; the size of the gap is less precise than a full run.\n")
 audit = None
 if req.get('mode') == 'audit':
     # every card: win rate when it was in the kept hand or the next 3 draws, vs games where it wasn't
@@ -95,7 +107,7 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
                   "reused": a.get('prior_games', 0), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
-        "batching": batching,
+        "batching": batching, **({"stopped": True} if STOPPED else {}),
         "compare": pairs, "opponents": req.get('opponents'),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),

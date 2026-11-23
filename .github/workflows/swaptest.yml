@@ -78,6 +78,16 @@ jobs:
           path: out/
           retention-days: 7
           overwrite: true
+      - name: Early read (1)
+        if: ${{ !cancelled() && matrix.s == 0 }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # every test refreshes its early read each time the runners save progress (needs games still running)
+          if pgrep -f "Run forge" >/dev/null; then
+            sleep 90   # let the other runners finish uploading this checkpoint
+            gh workflow run peek.yml -R ${{ github.repository }} --ref ${{ github.ref_name }} -f run_id=${{ github.run_id }} || true
+          fi
       - name: Checkpoint 2
         if: ${{ !cancelled() }}
         run: scripts/waitgames.sh 20
@@ -248,7 +258,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { pattern: out-*, path: out }
-      - run: python3 scripts/aggregate.py
+      - name: Tally results
+        run: |
+          # stopped early? (an early read found the answer settled and left the ref refs/stop/<run>)
+          git ls-remote origin "refs/stop/${{ github.run_id }}" | grep -q . && export STOPPED=1
+          python3 scripts/aggregate.py
       - name: Commit results
         run: |
           git config user.name "swaptest-bot"

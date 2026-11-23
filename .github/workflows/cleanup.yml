@@ -16,3 +16,4 @@ jobs:
         run: |
           gh api "repos/${{ github.repository }}/git/matching-refs/batches/${{ inputs.run }}" --paginate -q '.[].ref' 2>/dev/null \
             | while read r; do gh api -X DELETE "repos/${{ github.repository }}/git/${r}" --silent || true; sleep 1; done; true
+          gh api -X DELETE "repos/${{ github.repository }}/git/refs/stop/${{ inputs.run }}" --silent 2>/dev/null || true

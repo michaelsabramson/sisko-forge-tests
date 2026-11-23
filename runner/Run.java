@@ -7,6 +7,8 @@ public class Run {
   static boolean claimGame(String file,int max){
     final String arm=System.getProperty("batchArm"), runner=System.getProperty("batchRunner");
     final String cmd=arm!=null&&runner!=null ? "scripts/claimbatch.sh "+arm+" "+runner : null; final int batch=Integer.getInteger("batch",0);
+    // early stop: scripts/shard.sh drops a STOP file next to the pool once the run's answer is settled; start no new games
+    if(new java.io.File(new java.io.File(file).getAbsoluteFile().getParentFile(),"STOP").exists()) return false;
     try(java.io.RandomAccessFile f=new java.io.RandomAccessFile(file,"rw"); java.nio.channels.FileLock lk=f.getChannel().lock()){
       int used=f.length()>=8?f.readInt():0; int granted=f.length()>=8?f.readInt():max;   // first-round games (or the whole fixed pool)
       if(used>=granted){

@@ -11,6 +11,14 @@ SB=$(jq -r '.seedbase // 7000' $REQ)
 RES=forge/forge-gui/res; CP="runner-classes:lib/*"
 OPP=$(jq -r '(.opponents // ["Atraxa","Prossh","UrDragon","Edgar","Meren"]) | map("decks/"+.+".dck") | join(" ")' $REQ)
 mkdir -p out
+if [ "$(jq -r '.earlystop // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
+  # early stop: an early read marks the run settled with the ref refs/stop/<run>; poll it over plain git (public repo,
+  # outside the API's hourly limit) and tell the game processes to start no new games
+  ( sleep 120; while pgrep -f "Run forge" >/dev/null; do
+      git ls-remote "https://github.com/$GITHUB_REPOSITORY" "refs/stop/$GITHUB_RUN_ID" 2>/dev/null | grep -q . && { touch out/STOP; echo "$(date -u +%T) stop seen" >> out/claims.log; break; }
+      sleep 60
+    done ) &
+fi
 for p in 0 1 2 3; do
   k=$((S*4+p))
   if [ "$(jq '.procs|length' $REQ)" -gt "$k" ] 2>/dev/null; then i=$(jq -r ".procs[$k]" $REQ); else i=${RUN[$((k % N))]}; fi

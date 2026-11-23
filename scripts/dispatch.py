@@ -244,9 +244,15 @@ def main():
             # and the run ends within a few minutes of its last game. At most ~2 claims per runner per arm keeps GitHub
             # API writes well inside its limits.
             sh = req["shards"]
-            first = [int(0.6 * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
+            # slot tests can stop early once settled (scripts/aggregate.py): a smaller first round leaves more of the run
+            # in batches, which runners stop claiming, and early reads come every 10 minutes instead of 20
+            req["earlystop"] = req["mode"] in ("swap", "package") and not r.get("full")
+            if req["earlystop"]:
+                req["checkpoint"] = 10
+            frac = 0.3 if req["earlystop"] else 0.6
+            first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
             rest = [max(0, need[i] - first[i] * per[i]) for i in range(len(arms))]
-            size = [max(6, math.ceil(rest[i] / (2 * sh))) if rest[i] else 0 for i in range(len(arms))]
+            size = [max(6, math.ceil(rest[i] / ((3 if req["earlystop"] else 2) * sh))) if rest[i] else 0 for i in range(len(arms))]
             req["first"] = first
             req["batch"] = size
             req["batches"] = [math.ceil(rest[i] / size[i]) if size[i] else 0 for i in range(len(arms))]
