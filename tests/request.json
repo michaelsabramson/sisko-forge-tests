@@ -1,20 +1,28 @@
 {
-  "name": "siskofinal_vs_norinb3",
-  "title": "SiskoFinal vs NorinB3",
+  "name": "imperial_recruiter_for_pact_of_negation_hard_ai",
+  "title": "Imperial Recruiter for Pact of Negation (Hard AI)",
   "arms": [
     {
       "deck": "SiskoFinal",
-      "card": "",
-      "key": "4bb9b8d1b741361a2667",
+      "card": "Pact of Negation",
+      "key": "b37be9d6dd2ffa739c29",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 5256,
       "cached": false
     },
     {
-      "deck": "NorinB3",
-      "card": "",
-      "key": "e8115078146a29ee460c",
+      "deck": "SiskoFinal__ImperialRecruiter__for__PactOfNegation",
+      "card": "Imperial Recruiter",
+      "swap": {
+        "out": [
+          "Pact of Negation"
+        ],
+        "in": [
+          "Imperial Recruiter"
+        ]
+      },
+      "key": "91325538d518badac242",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 5255,
@@ -28,11 +36,11 @@
     ]
   ],
   "band": 0,
-  "minutes": 81,
+  "minutes": 170,
   "shards": 38,
-  "mode": "decks",
-  "queued_from": "20261123T031904-siskofinal-vs-norinb3.json",
-  "started": "2026-11-23T03:19:14Z",
+  "mode": "swap",
+  "queued_from": "20261123-043704-imperial-recruiter-for-pact-of-negation-hard-ai.json",
+  "started": "2026-11-23T04:37:12Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -40,6 +48,7 @@
     "Edgar",
     "Meren"
   ],
+  "profile": "Hard",
   "precision": 1.5,
   "procs": [
     0,
@@ -196,27 +205,28 @@
     1
   ],
   "gpm": [
-    1.248,
-    1.237
+    0.545,
+    0.545
   ],
   "quota": [
     70,
     70
   ],
-  "earlystop": false,
+  "earlystop": true,
+  "checkpoint": 10,
   "first": [
-    41,
-    41
+    20,
+    20
   ],
   "batch": [
-    29,
-    29
+    33,
+    33
   ],
   "batches": [
-    74,
-    74
+    114,
+    114
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184689800
+  "seedbase": 184705400
 }
