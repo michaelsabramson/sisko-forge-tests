@@ -333,6 +333,37 @@ function manaBalance(rows, games, curve) {
     ${forestSVG(gaps)}${note}${bars}
     <p class="small muted" style="margin:6px 0 0">${curve ? 'One more land: how much win rate rises per extra land in the first 10 cards, basics included. ' : ''}Ramp and typical spell: average Rank score of those cards. Rank favours cheap, early cards, so this leans slightly toward lands.</p>`;
 }
+// Speed curve: share of games the deck has won by the end of each round, against the pool's par (the average
+// opponent's share, cache/par.json). Stalls count as no win on both sides.
+function speedCurve(pace, pool) {
+  const par = S.par?.[pool]; if (!pace || !par) return '';
+  const R = pace.rounds.filter(r => r >= 6 && r <= 13), me = R.map(r => pace.won[pace.rounds.indexOf(r)]), pr = R.map(r => par.par[par.rounds.indexOf(r)]);
+  if (pr.some(v => v == null)) return '';
+  const at = r => { const i = R.indexOf(r); return me[i] - pr[i]; }, early = at(8), end = me[me.length - 1] - pr[pr.length - 1], late = end - early;
+  const head = early >= 1.5 ? 'Fast start' : early <= -2.5 ? 'Behind from the start' : 'Keeps pace early';
+  const tail = late <= -2 ? ', fades late' : late >= 2 ? ', strong late' : '';
+  const cls = end >= -1 ? 'good' : end <= -3 ? 'warn' : '';
+  const say = early <= -2.5 ? 'Opponents close out games before this deck gets going: it needs to be faster.'
+    : late <= -2 ? 'Level with the table early, but wins far fewer long games: it needs more late-game closing power.'
+    : late >= 2 ? 'Wins more of the long games than the table: its strength is the late game.'
+    : end >= -1 ? 'Wins at the same rate as the table at every stage.' : 'A little behind the table throughout.';
+  const W = 340, H = 150, pl = 34, pr2 = 10, pt = 10, pb = 26, ymax = Math.max(...me, ...pr) * 1.1;
+  const x = i => pl + i * (W - pl - pr2) / (R.length - 1), y = v => pt + (1 - v / ymax) * (H - pt - pb);
+  const line = vs => vs.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  const ticks = [0, 5, 10, 15, 20, 25].filter(v => v <= ymax);
+  const svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:520px;display:block" role="img" aria-label="Share of games won by each round, this deck vs par">
+    ${ticks.map(v => `<line x1="${pl}" x2="${W - pr2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl - 6}" y="${y(v) + 4}" text-anchor="end" font-size="10" fill="var(--muted)">${v}%</text>`).join('')}
+    ${R.map((r, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle" font-size="10" fill="var(--muted)">${r}</text>`).join('')}
+    <path d="${line(pr)}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/>
+    <path d="${line(me)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+    ${me.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="2.5" fill="var(--accent)"><title>Round ${R[i]}: ${v.toFixed(1)}% vs par ${pr[i].toFixed(1)}%</title></circle>`).join('')}</svg>`;
+  return `<div class="sect">Speed</div>
+    <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 2px"><span class="pill ${cls}">${head}${tail}</span><span class="small muted">vs par: ${early > 0 ? '+' : ''}${early.toFixed(1)} by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end</span></div>
+    <p class="small" style="margin:4px 0 6px">${say}</p>
+    ${svg}
+    <div class="small muted" style="display:flex;gap:14px;margin-top:2px"><span><span style="display:inline-block;width:14px;border-top:2.5px solid var(--accent);vertical-align:middle"></span> This deck</span><span><span style="display:inline-block;width:14px;border-top:2px dashed var(--muted);vertical-align:middle"></span> Par (average opponent)</span><span>by round</span></div>
+    <p class="small muted" style="margin:6px 0 0">Share of games won by the end of each round. ${pace.stalls ? `${pace.stalls}% of games stalled at the time limit and count as no win.` : ''}</p>`;
+}
 function forestSVG(gaps, link) {
   const nar = innerWidth < 640; const W = nar ? 360 : 900, rowH = nar ? 30 : 36, padL = nar ? 132 : 250, padR = nar ? 44 : 80, H = gaps.length * rowH + 26;
   const span = Math.max(4, ...gaps.map(g => Math.abs(g.diff) + g.ci)) * 1.1;
@@ -666,6 +697,7 @@ async function saveDeck(as) {
 async function loadCardMeta() {
   if (!S.speedLoaded) {
     S.speedLoaded = true;
+    if (S.tree.includes('cache/par.json')) { try { S.par = JSON.parse(await raw('cache/par.json')); } catch {} }
     if (S.tree.includes('cache/speed.json')) {
       try { const rows = JSON.parse(await raw('cache/speed.json'))['*'] || [];
         const g = rows.reduce((t, r) => t + r[0], 0), ms = rows.reduce((t, r) => t + r[1], 0);
@@ -798,6 +830,7 @@ async function drawAudit(body, name) {
     <p class="small muted" style="margin:4px 0 6px">${outliers.length ? '' : 'No outliers: nothing stands out from the deck\'s normal spread. '}Amber = below this deck's typical card; grey = within its normal spread or noise. Every deck has cards below zero, answers especially.</p>
     <table class="weak"><tbody>${weakest.map(weakRow).join('')}</tbody></table>
     ${manaBalance(rows, a.arms?.[0]?.games, a.audit.lands)}
+    ${speedCurve(a.audit.pace, a.auditPool)}
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
