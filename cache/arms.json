@@ -1828,6 +1828,15 @@
   ],
   "wins": 1258
  },
+ "856f89b31bed2d8a47af": {
+  "card": "@usage",
+  "deck": "Ironman",
+  "games": 5126,
+  "runs": [
+   "card_usage_in_ironman:45267267643"
+  ],
+  "wins": 387
+ },
  "87e6ee7d6a561bf769d0": {
   "card": "@usage",
   "deck": "SiskoFinal",
