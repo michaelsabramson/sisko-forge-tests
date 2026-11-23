@@ -370,10 +370,10 @@ function testsFor(name) {
   for (const r of S.results) {
     if (r.peek && finals.has(r.name.replace(/_peek$/, ''))) continue;
     for (const g of r.gaps) {
-      if (g.base === name) rows.push({ ...g, ...(g.mode === 'decks' ? { label: deckTitle(g.other || g.label) } : {}), test: r.name, date: r.date, peek: r.peek });
+      if (g.base === name) rows.push({ ...g, ...(g.mode === 'decks' ? { label: 'vs ' + deckTitle(g.other || g.label).replace(/ · Bracket \d+$/, ''), diff: -g.diff } : {}), test: r.name, date: r.date, peek: r.peek });   // head to head: this deck's side, + = this deck did better
       else if (g.mode === 'swap' && g.aswap && g.swap && g.base.startsWith(name + '__') && g.other.startsWith(name + '__') && g.aswap.out.join() === g.swap.out.join())
         rows.push({ ...g, direct: true, vs: g.swap.out[0], dlabel: `${g.label} vs ${g.aswap.in.join(', ')}`, test: r.name, date: r.date, peek: r.peek });
-      else if (g.mode === 'decks' && g.other === name) rows.push({ ...g, label: deckTitle(g.base), vs: name, diff: -g.diff, base: name, other: g.base, test: r.name, date: r.date, peek: r.peek });
+      else if (g.mode === 'decks' && g.other === name) rows.push({ ...g, label: 'vs ' + deckTitle(g.base).replace(/ · Bracket \d+$/, ''), vs: name, diff: g.diff, base: name, other: g.base, test: r.name, date: r.date, peek: r.peek });
     }
   }
   return rows.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
