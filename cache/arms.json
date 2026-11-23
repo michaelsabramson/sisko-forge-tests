@@ -1391,6 +1391,15 @@
   ],
   "wins": 753
  },
+ "91325538d518badac242": {
+  "card": "Imperial Recruiter",
+  "deck": "SiskoFinal__ImperialRecruiter__for__PactOfNegation",
+  "games": 5282,
+  "runs": [
+   "imperial_recruiter_for_pact_of_negation_hard_ai:45112943288"
+  ],
+  "wins": 1095
+ },
  "9a4a4ca0650cf4d137f5": {
   "card": "Shattering Spree",
   "deck": "NorinB3__ShatteringSpree__for__Pandemonium",
@@ -1417,6 +1426,15 @@
    "grand_abolisher_vs_cultivate_and_manamorphose:44815372817"
   ],
   "wins": 809
+ },
+ "b37be9d6dd2ffa739c29": {
+  "card": "Pact of Negation",
+  "deck": "SiskoFinal",
+  "games": 5282,
+  "runs": [
+   "imperial_recruiter_for_pact_of_negation_hard_ai:45112943288"
+  ],
+  "wins": 1025
  },
  "b7c51fb1dd32a90e1c62": {
   "card": "@audit",
