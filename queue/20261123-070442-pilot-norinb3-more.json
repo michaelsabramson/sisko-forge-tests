@@ -1,0 +1,11 @@
+{
+  "mode": "pilot",
+  "base": "NorinB3",
+  "profiles": ["Default", "Hard"],
+  "name": "Pilot test: NorinB3, Default vs Hard AI",
+  "result_name": "pilot_test_norinb3_default_vs_hard_ai",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
+  "submitted": "2026-11-23T07:04:42+00:00"
+}
