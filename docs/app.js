@@ -430,8 +430,9 @@ function testsFor(name) {
 function activeFor(name) {
   if (!S.runs) return [];
   const out = [];
-  for (const r of S.runs.runs) if (r.status !== 'completed' && r.req?.arms?.[0]?.deck === name) out.push({ label: reqSummary(r.req), state: r.status === 'in_progress' ? 'Testing now' : 'Waiting to start' });
-  for (const q of S.runs.queue) if ((q.req?.base || q.req?.decks?.[0]) === name) out.push({ label: reqSummary(q.req), state: 'Queued' });
+  const setup = q => q && (q.mode === 'cardcheck' || q.mode === 'usage');   // background deck setup isn't shown as a test
+  for (const r of S.runs.runs) if (r.status !== 'completed' && !setup(r.req) && r.req?.arms?.[0]?.deck === name) out.push({ label: reqSummary(r.req), state: r.status === 'in_progress' ? 'Testing now' : 'Waiting to start' });
+  for (const q of S.runs.queue) if (!setup(q.req) && (q.req?.base || q.req?.decks?.[0]) === name) out.push({ label: reqSummary(q.req), state: 'Queued' });
   return out;
 }
 
@@ -744,7 +745,7 @@ async function openCard(name, deck) {
       <div class="small muted">${esc(info.type || '')}</div>
       <div class="cp-sect"><div class="sect" style="margin:0">AI status</div>
         <div class="row" style="margin-top:6px"><span class="pill ${st.cls === 'ok' ? 'good' : st.cls === 'bad' ? 'bad' : st.cls === 'warn' ? 'warn' : st.cls === 'hint' ? 'accent' : ''}">${esc(st.label)}</span></div>
-        ${u ? `<p class="small" style="margin:6px 0 0">${u.forced ? 'Forced-hand check' : 'Card-usage run'} (${u.games.toLocaleString()} games held${u.date ? ', ' + esc(ago(u.date)) : ''}): cast ${Math.round(u.cast * 100)}%, stuck in hand ${Math.round(u.stuck * 100)}%${u.median_wait != null ? (u.median_wait === 0 ? ', usually cast as soon as it can be' : `, usually cast after waiting ${u.median_wait} turn${u.median_wait === 1 ? '' : 's'} it could have been cast`) : ''}.${st.stale ? ' <b>Measured before the hint was added.</b>' : ''}</p>` : ''}
+        ${u ? `<p class="small" style="margin:6px 0 0">Deck setup (${u.games.toLocaleString()} games held${u.date ? ', ' + esc(ago(u.date)) : ''}): cast ${Math.round(u.cast * 100)}%, stuck in hand ${Math.round(u.stuck * 100)}%${u.median_wait != null ? (u.median_wait === 0 ? ', usually cast as soon as it can be' : `, usually cast after waiting ${u.median_wait} turn${u.median_wait === 1 ? '' : 's'} it could have been cast`) : ''}.${st.stale ? ' <b>Measured before the hint was added.</b>' : ''}</p>` : ''}
         ${st.hint ? `<p class="small" style="margin:6px 0 0"><b>Hint:</b> ${esc(st.hint.hint)}</p>` : ''}
         ${st.flag === 'A' ? `<p class="small muted" style="margin:6px 0 0">Forge marks this card as one its AI can't play well.</p>` : ''}</div>
       <div class="cp-sect"><div class="sect" style="margin:0">Test history in ${esc(deckTitle(deck))}</div>
@@ -781,11 +782,11 @@ async function queueCardCheck(deck, cards, why) {
   const todo = cards.filter(c => !(S.sf[c]?.type || '').includes('Land') && !(usage[c] && usage[c].games >= 20 && !(S.hints[c] && (usage[c].date || '') < S.hints[c].since)));
   if (!todo.length || !S.token) return;
   const req = todo.length > 12
-    ? { mode: 'usage', base: deck, name: `Card usage in ${deck}`, minutes: 25, shards: SHARDS }
-    : { mode: 'cardcheck', base: deck, cards: todo, name: `Card check in ${deck}`, minutes: 8, shards: SHARDS };
+    ? { mode: 'usage', base: deck, name: `Setup of ${deck}`, minutes: 25, shards: SHARDS }
+    : { mode: 'cardcheck', base: deck, cards: todo, name: `Setup of new cards in ${deck}`, minutes: 8, shards: SHARDS };
   req.opponents = POOLS()[deckBracket(deck)]?.decks || OPP_DEFAULT; req.reason = why;
   const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15);
-  try { await putFile(`queue/${stamp}-check-${deck.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue AI check of new cards in ${deck}`); toast(`Queued a quick AI check of ${todo.length > 12 ? 'the whole list' : todo.length + ' new card' + (todo.length > 1 ? 's' : '')}.`); } catch {}
+  try { await putFile(`queue/${stamp}-check-${deck.toLowerCase()}.json`, JSON.stringify(req, null, 2) + '\n', `Deck Lab: queue AI check of new cards in ${deck}`); toast(`Setting up ${todo.length > 12 ? 'the deck' : todo.length + ' new card' + (todo.length > 1 ? 's' : '')} in the background (a few minutes), so the AI plays ${todo.length === 1 ? 'it' : 'them'} properly in tests.`); } catch {}
 }
 
 /* ---------- deck audit (shown as "Rank") ---------- */
@@ -1112,8 +1113,8 @@ async function loadRuns() {
 function reqSummary(q) {
   if (!q) return '';
   if (q.mode === 'decks' || (!q.slots && q.decks)) return (q.decks || []).join(' vs ');
-  if (q.mode === 'cardcheck') return `AI check of new cards: ${(q.cards || []).join(', ')}`;
-  if (q.mode === 'usage') return 'AI card-usage check of the whole list';
+  if (q.mode === 'cardcheck') return `Setting up new cards: ${(q.cards || []).join(', ')}`;
+  if (q.mode === 'usage') return 'Setting up the deck';
   if (q.mode === 'audit') return 'Ranking: every card scored from the shuffle';
   if (q.packages) return q.packages.map(p => `${p.in.join(', ')} in for ${p.out.join(', ')}`).join(' · ');
   if (q.slots) return q.slots.map(s => `${s.ins.join(', ')} in for ${s.out}`).join(' · ');
@@ -1133,9 +1134,13 @@ async function viewRuns(v) {
   S.runTimer = setInterval(async () => { if (S.tab !== 'runs') return clearInterval(S.runTimer); try { await loadTree(); await loadRuns(); drawRuns(); } catch {} }, S.token ? 45000 : 150000);
 }
 function drawRuns() {
-  const el = $('#runsBody'); if (!el) return; const { runs, queue } = S.runs;
-  const active = runs.filter(r => r.status !== 'completed').sort((a, b) => (b.status === 'in_progress') - (a.status === 'in_progress'));
+  const el = $('#runsBody'); if (!el) return; let { runs, queue } = S.runs;
+  const isSetup = q => q && (q.mode === 'cardcheck' || q.mode === 'usage');   // deck setup (how the AI plays new cards): background work, not a test
+  const setupRuns = runs.filter(r => r.status !== 'completed' && isSetup(r.req)), setupQ = queue.filter(q => isSetup(q.req));
+  const active = runs.filter(r => r.status !== 'completed' && !isSetup(r.req)).sort((a, b) => (b.status === 'in_progress') - (a.status === 'in_progress'));
+  queue = queue.filter(q => !isSetup(q.req));
   const badge = $('#runBadge'); const n = active.length + queue.length; badge.hidden = !n; badge.textContent = n;
+  const setupNote = (setupRuns.length || setupQ.length) ? `<p class="small muted" style="margin:4px 0 14px">${[...setupRuns.map(r => r.req), ...setupQ.map(q => q.req)].map(q => `${esc(deckTitle(q.base || ''))}: ${esc(reqSummary(q).toLowerCase())}`).join(' · ')} (in the background).</p>` : '';
   const card = r => {
     const q = r.req || {}; const mins = (q.minutes || 160) + 15; const el = (Date.now() - new Date(r.started)) / 60000;
     const running = r.status === 'in_progress', waiting = r.status !== 'completed' && !running;
@@ -1153,9 +1158,9 @@ function drawRuns() {
         <a class="small" href="${esc(r.url)}" target="_blank" rel="noopener" style="margin-left:auto">GitHub run ↗</a></div></div>`;
   };
   el.innerHTML = `<div class="stack">
-    ${active.length ? `<h2>Now</h2>${active.map(card).join('')}` : '<div class="card muted">No test running.</div>'}
+    ${active.length ? `<h2>Now</h2>${active.map(card).join('')}` : '<div class="card muted">No test running.</div>'}${setupNote}
     <h2 style="margin-top:22px">Queue</h2>${queue.length ? queue.map((q, i) => `<div class="card row"><div class="grow"><b>${i + 1}. ${esc(q.req?.name || q.path)}</b><div class="small muted">${esc(reqSummary(q.req))} · ${q.req?.precision ? '±' + q.req.precision : (q.req?.minutes || '?') + ' min'}</div></div><button class="sm ghost danger" data-unq="${esc(q.path)}">Remove</button></div>`).join('') : '<div class="card muted small">Nothing queued. Start one from New test.</div>'}
-    <h2 style="margin-top:22px">Recent</h2><div class="card" style="padding:4px 12px">${runs.filter(r => r.status === 'completed').slice(0, 8).map(r => { const q = r.req || {}; const hasRes = S.tree.includes(`results/${q.name}.md`); const ok = r.conclusion === 'success' || hasRes;
+    <h2 style="margin-top:22px">Recent</h2><div class="card" style="padding:4px 12px">${runs.filter(r => r.status === 'completed' && !isSetup(r.req)).slice(0, 8).map(r => { const q = r.req || {}; const hasRes = S.tree.includes(`results/${q.name}.md`); const ok = r.conclusion === 'success' || hasRes;
       return `<div class="rrow"><div class="grow"><div class="rt">${esc(prettyName(q.name || 'unknown test', q.title))}</div><div class="small muted">${ok ? 'Done' : r.conclusion === 'cancelled' ? 'Cancelled' : 'Failed'} · ${esc(ago(r.updated))}</div></div>${hasRes ? `<button class="sm" data-goto="${esc(q.name)}" data-base="${esc(q.arms?.[0]?.deck || '')}">Results</button>` : `<a class="small" href="${esc(r.url)}" target="_blank" rel="noopener">GitHub ↗</a>`}</div>`; }).join('') || '<div class="muted small" style="padding:10px 0">None yet.</div>'}</div>
   </div>`;
   $$('[data-goto]').forEach(b => b.onclick = () => { S.results = null; location.hash = '#deck/' + encodeURIComponent(b.dataset.base || primary()[0]) + (b.dataset.mode === 'audit' ? '/audit' : ''); });
