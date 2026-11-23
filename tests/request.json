@@ -1,12 +1,12 @@
 {
-  "name": "card_usage_in_ironman",
-  "title": "Card usage in Ironman",
+  "name": "card_usage_in_kw_najeela_1123",
+  "title": "Card usage in KW-Najeela-1123",
   "arms": [
     {
-      "deck": "Ironman",
+      "deck": "KW-Najeela-1123",
       "card": "@usage",
-      "label": "Card usage in Ironman",
-      "key": "856f89b31bed2d8a47af",
+      "label": "Card usage in KW-Najeela-1123",
+      "key": "cdaccf726c353099749f",
       "prior_games": 0,
       "prior_wins": 0,
       "cached": false
@@ -17,8 +17,8 @@
   "minutes": 25,
   "shards": 38,
   "mode": "usage",
-  "queued_from": "20261123T204146-check-ironman.json",
-  "started": "2026-11-23T21:12:21Z",
+  "queued_from": "20261123T204447-check-kw-najeela-1123.json",
+  "started": "2026-11-23T21:40:18Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -27,5 +27,5 @@
     "Meren"
   ],
   "allcached": false,
-  "seedbase": 184904400
+  "seedbase": 184910000
 }
