@@ -16,10 +16,6 @@
  "*": [
   [
    5320,
-   251092926
-  ],
-  [
-   5320,
    263202435
   ],
   [
@@ -37,6 +33,10 @@
   [
    5262,
    240628557
+  ],
+  [
+   2882,
+   159598300
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -61,6 +61,12 @@
   [
    5262,
    240628557
+  ]
+ ],
+ "SiskoFinal__RikuOfManyPaths__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
+  [
+   2882,
+   159598300
   ]
  ]
 }

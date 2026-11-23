@@ -424,6 +424,15 @@
   ],
   "wins": 1196
  },
+ "154bd4be03dc5c078c5a": {
+  "card": "Riku of Many Paths",
+  "deck": "SiskoFinal__RikuOfManyPaths__for__PactOfNegation",
+  "games": 2882,
+  "runs": [
+   "riku_of_many_paths_for_pact_of_negation:45101200533"
+  ],
+  "wins": 648
+ },
  "1e6d15b1854b7ad4d71f": {
   "card": "Cultivate",
   "deck": "SiskoFinal",
