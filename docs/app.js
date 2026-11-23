@@ -3,7 +3,7 @@
    Reads everything from GitHub; writes (decks, queued tests) through the GitHub API with a token kept in localStorage. */
 const REPO = 'michaelsabramson/sisko-forge-tests', BR = 'main';
 const OPP_DEFAULT = ['Atraxa', 'Prossh', 'UrDragon', 'Edgar', 'Meren'];
-const SHARDS = 38, HELPER_SHARDS = 58, GPM_FALLBACK = 1.1;  // runners per test (main account + helper organization); games per process-minute until runs have measured it
+const SHARDS = 38, HELPER_SHARDS = 5, GPM_FALLBACK = 1.1;  // runners per test (main account + helper organization); games per process-minute until runs have measured it
 let GPM = GPM_FALLBACK;                 // replaced by the measured speed (cache/speed.json) once loaded
 const BASE_P = 0.19;                    // typical win rate for precision estimates
 
