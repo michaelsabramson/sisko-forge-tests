@@ -1,0 +1,15 @@
+{
+  "mode": "audit",
+  "base": "SiskoFinal",
+  "name": "Ranking of SiskoFinal",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-23T16:06:58.767Z"
+}
