@@ -473,7 +473,7 @@ async function viewDeck(v, name, sub = 'overview') {
   v.innerHTML = `<a href="#decks" class="back small">← Decks</a>
     <div class="pagehead" style="margin-top:6px"><div><h1>${esc(deckTitle(name))}</h1><p class="muted small" id="dsub">${esc(name)}</p></div>
       ${isOpp ? '' : `<a class="btn primary" href="#test/${encodeURIComponent(name)}">New test</a>`}</div>
-    <div class="seg" style="margin-bottom:16px">${[['overview', 'Overview'], ['tests', 'Tests'], ['audit', 'Cards'], ['list', 'List']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
+    <div class="seg" style="margin-bottom:16px">${[['overview', 'Overview'], ['tests', 'Tests'], ['audit', 'Rank'], ['list', 'List']].map(([k, l]) => `<a href="#deck/${encodeURIComponent(name)}/${k}" class="${k === sub ? 'on' : ''}">${l}</a>`).join('')}</div>
     <section id="dbody"><div class="empty"><span class="spin"></span></div></section>`;
   if (!S.deck.d) S.deck.d = structuredClone(await loadDeck(name));
   $('#dsub').innerHTML = `${esc(name)} · ${esc(S.deck.d.commander.join(' + ') || 'no commander')}${primary().includes(name) ? ` · <select id="dbr" class="sm" style="width:auto;padding:2px 6px;font-size:13px">${[2, 3, 4].map(b => `<option value="${b}" ${b === deckBracket(name) ? 'selected' : ''}>Bracket ${b}</option>`).join('')}</select>` : ''}`;
@@ -823,7 +823,7 @@ async function drawOverview(body, name) {
   // mana and speed in full, with their charts (the same sections as on the Cards tab)
   if (a) { const m = manaBalance(rows, a.arms?.[0]?.games, a.audit.lands), s = speedCurve(a.audit.pace, a.auditPool);
     if (m) h += `<div class="card">${m}</div>`; if (s) h += `<div class="card">${s}</div>`; }
-  if (!a) h += `<div class="card"><div class="sect" style="margin:0 0 6px">Card scores</div><p class="small muted" style="margin:0">Run a ranking on the Cards tab to get cut candidates, mana and speed for this deck.</p><a class="btn sm" style="margin-top:8px;display:inline-block" href="#deck/${enc}/audit">Go to Cards</a></div>`;
+  if (!a) h += `<div class="card"><div class="sect" style="margin:0 0 6px">No ranking yet</div><p class="small muted" style="margin:0">Run a ranking on the Rank tab to get power, mana and speed for this deck.</p><a class="btn sm" style="margin-top:8px;display:inline-block" href="#deck/${enc}/audit">Go to Rank</a></div>`;
   if (!h) h = `<div class="card empty">No tests for this deck yet.<br><a class="btn primary" style="display:inline-block;margin-top:12px" href="#test/${enc}">Start one</a></div>`;
   h += `<p class="small muted" style="margin:14px 0 0">${a ? `From the latest ranking (${a.audit.pace?.games?.toLocaleString() || ''} games, ${esc(ago(a.date))}) and tests. ` : ''}<a href="#deck/${enc}/notes">Notes</a> · <a href="#deck/${enc}/history">History</a></p>`;
   body.innerHTML = `<div class="stack">${h}</div>`;
