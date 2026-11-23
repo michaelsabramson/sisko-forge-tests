@@ -225,6 +225,8 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
+    if r.get("hidden"):
+        req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
     if r.get("profile") and r["profile"] != "Default":
         req["profile"] = r["profile"]   # AI settings for the tested (Sisko*) decks; opponents stay on Default
     # helper.json: a second account's runners (its own job limit) play shards main_shards..shards-1 of every run

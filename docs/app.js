@@ -200,7 +200,7 @@ document.addEventListener('mouseover', e => {
 
 /* ---------- results ---------- */
 function parseResult(path, md) {
-  if (md.includes('"mode": "pilot"')) return null;   // AI pilot comparisons are backend experiments, not deck results
+  if (md.includes('"mode": "pilot"') || md.includes('"hidden": true')) return null;   // AI pilot comparisons are backend experiments, not deck results
   const name = path.slice(8, -3); const peek = name.endsWith('_peek');
   const dm = md.match(/<!-- data (\{.*\}) -->/);
   let arms = [], gaps = [];
