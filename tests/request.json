@@ -39,8 +39,8 @@
   "minutes": 17,
   "shards": 96,
   "mode": "swap",
-  "queued_from": "20261123-022805-riku-of-many-paths-for-pact-of-negation.json",
-  "started": "2026-11-23T02:28:13Z",
+  "queued_from": "20261123-023629-riku-of-many-paths-for-pact-of-negation.json",
+  "started": "2026-11-23T02:36:37Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -461,5 +461,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184679600
+  "seedbase": 184681200
 }
