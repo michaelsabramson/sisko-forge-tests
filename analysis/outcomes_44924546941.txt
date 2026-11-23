@@ -1,0 +1,6 @@
+run 44924546941: 17902 games
+  opponent win                  14052 ( 78.5%)  median turn 35  median 45s  slowest 122s
+  our win                        3842 ( 21.5%)  median turn 34  median 49s  slowest 121s
+  draw/stall                        8 (  0.0%)  median turn 35  median 92s  slowest 112s
+  opponent wins by deck: {'Edgar': 4430, 'UrDragon': 4170, 'Prossh': 2611, 'Meren': 2096, 'Atraxa': 745}
+  draws at the 120s limit: 0
