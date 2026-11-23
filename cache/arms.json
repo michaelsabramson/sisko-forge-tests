@@ -454,11 +454,12 @@
  "231bc90d40c0776c76a1": {
   "card": "",
   "deck": "SiskoFinal",
-  "games": 1176,
+  "games": 5996,
   "runs": [
-   "pilot_test_siskofinal_default_vs_hard_ai:45127055326"
+   "pilot_test_siskofinal_default_vs_hard_ai:45127055326",
+   "pilot_test_siskofinal_default_vs_hard_ai:45131319814"
   ],
-  "wins": 267
+  "wins": 1324
  },
  "243a987199add13ca9be": {
   "card": "Caesar, Legion's Emperor",
@@ -924,11 +925,12 @@
  "4bb9b8d1b741361a2667": {
   "card": "",
   "deck": "SiskoFinal",
-  "games": 5262,
+  "games": 5688,
   "runs": [
-   "siskofinal_vs_norinb3:45105274164"
+   "siskofinal_vs_norinb3:45105274164",
+   "pilot_test_siskofinal_default_vs_hard_ai:45131319814"
   ],
-  "wins": 1110
+  "wins": 1218
  },
  "4e497ac4b88d3239e29a": {
   "card": "Assassin's Trophy",
