@@ -114,7 +114,10 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped'))}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"
-os.makedirs('results', exist_ok=True); open(f"results/{req['name']}.md", 'w').write(txt); print(txt)
+if all(res[i][1] for pr in pairs for i in pr):
+    os.makedirs('results', exist_ok=True); open(f"results/{req['name']}.md", 'w').write(txt); print(txt)
+else:
+    print("a compared list has no games (run cancelled early?): no result written")
 
 # add this run's new games to the cache (final aggregation only, never for early reads)
 if not PEEK:
