@@ -1,0 +1,10 @@
+name: probe-cors
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for u in "https://deckcheck.co/api/external/deck?deck_id=sBid_JEUQZ4D" "https://archidekt.com/api/decks/1/" "https://api2.moxfield.com/v3/decks/all/OEAzHi5MyEOSCcfIkUY8ng" "https://manabox.app/decks/abc"; do
+            echo "== $u"; curl -s -m 20 -D /tmp/h -o /tmp/b -H "Origin: https://michaelsabramson.github.io" "$u"; grep -iE "^HTTP|access-control-allow-origin|content-type" /tmp/h; head -c 300 /tmp/b; echo
+          done
