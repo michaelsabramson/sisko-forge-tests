@@ -231,6 +231,9 @@ def main():
            "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
     if r.get("opponents"):
         req["opponents"] = r["opponents"]
+    # a background run (power ladder calibration, .github/workflows/background.yml) holds some runners: leave them free
+    if os.environ.get("BG_RUNNERS"):
+        req["shards"] = max(10, req["shards"] - int(os.environ["BG_RUNNERS"]))
     if r.get("mode") == "ladder":
         req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
     if r.get("hidden"):

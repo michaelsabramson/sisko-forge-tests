@@ -42,6 +42,9 @@ jobs:
       - name: Start next queued test
         if: steps.busy.outputs.active == '0'
         run: |
+          # runners held by a background run (tests/background.json, usually 12) are left free
+          bg=$(gh run list -R ${{ github.repository }} -w background.yml -L 5 --json status -q '[.[]|select(.status!="completed")]|length' 2>/dev/null || echo 0)
+          [ "${bg:-0}" -gt 0 ] && export BG_RUNNERS=$(jq -r '.shards // 12' tests/background.json 2>/dev/null || echo 12)
           name=$(python3 scripts/dispatch.py)
           if [ -z "$name" ]; then echo "queue empty"; exit 0; fi
           git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"

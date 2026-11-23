@@ -1,0 +1,205 @@
+# Background lane: a long, low-priority run (e.g. power ladder calibration) on a few runners, alongside the normal
+# one-at-a-time test queue. Generated from swaptest.yml; reads tests/background.json; no early reads, no queue hand-off.
+name: background
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: background
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.m.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the background request
+        run: cp tests/background.json tests/request.json
+      - id: m
+        run: echo "shards=$(jq -c '[range(0; (.main_shards // .shards // 20))]' tests/request.json)" >> $GITHUB_OUTPUT
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - name: Fetch Forge at pinned commit
+        run: |
+          git init forge && cd forge
+          git remote add origin https://github.com/Card-Forge/forge
+          GIT_LFS_SKIP_SMUDGE=1 git fetch --depth 1 origin $(cat ../FORGE_COMMIT)
+          git -c advice.detachedHead=false checkout FETCH_HEAD
+          git apply ../forge.patch
+      - name: Build engine (core, game, ai)
+        run: |
+          cd forge
+          mvn -B -pl forge-ai -am package dependency:copy-dependencies -DoutputDirectory=$GITHUB_WORKSPACE/lib -DincludeScope=runtime -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
+          rm -f ../lib/forge-core-*.jar ../lib/forge-game-*.jar ../lib/forge-ai-*.jar
+          cp forge-core/target/forge-core-*.jar forge-game/target/forge-game-*.jar forge-ai/target/forge-ai-*.jar ../lib/
+          ls ../lib | head -50 >> ../build.log
+      - name: Report build failure
+        if: failure()
+        run: |
+          mkdir -p results && grep -E "ERROR|BUILD|error:" build.log | head -80 > results/build-error.log || tail -100 build.log > results/build-error.log
+          git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          git add results/build-error.log && git commit -m "Build error log" && git push origin HEAD:${{ github.ref_name }}
+      - name: Compile runner
+        run: |
+          mkdir -p runner-classes
+          javac -nowarn -cp "lib/*" -d runner-classes runner/Run.java
+      - name: Package
+        run: tar czf build.tgz lib runner-classes forge/forge-gui/res
+      - uses: actions/upload-artifact@v4
+        with: { name: build, path: build.tgz, retention-days: 2 }
+  shard:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    strategy:
+      fail-fast: false
+      matrix:
+        s: ${{ fromJson(needs.build.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the background request
+        run: cp tests/background.json tests/request.json
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21' }
+      - uses: actions/download-artifact@v4
+        with: { name: build }
+      - run: tar xzf build.tgz
+      - name: Start games
+        env:
+          GH_TOKEN: ${{ github.token }}   # batches are claimed through the GitHub API (scripts/claimbatch.sh)
+        run: nohup setsid scripts/shard.sh ${{ matrix.s }} $(jq -r '.minutes // 40' tests/request.json) > shard.out 2>&1 &
+      - name: Checkpoint 1
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 2
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 3
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 4
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 5
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 6
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 7
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Checkpoint 8
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        continue-on-error: true   # a progress save racing the final save must not fail the run
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Final
+        if: ${{ !cancelled() }}
+        run: scripts/waitgames.sh 100000
+      - name: Stop games (run cancelled)
+        if: ${{ cancelled() }}
+        run: pkill -f "Run forge" || true; sleep 3
+      - uses: actions/upload-artifact@v4
+        id: final_upload
+        if: always()
+        continue-on-error: true   # GitHub sometimes answers 409 while replacing the previous save; retried below
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+      - name: Wait before retrying the final save
+        if: ${{ always() && steps.final_upload.outcome == 'failure' }}
+        run: sleep 20
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && steps.final_upload.outcome == 'failure' }}
+        with:
+          name: out-${{ matrix.s }}
+          path: out/
+          retention-days: 7
+          overwrite: true
+  aggregate:
+    needs: shard
+    if: ${{ always() && needs.shard.result != 'skipped' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use the background request
+        run: cp tests/background.json tests/request.json
+      - uses: actions/download-artifact@v4
+        with: { pattern: out-*, path: out }
+      - name: Tally results
+        run: |
+          # stopped early? (an early read found the answer settled and left the ref refs/stop/<run>)
+          git ls-remote origin "refs/stop/${{ github.run_id }}" | grep -q . && export STOPPED=1
+          python3 scripts/aggregate.py
+      - name: Commit results
+        run: |
+          git ls-remote origin "refs/stop/${{ github.run_id }}" | grep -q . && export STOPPED=1
+          scripts/commitresults.sh ${{ github.ref_name }}
