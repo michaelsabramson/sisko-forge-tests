@@ -1,0 +1,18 @@
+{
+  "mode": "cardcheck",
+  "base": "SiskoFinal",
+  "cards": [
+    "Riku of Many Paths"
+  ],
+  "name": "Card check in SiskoFinal",
+  "minutes": 8,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "reason": "promotion"
+}
