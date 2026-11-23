@@ -1358,6 +1358,15 @@
   ],
   "wins": 1113
  },
+ "519ca4a5d39be9ecf60a": {
+  "card": "Seven of Nine, Unassimilated",
+  "deck": "SiskoFinal__SevenOfNineUnassimilated__for__SylvanLibrary",
+  "games": 3390,
+  "runs": [
+   "seven_of_nine_for_sylvan_library:45260062213"
+  ],
+  "wins": 728
+ },
  "5a32f90b892c782c8a44": {
   "card": "Riku of Many Paths",
   "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
@@ -1800,6 +1809,15 @@
    "caesar_vs_cultivate_and_manamorphose:44769997296"
   ],
   "wins": 1293
+ },
+ "7ebfc0eef22b6d56ccd9": {
+  "card": "Sylvan Library",
+  "deck": "SiskoFinal",
+  "games": 3458,
+  "runs": [
+   "seven_of_nine_for_sylvan_library:45260062213"
+  ],
+  "wins": 662
  },
  "8170b90ddd75b2062e31": {
   "card": "Manamorphose",
