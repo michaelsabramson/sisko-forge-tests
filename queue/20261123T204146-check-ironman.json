@@ -1,0 +1,15 @@
+{
+  "mode": "usage",
+  "base": "Ironman",
+  "name": "Card usage in Ironman",
+  "minutes": 25,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "reason": "deck saved"
+}
