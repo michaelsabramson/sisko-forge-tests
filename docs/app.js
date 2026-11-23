@@ -132,26 +132,52 @@ function parseDck(txt) {
 function toDck(name, d) { return `[metadata]\nName=${name}\n[Commander]\n${d.commander.map(c => '1 ' + c).join('\n')}${d.commander.length ? '\n' : ''}[Main]\n${d.main.map(r => r.n + ' ' + r.name).join('\n')}\n`; }
 function toText(d) { return 'Commander\n' + d.commander.map(c => '1 ' + c).join('\n') + '\n\nDeck\n' + d.main.map(r => r.n + ' ' + r.name).join('\n') + '\n'; }
 function parseText(txt) {
-  // accepts Moxfield/Archidekt/MTGO style lists; "Commander" header or *CMDR* marks commanders
-  const d = { commander: [], main: [] }; let sec = 'main'; const bad = [];
-  for (let line of txt.split(/\r?\n/)) {
-    line = line.trim(); if (!line || line.startsWith('#')) continue;
-    const h = line.replace(/^\/\/\s*|^\[|\]$|:$/g, '').trim().toLowerCase();
-    if (/^(commanders?|command zone)$/.test(h)) { sec = 'cmd'; continue; }
-    if (/^(deck|main(board)?|mainboard|library|creatures?|lands?|instants?|sorcer(y|ies)|artifacts?|enchantments?|planeswalkers?|battles?|other|spells?)(\s*\(\d+\))?$/.test(h)) { sec = 'main'; continue; }
-    if (/^(sideboard|maybeboard|considering|tokens?)/.test(h)) { sec = 'skip'; continue; }
-    if (sec === 'skip') continue;
-    // a trailing "(Commander)" / "(CMDR)" tag also marks a commander (Archidekt / plain-text exports)
-    let cmd = /\*CMDR\*/i.test(line) || /\s*[\(\[](commander|cmdr)[\)\]]\s*$/i.test(line);
-    line = line.replace(/\s*[\(\[](commander|cmdr)[\)\]]\s*$/i, '');
-    let m = line.match(/^(\d+)\s*x?\s+(.+)$/i); let n = 1, name = line;
-    if (m) { n = +m[1]; name = m[2]; }
-    name = name.replace(/\*[A-Z]+\*/gi, '').replace(/\s+\([A-Za-z0-9]{2,6}\)\s*[\w-]*\s*$/, '').replace(/\s+\[[^\]]+\]\s*$/, '').replace(/\s+#.*$/, '').trim();
+  // accepts Moxfield / Archidekt / MTGO / Arena / ManaBox / DeckCheck text lists and CSV exports (ManaBox, Archidekt,
+  // Moxfield); a "Commander" header, *CMDR* or a trailing "(Commander)" marks commanders
+  const d = { commander: [], main: [] }; const bad = [];
+  const add = (name, n, cmd) => {
+    name = name.replace(/\s+\^[^^]*\^\s*$/, '').replace(/\s+\[[^\]]*\]\s*$/, '').replace(/\*[A-Z]+\*/gi, '').trim()
+      .replace(/\s+\([A-Za-z0-9]{2,6}\)(\s+\S+)?\s*$/, '').replace(/\s+\[[A-Za-z0-9]{2,6}\](\s+\S+)?\s*$/, '').replace(/\s+#.*$/, '').trim();
+    if (!name) return;
     const fn = forgeName(name) || name.split(' // ')[0];
     if (!forgeName(name)) bad.push(name);
-    if (sec === 'cmd' || cmd) d.commander.push(fn);
+    if (cmd) d.commander.push(fn);
     else { const ex = d.main.find(r => r.name === fn); ex ? ex.n += n : d.main.push({ n, name: fn }); }
+  };
+  const lines = txt.replace(/^﻿/, '').split(/\r?\n/);
+  // CSV export: a header row naming the card column (Name / Card Name) and usually a quantity column
+  const csvSplit = s => { const out = []; let cur = '', q = false; for (const ch of s) { if (ch === '"') q = !q; else if ((ch === ',' || ch === ';' || ch === '\t') && !q) { out.push(cur); cur = ''; } else cur += ch; } out.push(cur); return out.map(x => x.trim()); };
+  const head = csvSplit(lines[0] || '').map(h => h.toLowerCase());
+  const ni = head.findIndex(h => h === 'name' || h === 'card name' || h === 'card'), qi = head.findIndex(h => /^(quantity|qty|count|amount)$/.test(h));
+  if (ni >= 0 && head.length > 2) {
+    const bi = head.findIndex(h => /^(board|category|categories|section|zone|type)$/.test(h)), ci = head.findIndex(h => /commander/.test(h) && h !== 'name');
+    for (const l of lines.slice(1)) {
+      if (!l.trim()) continue; const c = csvSplit(l); const board = (bi >= 0 ? c[bi] : '').toLowerCase();
+      if (/side|maybe|consider|token/.test(board)) continue;
+      add(c[ni] || '', qi >= 0 ? (+c[qi] || 1) : 1, /commander/.test(board) || (ci >= 0 && /^(true|yes|1|x)$/i.test(c[ci] || '')));
+    }
+    return { d, bad };
   }
+  let sec = 'main'; const tail = [];
+  for (let line of lines) {
+    line = line.trim();
+    if (!line) { if (sec === 'skip' || sec === 'tail') { sec = 'tail'; tail.length = 0; } continue; }
+    if (line.startsWith('#')) continue;
+    if (sec === 'tail' && /^\d+\s*x?\s+\S/.test(line)) { tail.push(line.replace(/^\d+\s*x?\s+/, '')); continue; }
+    const h = line.replace(/^\/\/\s*|^\[|\]$|:$/g, '').trim().toLowerCase();
+    if (/^(commanders?|command zone|commander zone)(\s*\(\d+\))?$/.test(h)) { sec = 'cmd'; continue; }
+    if (/^(sideboard|maybeboard|maybe|considering|tokens?|companion)(\s*\(\d+\))?/.test(h)) { sec = 'skip'; continue; }
+    // any other header: a known section name, or a category label with no quantity in front, like "Ramp (10)"
+    if (/^(about|name\s.*|deck|main(board)?|library|creatures?|lands?|instants?|sorcer(y|ies)|artifacts?|enchantments?|planeswalkers?|battles?|other|spells?)(\s*\(\d+\))?$/.test(h)
+        || (!/^\d/.test(line) && /\(\d+\)\s*:?$/.test(line))) { sec = 'main'; continue; }
+    if (sec === 'skip') continue;
+    if (/\[(maybeboard|sideboard|considering)[^\]]*\]|\{noDeck\}/i.test(line)) continue;
+    const cmd = /\*CMDR\*/i.test(line) || /\s*[\(\[](commander|cmdr)[\)\]]\s*$/i.test(line) || /\[commander[^\]]*\]/i.test(line);
+    line = line.replace(/\s*[\(\[](commander|cmdr)[\)\]]\s*$/i, '');
+    const m = line.match(/^(\d+)\s*x?\s+(.+)$/i) || line.match(/^(\d+)\t(.+)$/);
+    add(m ? m[2] : line, m ? +m[1] : 1, sec === 'cmd' || cmd);
+  }
+  if (!d.commander.length && tail.length && tail.length <= 2) tail.forEach(n => add(n, 1, true));
   return { d, bad };
 }
 async function loadDeck(name) {
@@ -551,6 +577,7 @@ function deckStats(d) {
   for (const r of d.main) { const t = S.sf[r.name]; if (!t || t.type.includes('Land')) continue; const c = Math.min(7, Math.round(t.cmc)); curve[c] += r.n; mv += t.cmc * r.n; nonland += r.n; }
   const issues = [];
   if (count !== 100) issues.push(`${count} cards (Commander decks are 100)`);
+  if (!d.commander.length && count) issues.push('No commander found: put it under a "Commander" line, or add "(Commander)" after its name');
   for (const r of d.main) if (r.n > 1 && !/^(Plains|Island|Swamp|Mountain|Forest|Wastes|Snow-Covered .+)$/.test(r.name) && !/any number of cards named/i.test(S.sf[r.name]?.type || '')) issues.push(`${r.n} copies of ${r.name}`);
   if (ci.size) { const off = d.main.filter(r => { const c = S.sf[r.name]?.ci; return c && c.some(x => !ci.has(x)); }).map(r => r.name);
     if (off.length) issues.push(`Outside the commander's colors (${off.length}): ${off.slice(0, 8).join(', ')}${off.length > 8 ? '…' : ''}`); }
@@ -578,7 +605,7 @@ function drawEditor() {
     ${st.missing.length ? `<div class="note bad"><b>Not in Forge:</b> ${st.missing.map(esc).join(', ')}. These can't be simulated; fix the name or swap them out.</div>` : ''}
     ${weak.length ? `<div class="note"><b>Forge's AI plays these poorly:</b> ${weak.map(esc).join(', ')}. Tests will tend to undervalue them.</div>` : ''}
     ${st.issues.length ? `<div class="note">${st.issues.map(esc).join('<br>')}</div>` : ''}
-    ${S.deckText ? `<textarea id="dtext" spellcheck="false" placeholder="Paste a list: Moxfield, Archidekt or plain '1 Sol Ring' lines. Put commanders under a 'Commander' line.">${esc(d.commander.length || d.main.length ? toText(d) : '')}</textarea>
+    ${S.deckText ? `<textarea id="dtext" spellcheck="false" placeholder="Paste a list or CSV: Moxfield, Archidekt, ManaBox, DeckCheck, Arena or plain '1 Sol Ring' lines. Put commanders under a 'Commander' line.">${esc(d.commander.length || d.main.length ? toText(d) : '')}</textarea>
       <div class="row end"><button id="applyText" class="primary">Apply</button></div>` :
       `<div class="row"><div class="ac grow" style="max-width:420px"><input id="addCard" placeholder="Add a card…"></div>
         <label class="chk"><input type="checkbox" id="asCmd"> as commander</label></div>
