@@ -1,0 +1,45 @@
+name: outcomes
+# Counts how a run's games ended (our win, an opponent's win, knocked out early, draw/stall) from its stored logs.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: 'swap-test run id', required: true }
+permissions:
+  contents: write
+  actions: read
+jobs:
+  count:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: out-*, path: out, run-id: '${{ inputs.run_id }}', github-token: '${{ github.token }}' }
+      - name: Count
+        run: |
+          mkdir -p analysis
+          python3 - <<'PY' | tee analysis/outcomes_${{ inputs.run_id }}.txt
+          import glob, re, collections, json
+          c = collections.Counter(); turns = collections.defaultdict(list); ms = collections.defaultdict(list); opp = collections.Counter(); seat = collections.Counter()
+          for f in glob.glob('out/**/arm*_*.log', recursive=True):
+              pod = None
+              for l in open(f, errors='ignore'):
+                  if l.startswith('POD '): pod = re.findall(r"[\w'-]+", l[4:]); continue
+                  m = re.match(r'G\d+ winner=(\S+) turn=(\d+) \(round [\d.]+\) (\d+)ms', l)
+                  if not m or not pod: continue
+                  me = pod[0] if False else None
+                  w = m.group(1); tracked = [d for d in pod if d not in ('Atraxa', 'Prossh', 'UrDragon', 'Edgar', 'Meren')]
+                  kind = 'draw/stall' if w == 'Draw' else 'knocked out (ended early)' if w == 'TrackedOut' else 'our win' if w in tracked else 'opponent win'
+                  c[kind] += 1; turns[kind].append(int(m.group(2))); ms[kind].append(int(m.group(3)))
+                  if kind == 'opponent win': opp[w] += 1
+          N = sum(c.values()); print(f"run ${{ inputs.run_id }}: {N} games")
+          for k, v in c.most_common():
+              t = sorted(turns[k]); s = sorted(ms[k])
+              print(f"  {k:28} {v:6} ({100*v/N:5.1f}%)  median turn {t[len(t)//2]}  median {s[len(s)//2]/1000:.0f}s  slowest {s[-1]/1000:.0f}s")
+          print("  opponent wins by deck:", dict(opp.most_common()))
+          d = [x for x in ms['draw/stall']]; print(f"  draws at the 120s limit: {sum(x >= 119000 for x in d)}")
+          PY
+      - name: Save
+        run: |
+          git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
+          git add analysis/ && git commit -qm "Outcomes: run ${{ inputs.run_id }}" || exit 0
+          for i in 1 2 3 4; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep $((RANDOM % 10 + 5)); done
