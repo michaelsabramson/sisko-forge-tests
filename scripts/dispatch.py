@@ -173,8 +173,11 @@ def main():
     elif r.get("mode") == "pilot":
         # backend only (no app button): the same list piloted by different Forge AI profiles, opponents on Default,
         # nothing forced. Measures how much a profile's extra thinking is worth with this deck.
-        for p in r.get("profiles", ["Default", "Hard"]):
-            arms.append({"deck": r["base"], "card": "", "profile": p, "label": f"{p} AI"})
+        for p in r.get("pilots") or [{"profile": q} for q in r.get("profiles", ["Default", "Hard"])]:
+            # a pilot: an AI profile, optionally with Forge's lookahead search ("mc": on = profile budgets, max = desktop)
+            mc = p.get("mc", "off")
+            arms.append({"deck": r["base"], "card": "", "profile": p["profile"], **({"mc": mc} if mc != "off" else {}),
+                         "label": f"{p['profile']} AI" + {"off": "", "on": " + lookahead", "max": " + lookahead (desktop)"}[mc]})
         compare = [[0, i] for i in range(1, len(arms))]
     elif r.get("mode", "swap") == "swap":
         base = r["base"]
@@ -260,6 +263,7 @@ def main():
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
         a["key"] = cache.arm_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"))
+        if a.get("mc") or req.get("opp_mc"): a["key"] = cache._h((a["key"] + "|mc=" + a.get("mc", "off") + "|opp_mc=" + req.get("opp_mc", "off")).encode())[:20]
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4

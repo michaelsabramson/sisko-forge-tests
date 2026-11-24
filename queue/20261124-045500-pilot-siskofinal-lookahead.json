@@ -1,0 +1,11 @@
+{
+  "mode": "pilot",
+  "base": "SiskoFinal",
+  "pilots": [{"profile": "Default"}, {"profile": "Default", "mc": "max"}, {"profile": "Hard", "mc": "max"}],
+  "name": "Pilot test: SiskoFinal, lookahead search off vs on",
+  "precision": 2.5,
+  "minutes": 100,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
+  "submitted": "2026-11-24T04:55:00+00:00"
+}

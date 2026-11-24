@@ -56,6 +56,13 @@ public class Run {
       List<RegisteredPlayer> pp=new ArrayList<>(); int k=pod.size();
       for(int j=0;j<k;j++){ Deck d=pod.get((j+g)%k); RegisteredPlayer rp=RegisteredPlayer.forCommander(d); LobbyPlayerAi lp=new LobbyPlayerAi(d.getName(),null); lp.setAiProfile(trackedNames.contains(d.getName()) ? System.getProperty("sisko.profile","Default") : System.getProperty("sisko.oppProfile","Default")); /* tested deck's AI settings; opponents' AI settings */ rp.setPlayer(lp); pp.add(rp);}
       Match mc=new Match(rules,pp,"T"); Game game=mc.createGame(); game.setNoGUIUser();
+      { /* Forge's lookahead search (flat Monte Carlo): only the desktop app switches it on, so headless games need it here.
+           -Dsisko.mc / -Dsisko.oppMc: off | on (profile budgets) | max (desktop budgets) for the tested deck / its opponents */
+        String mt=System.getProperty("sisko.mc","off"), mo=System.getProperty("sisko.oppMc","off");
+        game.AI_FLAT_MONTE_CARLO_MAX = mt.equals("max") || mo.equals("max");
+        for(Player pl:game.getPlayers()) if(pl.getController() instanceof PlayerControllerAi){
+          String m=trackedNames.contains(pl.getName()) ? mt : mo;
+          ((PlayerControllerAi)pl.getController()).getAi().setFlatMonteCarloOverride(!m.equals("off")); } }
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
       if(!Boolean.getBoolean("full")) { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());   /* -Dfull=true: play every game to the end (power ladder needs every winner) */

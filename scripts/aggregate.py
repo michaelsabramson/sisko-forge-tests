@@ -124,7 +124,7 @@ if logs:
 data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
-                  "reused": a.get('prior_games', 0), **({"profile": a['profile']} if a.get('profile') else {}), **({"label": a['label']} if a.get('label') else {}),
+                  "reused": a.get('prior_games', 0), **({"profile": a['profile']} if a.get('profile') else {}), **({"mc": a['mc']} if a.get('mc') else {}), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"opp_profile": req['opp_profile']} if req.get('opp_profile') else {}), **({"hidden": True} if req.get('hidden') else {}), **({"stopped": True} if STOPPED else {}),
         "compare": pairs, "opponents": req.get('opponents'),
@@ -163,6 +163,8 @@ if not PEEK:
         if speed[i][0] < 20: continue
         prof = a.get('profile') or req.get('profile')
         prof = None if prof == "Default" else prof
+        if a.get('mc') or req.get('opp_mc'):   # lookahead games run at their own speed: keep them out of the plain-AI figures
+            prof = (prof or "Default") + "+mc"
         for k in ((a['deck'] + "|" + opps + "|" + prof, "*|" + prof) if prof else (a['deck'] + "|" + opps, "*")):
             sp[k] = (sp.get(k, []) + [speed[i]])[-6:]   # recent measurements only: the engine and decks change
     json.dump(sp, open('cache/speed.json', 'w'), indent=1)
