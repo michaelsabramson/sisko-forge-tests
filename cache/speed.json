@@ -107,10 +107,6 @@
  ],
  "*|Hard": [
   [
-   5282,
-   252116296
-  ],
-  [
    1144,
    53044796
   ],
@@ -129,6 +125,10 @@
   [
    4076,
    159860658
+  ],
+  [
+   16492,
+   639265528
   ]
  ],
  "SiskoFinal__ImperialRecruiter__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard": [
@@ -315,6 +315,12 @@
   [
    160,
    9850073
+  ]
+ ],
+ "Ironman|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard": [
+  [
+   16492,
+   639265528
   ]
  ]
 }
