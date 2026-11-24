@@ -1,10 +1,6 @@
 {
  "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren": [
   [
-   5253,
-   264805571
-  ],
-  [
    5262,
    243793193
   ],
@@ -23,13 +19,13 @@
   [
    3458,
    170609567
+  ],
+  [
+   1894,
+   92849901
   ]
  ],
  "*": [
-  [
-   170,
-   9867054
-  ],
   [
    163,
    9827716
@@ -49,6 +45,10 @@
   [
    160,
    9850073
+  ],
+  [
+   1894,
+   92849901
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -329,6 +329,30 @@
   [
    16492,
    639265528
+  ]
+ ],
+ "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren|Default+mc": [
+  [
+   1868,
+   128593506
+  ]
+ ],
+ "*|Default+mc": [
+  [
+   1868,
+   128593506
+  ]
+ ],
+ "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard+mc": [
+  [
+   1863,
+   127990761
+  ]
+ ],
+ "*|Hard+mc": [
+  [
+   1863,
+   127990761
   ]
  ]
 }
