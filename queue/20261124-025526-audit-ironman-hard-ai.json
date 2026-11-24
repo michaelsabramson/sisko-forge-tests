@@ -1,0 +1,11 @@
+{
+  "mode": "audit",
+  "base": "Ironman",
+  "name": "Rank of Ironman on Hard AI",
+  "precision": 2,
+  "shards": 38,
+  "profile": "Hard",
+  "hidden": true,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
+  "submitted": "2026-11-24T02:55:26+00:00"
+}
