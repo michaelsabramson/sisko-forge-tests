@@ -89,10 +89,6 @@
  ],
  "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard": [
   [
-   5282,
-   254379234
-  ],
-  [
    1176,
    69855709
   ],
@@ -111,17 +107,13 @@
   [
    5972,
    283286204
+  ],
+  [
+   3350,
+   176227230
   ]
  ],
  "*|Hard": [
-  [
-   4820,
-   238702789
-  ],
-  [
-   16492,
-   826149826
-  ],
   [
    4076,
    159860658
@@ -137,6 +129,14 @@
   [
    5972,
    283286204
+  ],
+  [
+   3350,
+   176227230
+  ],
+  [
+   5147,
+   177409613
   ]
  ],
  "SiskoFinal__ImperialRecruiter__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard": [
@@ -153,6 +153,10 @@
   [
    4076,
    159860658
+  ],
+  [
+   5147,
+   177409613
   ]
  ],
  "SiskoFinal__SevenOfNineUnassimilated__for__SylvanLibrary|Atraxa,Prossh,UrDragon,Edgar,Meren": [

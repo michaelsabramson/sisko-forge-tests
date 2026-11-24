@@ -890,6 +890,15 @@
   ],
   "wins": 3742
  },
+ "0b11dc19754f39a37468F": {
+  "card": "",
+  "deck": "NorinB3",
+  "games": 5147,
+  "runs": [
+   "par_curve_hard_ai:45326783493"
+  ],
+  "wins": 941
+ },
  "0b84bb7ca8031ac35e07": {
   "card": "",
   "deck": "TheUrDragon_B3",
@@ -3651,6 +3660,15 @@
    "power_ladder_calibration:45290614068"
   ],
   "wins": 26
+ },
+ "7099b0fbb80e924ca8f0F": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 3350,
+  "runs": [
+   "par_curve_hard_ai:45326783493"
+  ],
+  "wins": 732
  },
  "712cde349d0813a79e5a": {
   "card": "Caesar, Legion's Emperor",
