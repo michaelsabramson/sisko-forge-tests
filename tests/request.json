@@ -1,12 +1,12 @@
 {
-  "name": "ranking_of_kw_najeela_1123",
-  "title": "Ranking of KW-Najeela-1123",
+  "name": "ranking_of_ironman",
+  "title": "Ranking of Ironman",
   "arms": [
     {
-      "deck": "KW-Najeela-1123",
+      "deck": "Ironman",
       "card": "@audit",
-      "label": "Audit of KW-Najeela-1123",
-      "key": "066e45ba5c262322fe81",
+      "label": "Audit of Ironman",
+      "key": "3dc13a692489c9183e06",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -15,11 +15,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 119,
+  "minutes": 111,
   "shards": 38,
   "mode": "audit",
-  "queued_from": "20261123T204618-audit-kw-najeela-1123.json",
-  "started": "2026-11-23T22:10:35Z",
+  "queued_from": "20261124T002546-audit-ironman.json",
+  "started": "2026-11-24T00:25:57Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -183,7 +183,7 @@
     0
   ],
   "gpm": [
-    1.3
+    1.391
   ],
   "quota": [
     109
@@ -200,5 +200,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184916000
+  "seedbase": 184943000
 }
