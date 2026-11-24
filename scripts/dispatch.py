@@ -215,6 +215,17 @@ def main():
             if c not in have:
                 sys.exit(f"{c!r} is not in {base}")
             arms.append({"deck": base, "card": c, "usage": True, "label": c})
+    elif r.get("mode") == "tail":
+        # tail check after a Rank (scripts/tail.py): the reference arm forces a typical card, each other arm forces one
+        # card whose outlier call was uncertain; every gap is against the reference
+        base = r["base"]; d = read_deck(base); have = {c for _, c in d["Main"]}
+        for c in [r["ref"]] + r["cards"]:
+            if c not in have:
+                sys.exit(f"{c!r} is not in {base}")
+        arms.append({"deck": base, "card": r["ref"], "label": f"Typical card ({r['ref']})"})
+        for c in r["cards"]:
+            arms.append({"deck": base, "card": c, "label": c})
+        compare = [[0, i] for i in range(1, len(arms))]
     elif r.get("mode") == "usage":
         # short unforced run that logs how the AI handles every card it holds (cast rate, turns held while affordable)
         read_deck(r["base"])
@@ -254,6 +265,8 @@ def main():
         req["shards"] = max(10, req["shards"] - int(os.environ["BG_RUNNERS"]))
     if r.get("mode") == "ladder":
         req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
+    if r.get("mode") == "tail":
+        req["tail"] = {k: r[k] for k in ("margin", "tau", "p_outlier", "rank") if k in r}
     if r.get("hidden"):
         req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
     if r.get("mc") and r.get("mode") not in ("pilot", "ladder"):
@@ -303,7 +316,7 @@ def main():
             sh = req["shards"]
             # slot tests can stop early once settled (scripts/aggregate.py): a smaller first round leaves more of the run
             # in batches, which runners stop claiming, and early reads come every 10 minutes instead of 20
-            req["earlystop"] = req["mode"] in ("swap", "package", "pilot") and not r.get("full")
+            req["earlystop"] = req["mode"] in ("swap", "package", "pilot", "tail") and not r.get("full")
             if req["earlystop"]:
                 # about five looks per run: every 5 minutes for short runs, every 10 for the longest
                 est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, speed_profile(arms[i], req))) for i in todo)

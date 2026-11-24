@@ -5,7 +5,7 @@
 git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
 BR=${1:-main}; cp tests/request.json /tmp/request.json
 for try in 1 2 3 4; do
-  git add results/ cache/ 2>/dev/null || git add results/
+  git add results/ cache/ queue/ 2>/dev/null || git add results/
   git commit -qm "Results: $(jq -r .name tests/request.json)" || true
   git checkout -q -- . 2>/dev/null   # leftovers outside results/cache (e.g. a recovered run's request) would block the pull
   git pull -q --rebase origin "$BR" && git push -q origin "HEAD:$BR" && exit 0

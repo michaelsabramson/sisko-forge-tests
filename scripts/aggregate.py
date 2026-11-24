@@ -69,6 +69,21 @@ for b, i in pairs:
     p0, n0 = p(b); pi, n = p(i); se = math.sqrt(p0*(1-p0)/max(1, n0) + pi*(1-pi)/max(1, n))
     t.append(f"- **{lab(arms[i])} vs {lab(arms[b])}: {100*(pi-p0):+.1f} ± {196*se:.1f} points**")
     settled = settled and abs(pi - p0) > 2.576 * se
+tail_rows = None
+if req.get('mode') == 'tail':
+    # tail check: each card vs the typical reference card; done when every card's verdict is settled (scripts/tail.py)
+    import tail as tailmod
+    m = req.get('tail', {}).get('margin', 2.0); po = req.get('tail', {}).get('p_outlier', {}); tail_rows = []
+    for b, i in pairs:
+        p0, n0 = p(b); pi, n = p(i); se = math.sqrt(p0*(1-p0)/max(1, n0) + pi*(1-pi)/max(1, n))
+        v = tailmod.verdict(100*(pi-p0), 100*se, m)
+        tail_rows.append({"card": arms[i]['card'], "gap": round(100*(pi-p0), 2), "ci": round(196*se, 2), "verdict": v,
+                          **({"p_outlier": po[arms[i]['card']]} if arms[i]['card'] in po else {})})
+    settled = all(r['verdict'] in tailmod.SETTLED for r in tail_rows)
+    t.append(f"\nTail check: each card forced into the opening hand vs a typical card ({arms[0]['card']}). The Rank's outlier line sits {m:.1f} points below a typical card.\n")
+    t.append("| Card | Rank's chance it's an outlier | Gap vs typical card | ± (95%) | Verdict |"); t.append("|---|---|---|---|---|")
+    for r in tail_rows:
+        t.append(f"| {r['card']} | {round(100*r['p_outlier']) if 'p_outlier' in r else '-'}% | {r['gap']:+.1f} | {r['ci']:.1f} | {tailmod.LABEL[r['verdict']]} |")
 # slot tests stop early once the answer is settled: every gap clear at 99% (stricter than the 95% shown, because the run
 # is checked several times) and every arm at least a quarter of its planned games in. The early read leaves stop.flag;
 # peek.yml turns it into the ref refs/stop/<run>, which the runners watch for.
@@ -78,7 +93,7 @@ if PEEK and req.get('earlystop') and settled and all(new[i][1] >= 0.25 * a.get('
 if STOPPED:
     t[0] += (f"\nStopped early: every gap was clear at 99% confidence after {sum(r[1] for r in res):,} games"
              f" ({100*sum(new[i][1] for i in range(len(arms)))/max(1, sum(a.get('target_new', 0) for a in arms)):.0f}% of the planned run)."
-             " The winner is settled; the size of the gap is less precise than a full run.\n")
+             + (" Every card's verdict is settled." if tail_rows is not None else " The winner is settled; the size of the gap is less precise than a full run.") + "\n")
 audit = None
 if req.get('mode') == 'audit':
     # every card: win rate when it was in the kept hand or the next 3 draws, vs games where it wasn't
@@ -134,6 +149,7 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"opp_profile": req['opp_profile']} if req.get('opp_profile') else {}), **({"hidden": True} if req.get('hidden') else {}), **({"stopped": True} if STOPPED else {}),
         "compare": pairs, "opponents": req.get('opponents'),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
+        **({"tail": {"deck": arms[0]['deck'], "ref": arms[0]['card'], "rows": tail_rows, **req.get('tail', {})}} if tail_rows is not None else {}),
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
         **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped')),
                       **({"lands": audit["lands"]} if audit.get("lands") else {}),
@@ -160,7 +176,7 @@ if not PEEK:
     # slot tests, head-to-heads and pilots also play each list naturally apart from one forced card: add their opening-card
     # tallies to that list's Rank (same list, opponents, engine and AI settings). The forced card itself is left out
     # (it was in every hand) and its games noted in "excl", so its own comparison only uses games where it was dealt.
-    if req.get('mode', 'swap') in ('swap', 'decks', 'pilot'):
+    if req.get('mode', 'swap') in ('swap', 'decks', 'pilot', 'tail'):
         opps_l = req.get('opponents') or cache.DEFAULT_OPP; eng = cache.engine_sig()
         for i, a in enumerate(arms):
             tal, g, w = side[i]
@@ -169,7 +185,7 @@ if not PEEK:
                                 a.get('profile') or req.get('profile'), req.get('opp_profile'), a.get('mc') or req.get('mc'), req.get('opp_mc'))
             e = c.setdefault(rk, {"deck": a['deck'], "card": "@audit", "games": 0, "wins": 0, "runs": []})
             e["games"] += g; e["wins"] += w; e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}:side")
-            ct = e.setdefault("cards", {}); forced = a['card'] if req.get('mode', 'swap') == 'swap' else ''
+            ct = e.setdefault("cards", {}); forced = a['card'] if req.get('mode', 'swap') in ('swap', 'tail') else ''
             for k, (n1, w1) in tal.items():
                 if k == forced: continue
                 x = ct.setdefault(k, [0, 0]); x[0] += n1; x[1] += w1
@@ -192,3 +208,26 @@ if not PEEK:
         for k in ((a['deck'] + "|" + opps + "|" + prof, "*|" + prof) if prof else (a['deck'] + "|" + opps, "*")):
             sp[k] = (sp.get(k, []) + [speed[i]])[-6:]   # recent measurements only: the engine and decks change
     json.dump(sp, open('cache/speed.json', 'w'), indent=1)
+
+# After a finished Rank, queue its tail check (scripts/tail.py): the cards whose outlier call is uncertain, plus the
+# clearest outliers to confirm them, each forced into the opening hand against a typical card. Same list, opponents
+# and AI settings as the Rank. Hidden (experimental) Ranks don't queue one unless they ask ("tail": true).
+if not PEEK and req.get('mode') == 'audit' and audit and (not req.get('hidden') or req.get('tail_auto')) and not req.get('no_tail'):
+    try:
+        import tail as tailmod
+        pick = tailmod.select(arms[0]['deck'], audit["cards"], res[0][1])
+        if pick:
+            q = {"mode": "tail", "base": arms[0]['deck'], **pick, "rank": req['name'],
+                 "name": f"Tail check of {arms[0]['deck']}", "precision": 1.5, "shards": req.get('shards', 38),
+                 **({"opponents": req['opponents']} if req.get('opponents') else {}),
+                 **({"profile": req['profile']} if req.get('profile') else {"profile": "Default"}),
+                 **({"opp_profile": req['opp_profile']} if req.get('opp_profile') else {}),
+                 **({"mc": arms[0]['mc']} if arms[0].get('mc') else {}), **({"opp_mc": req['opp_mc']} if req.get('opp_mc') else {}),
+                 "hidden": True,   # shown in chat until the Rank tab gets its tail-check badges
+                 "reason": "after Rank",
+                 "submitted": time.strftime('%Y-%m-%dT%H:%M:%S+00:00', time.gmtime())}
+            os.makedirs('queue', exist_ok=True)
+            fn = f"queue/{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}-tail-{re.sub(r'[^a-z0-9]+', '-', arms[0]['deck'].lower())}.json"
+            json.dump(q, open(fn, 'w'), indent=2); print("queued tail check:", fn, pick['cards'])
+    except Exception as ex:
+        print("tail check not queued:", ex)

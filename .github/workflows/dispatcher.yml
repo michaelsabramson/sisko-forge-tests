@@ -4,6 +4,9 @@ on:
   push:
     paths: ['queue/**']
   workflow_dispatch: {}
+  workflow_run:   # a finished run may have queued a follow-up (a Rank's tail check): start it without waiting for the cron
+    workflows: [swap-test]
+    types: [completed]
   schedule:
     - cron: '*/15 * * * *'
 permissions:
