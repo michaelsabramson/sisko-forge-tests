@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       run_id: { description: 'swap-test run id', required: true }
+      repo: { description: 'repo of that run (default: this one; the Team repo uses HELPER_TOKEN)', required: false, default: '' }
 permissions:
   contents: write
   actions: read
@@ -13,8 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Token for another repo's run
+        env:
+          H: ${{ secrets.HELPER_TOKEN }}
+        run: |
+          if [ -n "${{ inputs.repo }}" ]; then T=$(printf %s "$H" | tr -d '[:space:]'); echo "::add-mask::$T"; echo "TOK=$T" >> $GITHUB_ENV; echo "SRC=${{ inputs.repo }}" >> $GITHUB_ENV
+          else echo "SRC=${{ github.repository }}" >> $GITHUB_ENV; fi
       - uses: actions/download-artifact@v4
-        with: { pattern: out-*, path: out, run-id: '${{ inputs.run_id }}', github-token: '${{ github.token }}' }
+        with: { pattern: out-*, path: out, run-id: '${{ inputs.run_id }}', repository: '${{ env.SRC }}', github-token: '${{ env.TOK || github.token }}' }
       - name: Extract
         run: |
           mkdir -p analysis
