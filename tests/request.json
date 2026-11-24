@@ -1,12 +1,12 @@
 {
-  "name": "ranking_of_ironman",
-  "title": "Ranking of Ironman",
+  "name": "rank_of_ironman_on_hard_ai",
+  "title": "Rank of Ironman on Hard AI",
   "arms": [
     {
       "deck": "Ironman",
       "card": "@audit",
       "label": "Audit of Ironman",
-      "key": "3dc13a692489c9183e06",
+      "key": "6dcdbc2171ecc9d33ea6",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -15,11 +15,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 111,
+  "minutes": 125,
   "shards": 38,
   "mode": "audit",
-  "queued_from": "20261124T002546-audit-ironman.json",
-  "started": "2026-11-24T00:25:57Z",
+  "queued_from": "20261124-025526-audit-ironman-hard-ai.json",
+  "started": "2026-11-24T02:55:35Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -27,6 +27,8 @@
     "Edgar",
     "Meren"
   ],
+  "hidden": true,
+  "profile": "Hard",
   "precision": 2.0,
   "procs": [
     0,
@@ -183,7 +185,7 @@
     0
   ],
   "gpm": [
-    1.391
+    1.237
   ],
   "quota": [
     109
@@ -200,5 +202,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 184943000
+  "seedbase": 184973000
 }
