@@ -1,4 +1,13 @@
 {
+ "025179af81a8711431d8": {
+  "card": "@usage",
+  "deck": "Kess",
+  "games": 6951,
+  "runs": [
+   "card_usage_in_kess:45451877568"
+  ],
+  "wins": 612
+ },
  "025484ba4a29dee2614c": {
   "card": "",
   "deck": "Kykar_B4",
