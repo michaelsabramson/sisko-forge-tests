@@ -50,7 +50,7 @@ intro = ("Same list piloted by different Forge AI profiles (opponents on Default
          else "Package swap: each game forces one card of the package (or of the cards it replaces) into the opening hand, rotating through them." if req.get('mode') == 'package'
          else f"Swapped card forced into opening hand (band {req.get('band', 0)}).")
 reused = sum(a.get('prior_games', 0) for a in arms)
-if req.get('profile'): intro += f" Tested lists piloted by Forge's {req['profile']} AI (opponents on Default)."
+if req.get('profile'): intro += (f" Every player on Forge's {req['profile']} AI." if req.get('opp_profile') == req['profile'] else f" Tested lists piloted by Forge's {req['profile']} AI (opponents on {req.get('opp_profile', 'Default')})." )
 t = [f"# {req['name']}\n\n{intro} Same opponents for every list."
      + (f" {reused:,} games reused from earlier runs with identical settings." if reused else "") + "\n",
      "| List | Card | Games | Wins | Win rate | Reused |", "|---|---|---|---|---|---|"]
@@ -126,7 +126,7 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
                   "reused": a.get('prior_games', 0), **({"profile": a['profile']} if a.get('profile') else {}), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
-        "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"hidden": True} if req.get('hidden') else {}), **({"stopped": True} if STOPPED else {}),
+        "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"opp_profile": req['opp_profile']} if req.get('opp_profile') else {}), **({"hidden": True} if req.get('hidden') else {}), **({"stopped": True} if STOPPED else {}),
         "compare": pairs, "opponents": req.get('opponents'),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),

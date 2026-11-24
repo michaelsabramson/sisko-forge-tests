@@ -57,6 +57,9 @@ P_DEFAULT = 0.19
 STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 
 
+DEFAULT_PROFILE = "Hard"
+
+
 def measured_gpm(deck, opps, profile=None):
     """Games per process-minute from recent runs (cache/speed.json, written by aggregate.py):
     this deck against these opponents if measured, else the average of all recent runs, else the fallback."""
@@ -238,8 +241,14 @@ def main():
         req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
     if r.get("hidden"):
         req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
-    if r.get("profile") and r["profile"] != "Default":
-        req["profile"] = r["profile"]   # AI settings for the tested (Sisko*) decks; opponents stay on Default
+    if r.get("mode") not in ("pilot", "ladder"):
+        # Forge AI settings: Hard for every player by default (since 2026-11-24); a request can still ask for Default
+        prof = r.get("profile", DEFAULT_PROFILE)
+        if prof != "Default": req["profile"] = prof
+        op = r.get("opp_profile", prof)
+        if op != "Default": req["opp_profile"] = op
+    elif r.get("profile") and r["profile"] != "Default":
+        req["profile"] = r["profile"]   # AI settings for the tested decks; opponents stay on Default
     # helper.json: a second account's runners (its own job limit) play shards main_shards..shards-1 of every run
     if os.path.exists("helper.json") and not r.get("no_helper"):
         h = json.load(open("helper.json"))
@@ -250,7 +259,7 @@ def main():
     opps = req.get("opponents") or cache.DEFAULT_OPP
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
-        a["key"] = cache.arm_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"))
+        a["key"] = cache.arm_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"))
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4
