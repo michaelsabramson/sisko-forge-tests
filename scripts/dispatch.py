@@ -166,7 +166,12 @@ def short(cards):
 
 
 def main():
-    q = sorted(glob.glob("queue/*.json"))
+    def setup_first(p):
+        # deck setup (the quick AI check of a new list's cards) goes ahead of longer tests, then first in, first out
+        try: m = json.load(open(p, encoding="utf-8")).get("mode")
+        except Exception: m = None
+        return (0 if m in ("usage", "cardcheck") else 1, p)
+    q = sorted(glob.glob("queue/*.json"), key=setup_first)
     if not q:
         return
     src = q[0]
