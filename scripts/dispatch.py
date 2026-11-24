@@ -60,6 +60,13 @@ STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 DEFAULT_PROFILE = "Hard"
 
 
+def speed_profile(a, req):
+    """the cache/speed.json profile label of an arm: its AI profile, plus "+mc" with the lookahead (as aggregate.py writes it)"""
+    p = a.get("profile") or req.get("profile")
+    if a.get("mc") or req.get("opp_mc"): p = (p or "Default") + "+mc"
+    return p
+
+
 def measured_gpm(deck, opps, profile=None):
     """Games per process-minute from recent runs (cache/speed.json, written by aggregate.py):
     this deck against these opponents if measured, else the average of all recent runs, else the fallback."""
@@ -244,6 +251,8 @@ def main():
         req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
     if r.get("hidden"):
         req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
+    if r.get("mc") and r.get("mode") not in ("pilot", "ladder"):
+        for a in arms: a["mc"] = r["mc"]   # Forge's lookahead search for the tested lists (on | max); opponents keep opp_mc
     if r.get("mode") not in ("pilot", "ladder"):
         # Forge AI settings: Hard for every player by default (since 2026-11-24); a request can still ask for Default
         prof = r.get("profile", DEFAULT_PROFILE)
@@ -277,7 +286,7 @@ def main():
         if todo:
             req["procs"] = allocate(need, todo, procs_total)
             per = [req["procs"].count(i) for i in range(len(arms))]
-            gpm = [measured_gpm(a["deck"], opps, a.get("profile") or req.get("profile")) for a in arms]
+            gpm = [measured_gpm(a["deck"], opps, speed_profile(a, req)) for a in arms]
             req["gpm"] = [round(g, 3) for g in gpm]
             # each process stops once it has played its share of its arm's games, so a run ends when the games are done;
             # the minutes are only a safety cap (generous, in case this run is slower than the measured speed)
@@ -292,7 +301,7 @@ def main():
             req["earlystop"] = req["mode"] in ("swap", "package", "pilot") and not r.get("full")
             if req["earlystop"]:
                 # about five looks per run: every 5 minutes for short runs, every 10 for the longest
-                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, arms[i].get("profile") or req.get("profile"))) for i in todo)
+                est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, speed_profile(arms[i], req))) for i in todo)
                 req["checkpoint"] = int(min(10, max(5, math.ceil(est / 5))))
             frac = 0.3 if req["earlystop"] else 0.6
             first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]

@@ -1,0 +1,12 @@
+{
+  "mode": "audit",
+  "base": "SiskoFinal",
+  "name": "Rank of SiskoFinal with lookahead",
+  "profile": "Default",
+  "mc": "max",
+  "hidden": true,
+  "precision": 2,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
+  "submitted": "2026-11-24T15:40:00+00:00"
+}
