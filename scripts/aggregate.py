@@ -9,6 +9,7 @@ speed = [[0, 0] for _ in arms]   # games, total game milliseconds (per process, 
 usage_rows = None
 usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
+side = [[{}, 0, 0] for _ in arms]   # other modes, per arm: same card tallies, games and wins with a logged opening (feeds the Rank)
 tops = []                      # audit: (first 10 cards, won) per game, for the land curve
 paced = []                     # audit: (won, round, stall) per game, for the speed curve (scripts/pace.py)
 import pace
@@ -34,6 +35,9 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
                 pg = pace.game(l, me)
                 if pg: paced.append(pg)
             new[i][1] += 1; new[i][0] += won
+            if top is not None and arms[i]['card'] != '@audit':
+                sd = side[i]; sd[1] += 1; sd[2] += won
+                for c in top: e = sd[0].setdefault(c, [0, 0]); e[0] += 1; e[1] += won
             if top is not None:
                 for c in top: e = seen.setdefault(c, [0, 0]); e[0] += 1; e[1] += won
                 if arms[i]['card'] == '@audit': tops.append((topl, won))
@@ -81,9 +85,10 @@ if req.get('mode') == 'audit':
     a0 = arms[0]; prior = cache.load().get(a0.get('key'), {}).get('cards', {})
     cards = {k: [v[0], v[1]] for k, v in prior.items()}
     for k, v in seen.items(): e = cards.setdefault(k, [0, 0]); e[0] += v[0]; e[1] += v[1]
-    W, N = res[0]; rows = []
+    W, N = res[0]; rows = []; excl = cache.load().get(a0.get('key'), {}).get('excl', {})
     for k, (n1, w1) in cards.items():
-        n0, w0 = N - n1, W - w1
+        xn, xw = excl.get(k, [0, 0])   # slot-test games where this card was forced into the hand
+        n0, w0 = N - xn - n1, W - xw - w1
         if n1 < 30 or n0 < 30: continue
         p1, p0 = w1 / n1, w0 / n0
         se = math.sqrt(p1 * (1 - p1) / n1 + p0 * (1 - p0) / n0)
@@ -152,6 +157,25 @@ if not PEEK:
             e["cards"] = audit["tallies"]
             if audit.get("land_tallies"): e["lands"] = audit["land_tallies"]
             if audit.get("pace_tallies"): e["pace"] = audit["pace_tallies"]
+    # slot tests, head-to-heads and pilots also play each list naturally apart from one forced card: add their opening-card
+    # tallies to that list's Rank (same list, opponents, engine and AI settings). The forced card itself is left out
+    # (it was in every hand) and its games noted in "excl", so its own comparison only uses games where it was dealt.
+    if req.get('mode', 'swap') in ('swap', 'decks', 'pilot'):
+        opps_l = req.get('opponents') or cache.DEFAULT_OPP; eng = cache.engine_sig()
+        for i, a in enumerate(arms):
+            tal, g, w = side[i]
+            if not g or a['card'] == '@audit': continue
+            rk = cache.full_key({"deck": a['deck'], "card": "@audit"}, opps_l, req.get('band', 0), eng,
+                                a.get('profile') or req.get('profile'), req.get('opp_profile'), a.get('mc') or req.get('mc'), req.get('opp_mc'))
+            e = c.setdefault(rk, {"deck": a['deck'], "card": "@audit", "games": 0, "wins": 0, "runs": []})
+            e["games"] += g; e["wins"] += w; e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}:side")
+            ct = e.setdefault("cards", {}); forced = a['card'] if req.get('mode', 'swap') == 'swap' else ''
+            for k, (n1, w1) in tal.items():
+                if k == forced: continue
+                x = ct.setdefault(k, [0, 0]); x[0] += n1; x[1] += w1
+            if forced:
+                x = e.setdefault("excl", {}).setdefault(forced, [0, 0]); x[0] += g; x[1] += w
+            changed = True
     if changed: cache.save(c)
     # remember how fast games actually ran (games per process-minute), so the dispatcher sizes future runs from it
     try:

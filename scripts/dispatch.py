@@ -262,8 +262,8 @@ def main():
     opps = req.get("opponents") or cache.DEFAULT_OPP
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
-        a["key"] = cache.arm_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"))
-        if a.get("mc") or req.get("opp_mc"): a["key"] = cache._h((a["key"] + "|mc=" + a.get("mc", "off") + "|opp_mc=" + req.get("opp_mc", "off")).encode())[:20]
+        a["key"] = cache.full_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"),
+                                  a.get("mc") or req.get("mc"), req.get("opp_mc"))
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4

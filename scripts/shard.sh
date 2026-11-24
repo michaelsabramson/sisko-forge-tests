@@ -28,7 +28,8 @@ for p in 0 1 2 3; do
   D=$(jq -r ".arms[$i].deck" $REQ); C=$(jq -r ".arms[$i].card" $REQ)
   PROF=$(jq -r ".arms[$i].profile // .profile // \"Default\"" $REQ); OPROF=$(jq -r ".opp_profile // \"Default\"" $REQ); MC=$(jq -r ".arms[$i].mc // .mc // \"off\"" $REQ); OMC=$(jq -r ".opp_mc // \"off\"" $REQ)
   AO=$OPP; [ -n "$(jq -r ".arms[$i].opponents // empty | length" $REQ)" ] && AO=$(dk $(jq -r ".arms[$i].opponents[]" $REQ))   # per-deck opponents (ladder)   # tested deck's AI settings (forge-gui/res/ai/<profile>.ai)
-  AUD=""; [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
+  AUD="-Daudit=$D"; [ "$(jq -r '.mode // "swap"' $REQ)" = "package" ] && AUD="";   # opening cards logged for the Rank (package games force a rotating card)
+  [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
   # precision-sized runs: this runner's processes on the same arm share one pool of games (quota x processes),
   # so the runner finishes together instead of waiting on whichever process drew the slowest games
   Q=$(jq -r ".quota[$i] // 0" $REQ); POOL=""; B=$(jq -r ".batch[$i] // 0" $REQ 2>/dev/null || echo 0)
