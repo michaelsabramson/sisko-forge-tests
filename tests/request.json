@@ -1,12 +1,12 @@
 {
-  "name": "card_usage_in_kess",
-  "title": "Card usage in Kess",
+  "name": "card_usage_in_necrobloom",
+  "title": "Card usage in Necrobloom",
   "arms": [
     {
-      "deck": "Kess",
+      "deck": "Necrobloom",
       "card": "@usage",
-      "label": "Card usage in Kess",
-      "key": "025179af81a8711431d8",
+      "label": "Card usage in Necrobloom",
+      "key": "f6b936f037bd37854897",
       "prior_games": 0,
       "prior_wins": 0,
       "cached": false
@@ -17,8 +17,8 @@
   "minutes": 25,
   "shards": 51,
   "mode": "usage",
-  "queued_from": "20261124T171721-check-kess.json",
-  "started": "2026-11-24T17:44:22Z",
+  "queued_from": "20261124T171839-check-necrobloom.json",
+  "started": "2026-11-24T18:12:39Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -31,5 +31,5 @@
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
   "allcached": false,
-  "seedbase": 185150800
+  "seedbase": 185156400
 }
