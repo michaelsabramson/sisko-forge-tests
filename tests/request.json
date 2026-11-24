@@ -1,25 +1,25 @@
 {
-  "name": "rank_of_ironman_on_hard_ai",
-  "title": "Rank of Ironman on Hard AI",
+  "name": "ranking_of_siskofinal_2",
+  "title": "Ranking of SiskoFinal",
   "arms": [
     {
-      "deck": "Ironman",
+      "deck": "SiskoFinal",
       "card": "@audit",
-      "label": "Audit of Ironman",
-      "key": "6dcdbc2171ecc9d33ea6",
+      "label": "Audit of SiskoFinal",
+      "key": "f92aba26da24d35b5740",
       "prior_games": 0,
       "prior_wins": 0,
-      "target_new": 16423,
+      "target_new": 29197,
       "cached": false
     }
   ],
   "compare": [],
   "band": 0,
-  "minutes": 125,
+  "minutes": 170,
   "shards": 38,
   "mode": "audit",
-  "queued_from": "20261124-025526-audit-ironman-hard-ai.json",
-  "started": "2026-11-24T02:55:35Z",
+  "queued_from": "20261124-042913-hard-audit-siskofinal.json",
+  "started": "2026-11-24T04:29:53Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -27,9 +27,9 @@
     "Edgar",
     "Meren"
   ],
-  "hidden": true,
   "profile": "Hard",
-  "precision": 2.0,
+  "opp_profile": "Hard",
+  "precision": 1.5,
   "procs": [
     0,
     0,
@@ -185,22 +185,22 @@
     0
   ],
   "gpm": [
-    1.237
+    1.199
   ],
   "quota": [
-    109
+    193
   ],
   "earlystop": false,
   "first": [
-    64
+    115
   ],
   "batch": [
-    89
+    155
   ],
   "batches": [
     76
   ],
-  "capped": false,
+  "capped": true,
   "allcached": false,
-  "seedbase": 184973000
+  "seedbase": 184991800
 }
