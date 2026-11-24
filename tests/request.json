@@ -7,19 +7,19 @@
       "card": "@audit",
       "label": "Audit of SiskoFinal",
       "key": "f92aba26da24d35b5740",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 29197,
+      "prior_games": 14298,
+      "prior_wins": 3063,
+      "target_new": 17637,
       "cached": false
     }
   ],
   "compare": [],
   "band": 0,
-  "minutes": 170,
+  "minutes": 134,
   "shards": 38,
   "mode": "audit",
   "queued_from": "20261124-042913-hard-audit-siskofinal.json",
-  "started": "2026-11-24T04:29:53Z",
+  "started": "2026-11-24T05:45:14Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -185,22 +185,22 @@
     0
   ],
   "gpm": [
-    1.199
+    1.232
   ],
   "quota": [
-    193
+    117
   ],
   "earlystop": false,
   "first": [
-    115
+    69
   ],
   "batch": [
-    155
+    95
   ],
   "batches": [
     76
   ],
-  "capped": true,
+  "capped": false,
   "allcached": false,
-  "seedbase": 184991800
+  "seedbase": 185007000
 }
