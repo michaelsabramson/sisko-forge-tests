@@ -115,10 +115,6 @@
  ],
  "*|Hard": [
   [
-   16492,
-   639265528
-  ],
-  [
    14298,
    660291175
   ],
@@ -137,6 +133,10 @@
   [
    6951,
    296901690
+  ],
+  [
+   4931,
+   295233273
   ]
  ],
  "SiskoFinal__ImperialRecruiter__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard": [
@@ -371,6 +371,12 @@
   [
    6951,
    296901690
+  ]
+ ],
+ "Necrobloom|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard": [
+  [
+   4931,
+   295233273
   ]
  ]
 }

@@ -5471,6 +5471,15 @@
   ],
   "wins": 3609
  },
+ "f6b936f037bd37854897": {
+  "card": "@usage",
+  "deck": "Necrobloom",
+  "games": 4931,
+  "runs": [
+   "card_usage_in_necrobloom:45457018806"
+  ],
+  "wins": 458
+ },
  "f88375c0c117ae3acd61": {
   "card": "@audit",
   "cards": {
