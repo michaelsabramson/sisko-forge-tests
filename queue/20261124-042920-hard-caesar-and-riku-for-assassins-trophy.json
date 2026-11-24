@@ -1,0 +1,24 @@
+{
+  "mode": "swap",
+  "base": "SiskoFinal",
+  "slots": [
+    {
+      "out": "Assassin's Trophy",
+      "ins": [
+        "Caesar, Legion's Emperor",
+        "Riku of Many Paths"
+      ]
+    }
+  ],
+  "name": "Caesar and Riku for Assassin's Trophy",
+  "precision": 1.5,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-24T04:29:20+00:00"
+}
