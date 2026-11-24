@@ -35,5 +35,7 @@
   "mc": "max",
   "hidden": true,
   "reason": "after Rank (by hand)",
-  "submitted": "2026-11-24T21:11:04+00:00"
+  "submitted": "2026-11-24T21:11:04+00:00",
+  "result_name": "tail_check_of_ironman_lookahead",
+  "chunk": 2
 }
