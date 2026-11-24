@@ -1,4 +1,13 @@
 {
+ "025484ba4a29dee2614c": {
+  "card": "",
+  "deck": "Kykar_B4",
+  "games": 186,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 33
+ },
  "063d399e991ece64f158": {
   "card": "Riku of Many Paths",
   "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
@@ -465,6 +474,15 @@
   ],
   "wins": 2260
  },
+ "08bc346ec58253ffdf25": {
+  "card": "",
+  "deck": "Tatyova_B2",
+  "games": 112,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 17
+ },
  "0a17c24b5e1b58d5c7c7": {
   "card": "@audit",
   "cards": {
@@ -872,6 +890,33 @@
   ],
   "wins": 3742
  },
+ "0b84bb7ca8031ac35e07": {
+  "card": "",
+  "deck": "TheUrDragon_B3",
+  "games": 151,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 52
+ },
+ "0ed983b17bc9badccc5b": {
+  "card": "",
+  "deck": "Krenko_B4",
+  "games": 157,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 42
+ },
+ "111353c1d16dd8440308": {
+  "card": "",
+  "deck": "Tatyova_B3",
+  "games": 103,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 16
+ },
  "13dcfc3a141cc467a569": {
   "card": "Riku of Many Paths",
   "deck": "SiskoFinal__RikuOfManyPaths__for__AssassinsTrophy",
@@ -890,6 +935,24 @@
   ],
   "wins": 648
  },
+ "164ba1e86ed2d6044773": {
+  "card": "",
+  "deck": "Kykar_B3",
+  "games": 180,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 17
+ },
+ "1b046df436ad86e3bcb6": {
+  "card": "",
+  "deck": "EdgarMarkov_B3",
+  "games": 151,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 68
+ },
  "1e6d15b1854b7ad4d71f": {
   "card": "Cultivate",
   "deck": "SiskoFinal",
@@ -907,6 +970,15 @@
    "shattering_spree_for_pact_of_negation:45049826375"
   ],
   "wins": 1004
+ },
+ "22b1ae75d285e0812475": {
+  "card": "",
+  "deck": "Kykar_B2",
+  "games": 136,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 18
  },
  "231bc90d40c0776c76a1": {
   "card": "",
@@ -935,6 +1007,24 @@
    "shattering_spree_for_pact_of_negation:45049826375"
   ],
   "wins": 957
+ },
+ "30ac7c8515a6b078ba6f": {
+  "card": "",
+  "deck": "Breya_B3",
+  "games": 163,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 18
+ },
+ "31fc22c41e1052294722": {
+  "card": "",
+  "deck": "Tatyova_B4",
+  "games": 108,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 19
  },
  "32434645260cb19f18f0": {
   "card": "Delighted Halfling",
@@ -1783,6 +1873,15 @@
   ],
   "wins": 1385
  },
+ "40e20706d1c8586387cb": {
+  "card": "",
+  "deck": "MerenofClanNelToth_B2",
+  "games": 178,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 43
+ },
  "461daaa28ec674a7f928": {
   "card": "Impossible Choice",
   "deck": "SiskoFinal",
@@ -2245,6 +2344,15 @@
   ],
   "wins": 728
  },
+ "52b06552db195644e454": {
+  "card": "",
+  "deck": "Krenko_B3",
+  "games": 164,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 32
+ },
  "5a32f90b892c782c8a44": {
   "card": "Riku of Many Paths",
   "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
@@ -2262,6 +2370,33 @@
    "shattering_spree_for_pandemonium:44962650180"
   ],
   "wins": 850
+ },
+ "64c63a0a17778856c22c": {
+  "card": "",
+  "deck": "EdgarMarkov_B2",
+  "games": 157,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 68
+ },
+ "66e1e5b9625a17ddbbba": {
+  "card": "",
+  "deck": "Talrand_B2",
+  "games": 155,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 25
+ },
+ "6b3ddf62cf46940d740a": {
+  "card": "",
+  "deck": "Krenko_B2",
+  "games": 119,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 24
  },
  "6c7a99652a36eef2f81b": {
   "card": "@audit",
@@ -2670,6 +2805,15 @@
   ],
   "wins": 3699
  },
+ "6fc54955a18063aa68db": {
+  "card": "",
+  "deck": "Talrand_B3",
+  "games": 147,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 26
+ },
  "712cde349d0813a79e5a": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoFinal__CaesarLegionsEmperor__for__AssassinsTrophy",
@@ -2678,6 +2822,15 @@
    "caesar_for_assassin_s_trophy:44988977132"
   ],
   "wins": 1201
+ },
+ "73b72103c14750c602fa": {
+  "card": "",
+  "deck": "MerenofClanNelToth_B3",
+  "games": 180,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 43
  },
  "7ad5f95706a09802c121": {
   "card": "Caesar, Legion's Emperor",
@@ -2696,6 +2849,15 @@
    "seven_of_nine_for_sylvan_library:45260062213"
   ],
   "wins": 662
+ },
+ "7f874c33dc7964624a4a": {
+  "card": "",
+  "deck": "MerenofClanNelToth_B4",
+  "games": 130,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 30
  },
  "8170b90ddd75b2062e31": {
   "card": "Manamorphose",
@@ -2724,6 +2886,24 @@
   ],
   "wins": 753
  },
+ "8cf173861711c2fd7bfe": {
+  "card": "",
+  "deck": "TheUrDragon_B4",
+  "games": 154,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 66
+ },
+ "903f21f8280f8976303b": {
+  "card": "",
+  "deck": "Talrand_B4",
+  "games": 160,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 25
+ },
  "91325538d518badac242": {
   "card": "Imperial Recruiter",
   "deck": "SiskoFinal__ImperialRecruiter__for__PactOfNegation",
@@ -2742,6 +2922,15 @@
   ],
   "wins": 924
  },
+ "a2badd9d875f6e6cd6d4": {
+  "card": "",
+  "deck": "Breya_B2",
+  "games": 170,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 34
+ },
  "a9ea762e42ea79e4e97b": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoCaesarM",
@@ -2759,6 +2948,15 @@
    "grand_abolisher_vs_cultivate_and_manamorphose:44815372817"
   ],
   "wins": 809
+ },
+ "b2db4938f3e0bf73602e": {
+  "card": "",
+  "deck": "TheUrDragon_B2",
+  "games": 141,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 62
  },
  "b37be9d6dd2ffa739c29": {
   "card": "Pact of Negation",
@@ -3077,6 +3275,15 @@
    "card_usage_in_kw_najeela_1123:45272039105"
   ],
   "wins": 558
+ },
+ "e0032c5c7c705f0bd28f": {
+  "card": "",
+  "deck": "EdgarMarkov_B4",
+  "games": 143,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 61
  },
  "e20a5cca13932ba46b6e": {
   "card": "@audit",
@@ -3493,6 +3700,15 @@
    "siskofinal_vs_norinb3:45105274164"
   ],
   "wins": 947
+ },
+ "e8ee4687ad05e8c6747d": {
+  "card": "",
+  "deck": "Breya_B4",
+  "games": 152,
+  "runs": [
+   "power_ladder_calibration:45290614068"
+  ],
+  "wins": 11
  },
  "eafaff28eccc73e61eeb": {
   "card": "Worldly Tutor",
