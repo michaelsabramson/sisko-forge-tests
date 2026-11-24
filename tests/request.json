@@ -1,12 +1,12 @@
 {
-  "name": "card_usage_in_necrobloom",
-  "title": "Card usage in Necrobloom",
+  "name": "card_usage_in_chatterfang",
+  "title": "Card usage in Chatterfang",
   "arms": [
     {
-      "deck": "Necrobloom",
+      "deck": "Chatterfang",
       "card": "@usage",
-      "label": "Card usage in Necrobloom",
-      "key": "f6b936f037bd37854897",
+      "label": "Card usage in Chatterfang",
+      "key": "eec588406eeb8feb7026",
       "prior_games": 0,
       "prior_wins": 0,
       "cached": false
@@ -17,8 +17,8 @@
   "minutes": 25,
   "shards": 51,
   "mode": "usage",
-  "queued_from": "20261124T171839-check-necrobloom.json",
-  "started": "2026-11-24T18:12:39Z",
+  "queued_from": "20261124T171959-check-chatterfang.json",
+  "started": "2026-11-24T18:41:05Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -31,5 +31,5 @@
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
   "allcached": false,
-  "seedbase": 185156400
+  "seedbase": 185162200
 }
