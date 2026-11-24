@@ -5064,6 +5064,15 @@
   ],
   "wins": 1172
  },
+ "eec588406eeb8feb7026": {
+  "card": "@usage",
+  "deck": "Chatterfang",
+  "games": 6379,
+  "runs": [
+   "card_usage_in_chatterfang:45462178778"
+  ],
+  "wins": 657
+ },
  "f4a0a8c7a07f00454c52": {
   "card": "@audit",
   "cards": {
