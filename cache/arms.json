@@ -17,6 +17,15 @@
   ],
   "wins": 33
  },
+ "06324fc4d74636e3bbbd": {
+  "card": "Sylvan Library",
+  "deck": "SiskoFinal",
+  "games": 705,
+  "runs": [
+   "seven_of_nine_for_sylvan_library_2:45655997411"
+  ],
+  "wins": 194
+ },
  "063d399e991ece64f158": {
   "card": "Riku of Many Paths",
   "deck": "SiskoFinal__RikuOfManyPaths__for__Manamorphose",
@@ -3890,400 +3899,400 @@
   "card": "@audit",
   "cards": {
    "Abrade": [
-    3904,
-    867
+    3975,
+    885
    ],
    "Abzan Charm": [
-    3850,
-    816
-   ],
-   "Academy Instructor": [
-    3880,
-    868
-   ],
-   "Agate Instigator": [
-    3849,
-    976
-   ],
-   "An Offer You Can't Refuse": [
-    4361,
-    929
-   ],
-   "Arid Mesa": [
-    5419,
-    1288
-   ],
-   "Assassin's Trophy": [
-    4350,
-    923
-   ],
-   "Badlands": [
-    5502,
-    1277
-   ],
-   "Bayou": [
-    5478,
-    1307
-   ],
-   "Birds of Paradise": [
-    3924,
-    949
-   ],
-   "Black Market Connections": [
-    3814,
-    859
-   ],
-   "Blood Crypt": [
-    5427,
-    1269
-   ],
-   "Bloodstained Mire": [
-    5456,
-    1281
-   ],
-   "Bloom Tender": [
-    3871,
-    970
-   ],
-   "Boros Charm": [
-    3866,
-    842
-   ],
-   "Captain James T. Kirk": [
-    3834,
-    778
-   ],
-   "City of Brass": [
-    5602,
-    1222
-   ],
-   "Collective Defiance": [
-    3751,
-    740
-   ],
-   "Collective Effort": [
-    3859,
-    835
-   ],
-   "Command Decision": [
-    3753,
-    841
-   ],
-   "Command Tower": [
-    5482,
-    1400
-   ],
-   "Consider the Prime Directive": [
-    3792,
+    3900,
     829
    ],
-   "Corpse Knight": [
-    3782,
-    891
+   "Academy Instructor": [
+    3945,
+    889
    ],
-   "Counterspell": [
-    4391,
-    945
+   "Agate Instigator": [
+    3916,
+    993
    ],
-   "Cultivate": [
-    3821,
-    887
+   "An Offer You Can't Refuse": [
+    4437,
+    944
    ],
-   "Deadly Rollick": [
-    3777,
-    845
-   ],
-   "Diabolic Intent": [
-    3738,
-    827
-   ],
-   "Elesh Norn, Mother of Machines": [
-    3661,
-    956
-   ],
-   "Elim Garak, Simple Tailor": [
-    3791,
-    958
-   ],
-   "Ertai Resurrected": [
-    3716,
-    754
-   ],
-   "Esper Charm": [
-    3649,
-    786
-   ],
-   "Esper Sentinel": [
-    3746,
-    895
-   ],
-   "Farseek": [
-    3813,
-    896
-   ],
-   "Fatal Push": [
-    4354,
-    932
-   ],
-   "Federation Outpost": [
-    5576,
-    1269
-   ],
-   "Fierce Guardianship": [
-    4389,
-    951
-   ],
-   "Flooded Strand": [
-    5425,
-    1288
-   ],
-   "Forest": [
-    5566,
-    1322
-   ],
-   "Gala Greeters": [
-    3850,
-    1120
-   ],
-   "Godless Shrine": [
-    5432,
-    1245
-   ],
-   "Heartless Act": [
-    3947,
-    854
-   ],
-   "Impact Tremors": [
-    3841,
-    955
-   ],
-   "Impossible Choice": [
-    3808,
-    857
-   ],
-   "Island": [
-    5464,
-    1306
-   ],
-   "Jeska's Will": [
-    3684,
-    867
-   ],
-   "Llanowar Elves": [
-    3802,
-    882
-   ],
-   "Make It So": [
-    3800,
-    790
-   ],
-   "Mana Confluence": [
-    5498,
-    1271
-   ],
-   "Manamorphose": [
-    3796,
-    879
-   ],
-   "Marsh Flats": [
-    5494,
-    1259
-   ],
-   "Misty Rainforest": [
-    5461,
-    1267
-   ],
-   "Molten Gatekeeper": [
-    3852,
-    936
-   ],
-   "Ni'Var Science Academy": [
-    5466,
-    1256
-   ],
-   "Noble Hierarch": [
-    3810,
-    844
-   ],
-   "Norin the Wary": [
-    3856,
-    1173
-   ],
-   "Ojer Axonil, Deepest Might": [
-    3742,
-    893
-   ],
-   "Outlaws' Merriment": [
-    3730,
-    810
-   ],
-   "Overgrown Tomb": [
-    5472,
-    1242
-   ],
-   "Panharmonicon": [
-    3861,
-    835
-   ],
-   "Parallel Lives": [
-    3823,
-    815
-   ],
-   "Path to Exile": [
-    3868,
-    789
-   ],
-   "Plains": [
-    5443,
-    1236
-   ],
-   "Plateau": [
-    5446,
-    1319
-   ],
-   "Polluted Delta": [
-    5680,
-    1265
-   ],
-   "Prismari Command": [
-    3747,
-    783
-   ],
-   "Purphoros, God of the Forge": [
-    3925,
-    1146
-   ],
-   "Pyroblast": [
-    3779,
-    803
-   ],
-   "Q Continuum": [
-    5443,
-    1255
-   ],
-   "Quark's Bar": [
-    5349,
+   "Arid Mesa": [
+    5518,
     1312
    ],
-   "Rapid Hybridization": [
-    4120,
-    915
+   "Assassin's Trophy": [
+    4416,
+    944
    ],
-   "Resistance Is Futile": [
-    3844,
-    809
+   "Badlands": [
+    5572,
+    1300
    ],
-   "Retreat to Hagra": [
-    3883,
-    909
+   "Bayou": [
+    5551,
+    1331
    ],
-   "Rhystic Study": [
-    3842,
-    871
+   "Birds of Paradise": [
+    3995,
+    966
    ],
-   "Riku of Many Paths": [
-    3972,
+   "Black Market Connections": [
+    3871,
     872
    ],
-   "Roaming Throne": [
-    3881,
-    837
+   "Blood Crypt": [
+    5518,
+    1303
    ],
-   "Sacred Foundry": [
-    5465,
-    1241
+   "Bloodstained Mire": [
+    5530,
+    1298
    ],
-   "Savannah": [
-    5395,
-    1206
+   "Bloom Tender": [
+    3928,
+    987
    ],
-   "Scalding Tarn": [
-    5535,
-    1255
+   "Boros Charm": [
+    3924,
+    854
    ],
-   "Scrubland": [
-    5488,
-    1346
+   "Captain James T. Kirk": [
+    3906,
+    797
    ],
-   "Smuggler's Surprise": [
-    3809,
+   "City of Brass": [
+    5715,
+    1248
+   ],
+   "Collective Defiance": [
+    3819,
+    758
+   ],
+   "Collective Effort": [
+    3913,
+    850
+   ],
+   "Command Decision": [
+    3811,
+    853
+   ],
+   "Command Tower": [
+    5560,
+    1421
+   ],
+   "Consider the Prime Directive": [
+    3847,
+    836
+   ],
+   "Corpse Knight": [
+    3839,
+    902
+   ],
+   "Counterspell": [
+    4454,
+    961
+   ],
+   "Cultivate": [
+    3869,
+    898
+   ],
+   "Deadly Rollick": [
+    3830,
+    858
+   ],
+   "Diabolic Intent": [
+    3802,
+    846
+   ],
+   "Elesh Norn, Mother of Machines": [
+    3716,
+    969
+   ],
+   "Elim Garak, Simple Tailor": [
+    3850,
+    972
+   ],
+   "Ertai Resurrected": [
+    3775,
+    765
+   ],
+   "Esper Charm": [
+    3698,
+    796
+   ],
+   "Esper Sentinel": [
+    3792,
+    908
+   ],
+   "Farseek": [
+    3876,
+    922
+   ],
+   "Fatal Push": [
+    4419,
+    948
+   ],
+   "Federation Outpost": [
+    5667,
+    1301
+   ],
+   "Fierce Guardianship": [
+    4445,
+    968
+   ],
+   "Flooded Strand": [
+    5502,
+    1308
+   ],
+   "Forest": [
+    5641,
+    1341
+   ],
+   "Gala Greeters": [
+    3904,
+    1137
+   ],
+   "Godless Shrine": [
+    5510,
+    1269
+   ],
+   "Heartless Act": [
+    4017,
+    875
+   ],
+   "Impact Tremors": [
+    3908,
+    970
+   ],
+   "Impossible Choice": [
+    3873,
+    875
+   ],
+   "Island": [
+    5560,
+    1330
+   ],
+   "Jeska's Will": [
+    3740,
+    880
+   ],
+   "Llanowar Elves": [
+    3859,
+    896
+   ],
+   "Make It So": [
+    3854,
     809
    ],
-   "Sol Ring": [
-    3803,
-    1096
+   "Mana Confluence": [
+    5579,
+    1294
    ],
-   "Steam Vents": [
-    5499,
+   "Manamorphose": [
+    3861,
+    902
+   ],
+   "Marsh Flats": [
+    5568,
+    1284
+   ],
+   "Misty Rainforest": [
+    5545,
+    1291
+   ],
+   "Molten Gatekeeper": [
+    3907,
+    952
+   ],
+   "Ni'Var Science Academy": [
+    5559,
+    1287
+   ],
+   "Noble Hierarch": [
+    3883,
+    865
+   ],
+   "Norin the Wary": [
+    3918,
+    1194
+   ],
+   "Ojer Axonil, Deepest Might": [
+    3805,
+    910
+   ],
+   "Outlaws' Merriment": [
+    3793,
+    826
+   ],
+   "Overgrown Tomb": [
+    5562,
     1265
    ],
+   "Panharmonicon": [
+    3916,
+    848
+   ],
+   "Parallel Lives": [
+    3892,
+    833
+   ],
+   "Path to Exile": [
+    3913,
+    806
+   ],
+   "Plains": [
+    5528,
+    1259
+   ],
+   "Plateau": [
+    5543,
+    1345
+   ],
+   "Polluted Delta": [
+    5754,
+    1278
+   ],
+   "Prismari Command": [
+    3805,
+    802
+   ],
+   "Purphoros, God of the Forge": [
+    3983,
+    1159
+   ],
+   "Pyroblast": [
+    3838,
+    817
+   ],
+   "Q Continuum": [
+    5537,
+    1281
+   ],
+   "Quark's Bar": [
+    5430,
+    1327
+   ],
+   "Rapid Hybridization": [
+    4187,
+    934
+   ],
+   "Resistance Is Futile": [
+    3899,
+    825
+   ],
+   "Retreat to Hagra": [
+    3937,
+    925
+   ],
+   "Rhystic Study": [
+    3903,
+    885
+   ],
+   "Riku of Many Paths": [
+    4029,
+    892
+   ],
+   "Roaming Throne": [
+    3948,
+    856
+   ],
+   "Sacred Foundry": [
+    5537,
+    1262
+   ],
+   "Savannah": [
+    5478,
+    1238
+   ],
+   "Scalding Tarn": [
+    5622,
+    1282
+   ],
+   "Scrubland": [
+    5575,
+    1373
+   ],
+   "Smuggler's Surprise": [
+    3876,
+    829
+   ],
+   "Sol Ring": [
+    3867,
+    1119
+   ],
+   "Steam Vents": [
+    5586,
+    1290
+   ],
    "Swords to Plowshares": [
-    3866,
-    831
+    3918,
+    844
    ],
    "Sylvan Library": [
     3902,
     788
    ],
    "Taiga": [
-    5411,
-    1373
+    5504,
+    1397
    ],
    "Test of Conviction": [
-    3654,
-    743
+    3713,
+    760
    ],
    "Test of Loyalty": [
-    3815,
-    837
+    3860,
+    847
    ],
    "Test of Priorities": [
-    3953,
-    835
+    4008,
+    853
    ],
    "The Unicomplex": [
-    5405,
-    1272
+    5479,
+    1292
    ],
    "Tropical Island": [
-    5516,
-    1339
+    5602,
+    1360
    ],
    "Tundra": [
-    5472,
-    1326
+    5570,
+    1351
    ],
    "Underground Sea": [
-    5467,
-    1283
+    5546,
+    1309
    ],
    "Utopia Sprawl": [
-    3856,
-    829
+    3916,
+    845
    ],
    "Verdant Catacombs": [
-    5498,
-    1291
+    5581,
+    1314
    ],
    "Volcanic Island": [
-    5446,
-    1278
+    5538,
+    1307
    ],
    "Warleader's Call": [
-    3822,
-    964
+    3876,
+    981
    ],
    "Windswept Heath": [
-    5496,
-    1204
+    5569,
+    1220
    ],
    "Witty Roastmaster": [
-    3895,
-    936
+    3951,
+    958
    ],
    "Wooded Foothills": [
-    5459,
-    1229
+    5560,
+    1257
    ]
   },
   "deck": "SiskoFinal",
@@ -4312,12 +4321,16 @@
     2178,
     476
    ],
+   "Sylvan Library": [
+    705,
+    194
+   ],
    "Test of Conviction": [
     1337,
     287
    ]
   },
-  "games": 45516,
+  "games": 46221,
   "lands": {
    "0": [
     13,
@@ -4375,9 +4388,10 @@
   "runs": [
    "pilot_test_siskofinal_lookahead_search_off_vs_on:45339577859:side",
    "rank_of_siskofinal_with_lookahead:45426984063",
-   "rank_of_siskofinal_adaptive_test:45569507031"
+   "rank_of_siskofinal_adaptive_test:45569507031",
+   "seven_of_nine_for_sylvan_library_2:45655997411:side"
   ],
-  "wins": 10438
+  "wins": 10632
  },
  "b0bb58d45c008012ce18": {
   "card": "",
@@ -4723,6 +4737,415 @@
    "imperial_recruiter_for_pact_of_negation:45058426145"
   ],
   "wins": 1109
+ },
+ "bf704e5f40f0da8e81e2": {
+  "card": "@audit",
+  "cards": {
+   "Abrade": [
+    61,
+    17
+   ],
+   "Abzan Charm": [
+    65,
+    10
+   ],
+   "Academy Instructor": [
+    63,
+    17
+   ],
+   "Agate Instigator": [
+    39,
+    9
+   ],
+   "An Offer You Can't Refuse": [
+    56,
+    13
+   ],
+   "Arid Mesa": [
+    72,
+    22
+   ],
+   "Assassin's Trophy": [
+    65,
+    19
+   ],
+   "Badlands": [
+    87,
+    23
+   ],
+   "Bayou": [
+    94,
+    26
+   ],
+   "Birds of Paradise": [
+    76,
+    23
+   ],
+   "Black Market Connections": [
+    58,
+    11
+   ],
+   "Blood Crypt": [
+    96,
+    28
+   ],
+   "Bloodstained Mire": [
+    81,
+    18
+   ],
+   "Bloom Tender": [
+    79,
+    17
+   ],
+   "Boros Charm": [
+    64,
+    13
+   ],
+   "Captain James T. Kirk": [
+    51,
+    9
+   ],
+   "City of Brass": [
+    84,
+    13
+   ],
+   "Collective Defiance": [
+    50,
+    14
+   ],
+   "Collective Effort": [
+    60,
+    8
+   ],
+   "Command Decision": [
+    64,
+    13
+   ],
+   "Command Tower": [
+    91,
+    22
+   ],
+   "Consider the Prime Directive": [
+    50,
+    15
+   ],
+   "Corpse Knight": [
+    55,
+    15
+   ],
+   "Counterspell": [
+    68,
+    22
+   ],
+   "Cultivate": [
+    51,
+    12
+   ],
+   "Deadly Rollick": [
+    66,
+    14
+   ],
+   "Diabolic Intent": [
+    66,
+    14
+   ],
+   "Elesh Norn, Mother of Machines": [
+    65,
+    20
+   ],
+   "Elim Garak, Simple Tailor": [
+    51,
+    17
+   ],
+   "Ertai Resurrected": [
+    57,
+    17
+   ],
+   "Esper Charm": [
+    55,
+    10
+   ],
+   "Esper Sentinel": [
+    69,
+    20
+   ],
+   "Farseek": [
+    63,
+    21
+   ],
+   "Fatal Push": [
+    66,
+    15
+   ],
+   "Federation Outpost": [
+    93,
+    29
+   ],
+   "Fierce Guardianship": [
+    71,
+    21
+   ],
+   "Flooded Strand": [
+    100,
+    32
+   ],
+   "Forest": [
+    88,
+    30
+   ],
+   "Gala Greeters": [
+    53,
+    18
+   ],
+   "Godless Shrine": [
+    80,
+    19
+   ],
+   "Heartless Act": [
+    60,
+    22
+   ],
+   "Impact Tremors": [
+    56,
+    22
+   ],
+   "Impossible Choice": [
+    58,
+    17
+   ],
+   "Island": [
+    90,
+    19
+   ],
+   "Jeska's Will": [
+    50,
+    17
+   ],
+   "Llanowar Elves": [
+    65,
+    17
+   ],
+   "Make It So": [
+    58,
+    9
+   ],
+   "Mana Confluence": [
+    83,
+    13
+   ],
+   "Manamorphose": [
+    48,
+    13
+   ],
+   "Marsh Flats": [
+    88,
+    21
+   ],
+   "Misty Rainforest": [
+    80,
+    22
+   ],
+   "Molten Gatekeeper": [
+    67,
+    15
+   ],
+   "Ni'Var Science Academy": [
+    79,
+    18
+   ],
+   "Noble Hierarch": [
+    54,
+    10
+   ],
+   "Norin the Wary": [
+    73,
+    18
+   ],
+   "Ojer Axonil, Deepest Might": [
+    59,
+    17
+   ],
+   "Outlaws' Merriment": [
+    57,
+    16
+   ],
+   "Overgrown Tomb": [
+    75,
+    22
+   ],
+   "Panharmonicon": [
+    76,
+    20
+   ],
+   "Parallel Lives": [
+    64,
+    11
+   ],
+   "Path to Exile": [
+    65,
+    8
+   ],
+   "Plains": [
+    86,
+    20
+   ],
+   "Plateau": [
+    88,
+    20
+   ],
+   "Polluted Delta": [
+    86,
+    23
+   ],
+   "Prismari Command": [
+    52,
+    13
+   ],
+   "Purphoros, God of the Forge": [
+    54,
+    28
+   ],
+   "Pyroblast": [
+    51,
+    13
+   ],
+   "Q Continuum": [
+    85,
+    22
+   ],
+   "Quark's Bar": [
+    86,
+    25
+   ],
+   "Rapid Hybridization": [
+    50,
+    19
+   ],
+   "Resistance Is Futile": [
+    58,
+    9
+   ],
+   "Retreat to Hagra": [
+    66,
+    17
+   ],
+   "Rhystic Study": [
+    75,
+    25
+   ],
+   "Riku of Many Paths": [
+    53,
+    11
+   ],
+   "Roaming Throne": [
+    68,
+    26
+   ],
+   "Sacred Foundry": [
+    75,
+    21
+   ],
+   "Savannah": [
+    87,
+    24
+   ],
+   "Scalding Tarn": [
+    74,
+    18
+   ],
+   "Scrubland": [
+    85,
+    18
+   ],
+   "Smuggler's Surprise": [
+    41,
+    11
+   ],
+   "Sol Ring": [
+    54,
+    20
+   ],
+   "Steam Vents": [
+    83,
+    25
+   ],
+   "Swords to Plowshares": [
+    64,
+    19
+   ],
+   "Taiga": [
+    82,
+    19
+   ],
+   "Test of Conviction": [
+    80,
+    21
+   ],
+   "Test of Loyalty": [
+    55,
+    13
+   ],
+   "Test of Priorities": [
+    64,
+    17
+   ],
+   "The Unicomplex": [
+    86,
+    14
+   ],
+   "Tropical Island": [
+    91,
+    23
+   ],
+   "Tundra": [
+    68,
+    19
+   ],
+   "Underground Sea": [
+    94,
+    24
+   ],
+   "Utopia Sprawl": [
+    63,
+    15
+   ],
+   "Verdant Catacombs": [
+    88,
+    21
+   ],
+   "Volcanic Island": [
+    84,
+    20
+   ],
+   "Warleader's Call": [
+    67,
+    19
+   ],
+   "Windswept Heath": [
+    75,
+    21
+   ],
+   "Witty Roastmaster": [
+    60,
+    16
+   ],
+   "Wooded Foothills": [
+    96,
+    21
+   ]
+  },
+  "deck": "SiskoFinal__SevenOfNine__for__SylvanLibrary",
+  "excl": {
+   "Seven of Nine": [
+    705,
+    183
+   ]
+  },
+  "games": 705,
+  "runs": [
+   "seven_of_nine_for_sylvan_library_2:45655997411:side"
+  ],
+  "wins": 183
  },
  "cbaee386ea21bc6ebd01": {
   "card": "Fiery Islet",
@@ -6979,6 +7402,15 @@
    "ranking_of_siskofinal_2:45335516700"
   ],
   "wins": 4340
+ },
+ "fb32b649a82078487082": {
+  "card": "Seven of Nine",
+  "deck": "SiskoFinal__SevenOfNine__for__SylvanLibrary",
+  "games": 705,
+  "runs": [
+   "seven_of_nine_for_sylvan_library_2:45655997411"
+  ],
+  "wins": 183
  },
  "fbdc945eadf575e24f03": {
   "card": "Counterspell",

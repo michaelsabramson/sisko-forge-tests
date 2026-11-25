@@ -347,17 +347,13 @@
   [
    26352,
    1974939805
+  ],
+  [
+   705,
+   58558860
   ]
  ],
  "*|Default+mc": [
-  [
-   4385,
-   293368243
-  ],
-  [
-   4240,
-   293650272
-  ],
   [
    4302,
    293464827
@@ -373,6 +369,14 @@
   [
    26352,
    1974939805
+  ],
+  [
+   705,
+   58558860
+  ],
+  [
+   705,
+   58433762
   ]
  ],
  "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard+mc": [
@@ -429,6 +433,12 @@
   [
    4150,
    293690230
+  ]
+ ],
+ "SiskoFinal__SevenOfNine__for__SylvanLibrary|Atraxa,Prossh,UrDragon,Edgar,Meren|Default+mc": [
+  [
+   705,
+   58433762
   ]
  ]
 }
