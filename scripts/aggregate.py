@@ -285,7 +285,8 @@ if not PEEK:
 # After a finished Rank, queue its tail check (scripts/tail.py): the cards whose outlier call is uncertain, plus the
 # clearest outliers to confirm them, each forced into the opening hand against a typical card. Same list, opponents
 # and AI settings as the Rank. Hidden (experimental) Ranks don't queue one unless they ask ("tail": true).
-if not PEEK and req.get('mode') == 'audit' and audit and (not req.get('hidden') or req.get('tail_auto')) and not req.get('no_tail') and not req.get('adaptive'):
+AUTO_TAIL = False   # off since 2026-11-25: more Rank games instead of targeted follow-ups (a request can still ask: "tail_auto")
+if not PEEK and req.get('mode') == 'audit' and audit and (AUTO_TAIL and not req.get('hidden') or req.get('tail_auto')) and not req.get('no_tail') and not req.get('adaptive'):
     try:
         import tail as tailmod
         pick = tailmod.select(arms[0]['deck'], audit["cards"], res[0][1])
