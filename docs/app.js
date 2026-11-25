@@ -283,6 +283,10 @@ function rankTiers(cards) {
   return new Map(cards.map((c, i) => [c.card, tau > 0 && shrunk[i] < med - 1.5 * tau ? 'outlier' : c.diff + c.ci < med ? 'below' : '']));
 }
 const tierCls = t => t === 'outlier' ? 'bad' : t === 'below' ? 'warn' : '';
+// adaptive Rank: verdicts from extra games where the card was forced into the opening hand vs a typical card
+const checkedOf = a => new Map((a?.audit?.targeted?.rows || []).map(r => [r.card, r]));
+const VERDICT = { outlier: ['bad', 'Confirmed weak'], weak: ['bad', 'Confirmed weak'], cleared: ['good', 'Cleared'], unclear: ['', 'Unclear'] };
+const vpill = r => r ? `<span class="pill ${VERDICT[r.verdict]?.[0] || ''}" title="Extra games with it forced into the opening hand: ${r.gap > 0 ? '+' : ''}${r.gap.toFixed(1)} ± ${r.ci.toFixed(1)} vs a typical card">${VERDICT[r.verdict]?.[1] || ''}</span>` : '';
 // Mana balance (the user's method): compare how lands score in the Rank with how spells score. If an extra land in
 // the early cards is worth more than an extra spell on average, the deck is short on mana, and the reverse.
 // Ramp = permanents that make mana, or spells that fetch lands onto the battlefield; it is shown on its own.
@@ -814,7 +818,9 @@ async function drawOverview(body, name) {
   if (a) await sfLoad(a.audit.cards.map(c => c.card));
   const rows = a ? a.audit.cards.filter(c => inList.has(c.card)) : [];
   const spells = rows.filter(c => !(S.sf[c.card]?.type || '').includes('Land'));
-  const tier = a ? rankTiers(a.audit.cards) : new Map(), cuts = spells.filter(c => tier.get(c.card) === 'outlier').sort((x, y) => x.diff - y.diff);
+  const tier = a ? rankTiers(a.audit.cards) : new Map(), chk = checkedOf(a);
+  for (const [k, r] of chk) if (r.verdict === 'cleared' && tier.get(k) === 'outlier') tier.set(k, 'below');
+  const cuts = spells.filter(c => tier.get(c.card) === 'outlier').sort((x, y) => x.diff - y.diff);
   const sp = a ? speedCurve(a.audit.pace, a.auditPool, true) : null, mb = a ? manaBalance(rows, a.arms?.[0]?.games, a.audit.lands, true) : null;
   // power: win rate against the pool's par, plus head-to-heads
   const h2h = tests.filter(g => g.mode === 'decks' && !g.peek);
@@ -850,11 +856,12 @@ async function drawAudit(body, name) {
   const isLand = c => (S.sf[c]?.type || '').includes('Land');
   const rows = a.audit.cards.filter(c => inList.has(c.card));
   const spells = rows.filter(c => !isLand(c.card)).sort((x, y) => y.diff - x.diff), lands = rows.filter(c => isLand(c.card)).sort((x, y) => y.diff - x.diff);
-  const tier = rankTiers(a.audit.cards);
+  const tier = rankTiers(a.audit.cards), chk = checkedOf(a);
+  for (const [k, r] of chk) if (r.verdict === 'cleared' && tier.get(k) === 'outlier') tier.set(k, 'below');   // extra games cleared it
   const byDiff = [...spells].sort((x, y) => x.diff - y.diff);
   const outliers = byDiff.filter(c => tier.get(c.card) === 'outlier'), weakest = byDiff.filter(c => tier.get(c.card) !== 'outlier').slice(0, Math.max(3, 8 - outliers.length));
   const toGap = c => ({ label: c.card, diff: c.diff, ci: c.ci, cls: tierCls(tier.get(c.card)) || (c.diff - c.ci > 0 ? 'good' : '') });
-  const weakRow = c => { const tr = tier.get(c.card), cls = tierCls(tr); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card.split(',')[0])} ${S.forge?.get(c.card) === 'A' ? '<span class="pill warn">AI weak</span>' : ''}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)}</span></td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Replace</a></td></tr>`; };
+  const weakRow = c => { const tr = tier.get(c.card), cls = tierCls(tr); return `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: c.card }))}'"><td data-card="${esc(c.card)}">${esc(c.card.split(',')[0])} ${S.forge?.get(c.card) === 'A' ? '<span class="pill warn">AI weak</span>' : ''} ${vpill(chk.get(c.card))}</td><td class="r num"><span class="pill ${cls}">${c.diff > 0 ? '+' : ''}${c.diff.toFixed(1)}</span></td><td class="r"><a class="btn sm" href="#test/${encodeURIComponent(name)}?out=${encodeURIComponent(c.card)}&pool=${a.auditPool}">Replace</a></td></tr>`; };
   const testLink = g => `#test/${encodeURIComponent(name)}?out=${encodeURIComponent(g.label)}&pool=${a.auditPool}`;
   const N = a.arms[0]?.games || 0;
   h += `<div class="card"><div class="res-head"><div><div class="res-title">Card rank</div>
@@ -866,6 +873,9 @@ async function drawAudit(body, name) {
     <div class="sect">${outliers.length ? 'Next weakest' : 'Weakest slots'}</div>
     <p class="small muted" style="margin:4px 0 6px">${outliers.length ? '' : 'No outliers: nothing stands out from the deck\'s normal spread. '}Amber = below this deck's typical card; grey = within its normal spread or noise. Every deck has cards below zero, answers especially.</p>
     <table class="weak"><tbody>${weakest.map(weakRow).join('')}</tbody></table>
+    ${chk.size ? `<div class="sect">Double-checked</div>
+    <p class="small muted" style="margin:4px 0 6px">The ranking's closest calls got extra games with the card forced into the opening hand, against a typical card from this deck (${esc(a.audit.targeted.ref.split(',')[0])}).</p>
+    <table class="weak"><tbody>${[...chk.values()].sort((x, y) => x.gap - y.gap).map(r => `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: r.card }))}'"><td data-card="${esc(r.card)}">${esc(r.card.split(',')[0])}</td><td class="r small muted num">${r.gap > 0 ? '+' : ''}${r.gap.toFixed(1)} ± ${r.ci.toFixed(1)}</td><td class="r">${vpill(r)}</td></tr>`).join('')}</tbody></table>` : ''}
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
