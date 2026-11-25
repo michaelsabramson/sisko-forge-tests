@@ -177,22 +177,39 @@ if req.get('mode') == 'audit' and req.get('adaptive') and audit:
     if plan.get('targets'):
         def fp(k): g_, w_ = forced_g.get(k, [0, 0]); return (w_ + 1) / (g_ + 2), g_   # lightly smoothed
         pr, nr = fp(plan['ref']); vrows = []
+        # both kinds of evidence count: the forced games say how the card compares with the typical (reference) card;
+        # adding the reference card's own Rank score puts that on the Rank's scale, and it is then pooled with the card's
+        # normal Rank score by precision. The verdict and the card's place on the ladder use the pooled score.
+        byc = {c['card']: c for c in audit["cards"]}; tt = tailmod.tiers(audit["cards"]); med = tt["median"] if tt else 0.0
+        refc = byc.get(plan['ref'])
         for k in plan['targets']:
             pk, nk = fp(k); se = math.sqrt(pk*(1-pk)/max(1, nk) + pr*(1-pr)/max(1, nr))
-            v = tailmod.verdict(100*(pk-pr), 100*se, plan['margin']) if min(nk, nr) >= 200 else "unclear"
-            vrows.append({"card": k, "games": nk, "gap": round(100*(pk-pr), 2), "ci": round(196*se, 2), "verdict": v,
-                          "p_outlier": plan.get('p_outlier', {}).get(k)})
+            c = byc.get(k); row = {"card": k, "games": nk, "gap": round(100*(pk-pr), 2), "ci": round(196*se, 2),
+                                   "p_outlier": plan.get('p_outlier', {}).get(k)}
+            if c and refc and min(nk, nr) >= 200:
+                s1 = c['ci'] / 1.96; s2 = math.hypot(100*se, refc['ci'] / 1.96); f_ = refc['diff'] + 100*(pk-pr)
+                w1, w2 = 1/s1**2, 1/s2**2; comb = (c['diff']*w1 + f_*w2) / (w1 + w2); sc = (1/(w1 + w2)) ** .5
+                row.update(rank_diff=c['diff'], rank_ci=c['ci'], diff=round(comb, 2), diff_ci=round(1.96*sc, 2),
+                           verdict=tailmod.verdict(comb - med, sc, plan['margin']))
+            else:
+                row["verdict"] = "unclear"
+            vrows.append(row)
         open_ = [r['card'] for r in vrows if r['verdict'] not in tailmod.SETTLED]
         if open_:
             share = (1 - NATURAL) / (len(open_) + math.sqrt(len(open_)))
             plan['weights'] = {"@natural": NATURAL, plan['ref']: round(share * math.sqrt(len(open_)), 4), **{k: round(share, 4) for k in open_}}
         else:
             plan['weights'] = {"@natural": 1.0}
-        plan['verdicts'] = vrows; audit['targeted'] = {"ref": plan['ref'], "ref_games": nr, "margin": plan['margin'], "rows": vrows}
+        plan['verdicts'] = vrows; audit['targeted'] = {"ref": plan['ref'], "ref_games": nr, "margin": plan['margin'], "median": round(med, 2), "rows": vrows}
+        if not PEEK:   # the ladder shows the pooled score for the double-checked cards (their normal score kept as rank_diff)
+            for r in vrows:
+                if 'diff' in r and r['card'] in byc:
+                    byc[r['card']].update(rank_diff=byc[r['card']]['diff'], rank_ci=byc[r['card']]['ci'], diff=r['diff'], ci=r['diff_ci'])
         t.append(f"\nTargeted games: the Rank's uncertain cards forced into the opening hand, each against a typical card ({plan['ref']}, {nr:,} games). The outlier line sits {plan['margin']:.1f} points below a typical card.\n")
-        t.append("| Card | Rank's chance it's an outlier | Forced games | Gap vs typical card | ± (95%) | Verdict |"); t.append("|---|---|---|---|---|---|")
+        t.append("| Card | Rank score | Forced games | Gap vs typical card | Pooled score | Verdict |"); t.append("|---|---|---|---|---|---|")
         for r in vrows:
-            t.append(f"| {r['card']} | {round(100*(r['p_outlier'] or 0))}% | {r['games']:,} | {r['gap']:+.1f} | {r['ci']:.1f} | {tailmod.LABEL[r['verdict']]} |")
+            t.append(f"| {r['card']} | {byc[r['card']].get('rank_diff', byc[r['card']]['diff']):+.1f} | {r['games']:,} | {r['gap']:+.1f} ± {r['ci']:.1f} | "
+                     + (f"{r['diff']:+.1f} ± {r['diff_ci']:.1f}" if 'diff' in r else "-") + f" | {tailmod.LABEL[r['verdict']]} |")
     if PEEK and plan:
         os.makedirs('plans', exist_ok=True); json.dump(plan, open(pf, 'w'), indent=1)
 data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
