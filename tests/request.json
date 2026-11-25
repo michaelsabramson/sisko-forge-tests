@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_chatterfang",
-  "title": "Ranking of Chatterfang",
+  "name": "ranking_of_kess_2",
+  "title": "Ranking of Kess",
   "arms": [
     {
-      "deck": "Chatterfang",
+      "deck": "Kess",
       "card": "@audit",
-      "label": "Audit of Chatterfang",
+      "label": "Audit of Kess",
       "mc": "max",
-      "key": "d7d1fbe88423e55c9894",
+      "key": "0fa43743e640616184ea",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -19,8 +19,8 @@
   "minutes": 110,
   "shards": 67,
   "mode": "audit",
-  "queued_from": "20261125T165055-audit-chatterfang.json",
-  "started": "2026-11-25T19:15:56Z",
+  "queued_from": "20261125T165034-audit-kess.json",
+  "started": "2026-11-25T19:19:08Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -325,5 +325,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185457000
+  "seedbase": 185457800
 }
