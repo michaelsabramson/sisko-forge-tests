@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_kess_4",
-  "title": "Ranking of Kess",
+  "name": "ranking_of_necrobloom_2",
+  "title": "Ranking of Necrobloom",
   "arms": [
     {
-      "deck": "Kess",
+      "deck": "Necrobloom",
       "card": "@audit",
-      "label": "Audit of Kess",
+      "label": "Audit of Necrobloom",
       "mc": "max",
-      "key": "cea05b7502d79e02c5d8",
+      "key": "e8ca3a42c3ff4e44a136",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -16,11 +16,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 110,
+  "minutes": 121,
   "shards": 67,
   "mode": "audit",
-  "queued_from": "20261125T195000-audit-kess.json",
-  "started": "2026-11-25T19:50:40Z",
+  "queued_from": "20261125T195001-audit-necrobloom.json",
+  "started": "2026-11-25T21:44:05Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -308,7 +308,7 @@
     0
   ],
   "gpm": [
-    0.799
+    0.726
   ],
   "quota": [
     62
@@ -325,5 +325,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185464000
+  "seedbase": 185486800
 }
