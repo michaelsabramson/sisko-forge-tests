@@ -167,8 +167,10 @@ if req.get('mode') == 'audit' and req.get('adaptive') and audit:
             subprocess.run(['git', 'fetch', '-q', 'origin', 'main'], check=True, timeout=120)
             plan = json.loads(subprocess.run(['git', 'show', f'FETCH_HEAD:{pf}'], capture_output=True, text=True, check=True).stdout)
           except Exception: plan = {}
-    nat_new = new[0][1] - sum(g_ for g_, _ in forced_g.values())
-    if not plan.get('targets') and nat_new >= SPLIT * (arms[0].get('target_new') or 0) > 0:
+    # switch once half of the run's total (games reused from earlier runs included) are normal games: a Rank that
+    # already has many games targets its uncertain cards from the first early read
+    nat_all = res[0][1] - sum(g_ for g_, _ in forced_g.values())
+    if not plan.get('targets') and nat_all >= SPLIT * ((arms[0].get('target_new') or 0) + arms[0].get('prior_games', 0)) > 0:
         pick = tailmod.select(arms[0]['deck'], audit["cards"], res[0][1])
         if pick:   # chosen once, then fixed so the forced games add up; no candidates yet = ask again at the next read
             plan = {"targets": pick["cards"], "ref": pick["ref"], "margin": pick["margin"], "tau": pick["tau"], "p_outlier": pick["p_outlier"]}

@@ -153,7 +153,7 @@ public class Run {
         pos[0]=rng[band[0]][0]+gr.nextInt(rng[band[0]][1]-rng[band[0]][0]+1);
         final Map<String,String> want=new HashMap<>(); for(String kv:strat.split(";")){ String[] kvp=kv.split("=",2); String[] op=kvp[1].split("\\|"); want.put(kvp[0],op[Math.floorMod(g,op.length)]); } // "A|B|C": packages rotate which card is forced
         { String pf=System.getProperty("plan"); String pc=pf==null?null:planPick(pf,seed,g);
-          if(pc!=null){ for(String k:new ArrayList<>(want.keySet())) want.put(k,pc); System.out.println("FORCE "+pc); } }
+          if(pc!=null){ for(String wk:new ArrayList<>(want.keySet())) want.put(wk,pc); System.out.println("FORCE "+pc); } }
         final boolean[] done={false};
         game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void tb(forge.game.event.GameEventTurnBegan e){
           if(done[0]) return; done[0]=true;
