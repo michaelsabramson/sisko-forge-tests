@@ -1,0 +1,21 @@
+{
+  "mode": "audit",
+  "base": "Kess",
+  "name": "Kess setup probe",
+  "precision": 2,
+  "shards": 2,
+  "opponents": [
+    "Edgar",
+    "UrDragon",
+    "Prossh",
+    "Meren",
+    "Talrand_B3",
+    "Krenko_B3",
+    "RafiqoftheMany_B3",
+    "TuvasatheSunlit_B3",
+    "Tatyova_B3",
+    "Kykar_B3"
+  ],
+  "submitted": "2026-11-25T16:50:34.823Z",
+  "hidden": true
+}
