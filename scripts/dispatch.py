@@ -57,7 +57,8 @@ P_DEFAULT = 0.19
 STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 
 
-DEFAULT_PROFILE = "Hard"
+DEFAULT_PROFILE = "Default"   # Hard without the lookahead is Default plus defending at 5 life; with it, no gain was measured
+DEFAULT_MC = "max"            # Forge's lookahead search (desktop budgets) for the tested lists, since 2026-11-25
 
 
 def speed_profile(a, req):
@@ -269,10 +270,11 @@ def main():
         req["tail"] = {k: r[k] for k in ("margin", "tau", "p_outlier", "rank") if k in r}
     if r.get("hidden"):
         req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
-    if r.get("mc") and r.get("mode") not in ("pilot", "ladder"):
-        for a in arms: a["mc"] = r["mc"]   # Forge's lookahead search for the tested lists (on | max); opponents keep opp_mc
+    mc = r.get("mc", DEFAULT_MC)
+    if mc != "off" and r.get("mode") not in ("pilot", "ladder"):
+        for a in arms: a["mc"] = mc   # Forge's lookahead search for the tested lists (on | max); opponents keep opp_mc
     if r.get("mode") not in ("pilot", "ladder"):
-        # Forge AI settings: Hard for every player by default (since 2026-11-24); a request can still ask for Default
+        # Forge AI settings: Default for every player, the tested lists with the lookahead (DEFAULT_MC); a request can ask otherwise
         prof = r.get("profile", DEFAULT_PROFILE)
         if prof != "Default": req["profile"] = prof
         op = r.get("opp_profile", prof)
