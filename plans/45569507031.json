@@ -31,49 +31,49 @@
  "verdicts": [
   {
    "card": "Collective Defiance",
-   "games": 0,
-   "gap": 0.0,
-   "ci": 138.59,
+   "games": 187,
+   "gap": 1.18,
+   "ci": 6.67,
    "verdict": "unclear",
    "p_outlier": 0.41
   },
   {
    "card": "Ertai Resurrected",
-   "games": 0,
-   "gap": 0.0,
-   "ci": 138.59,
+   "games": 187,
+   "gap": 1.18,
+   "ci": 6.67,
    "verdict": "unclear",
    "p_outlier": 0.33
   },
   {
    "card": "Test of Conviction",
-   "games": 0,
-   "gap": 0.0,
-   "ci": 138.59,
+   "games": 272,
+   "gap": 3.9,
+   "ci": 6.01,
    "verdict": "unclear",
    "p_outlier": 0.32
   },
   {
    "card": "Make It So",
-   "games": 0,
-   "gap": 0.0,
-   "ci": 138.59,
+   "games": 230,
+   "gap": 3.39,
+   "ci": 6.35,
    "verdict": "unclear",
    "p_outlier": 0.27
   },
   {
    "card": "Esper Charm",
-   "games": 0,
-   "gap": 0.0,
-   "ci": 138.59,
+   "games": 228,
+   "gap": 0.11,
+   "ci": 6.12,
    "verdict": "unclear",
    "p_outlier": 0.13
   },
   {
    "card": "Rapid Hybridization",
-   "games": 0,
-   "gap": 0.0,
-   "ci": 138.59,
+   "games": 276,
+   "gap": -0.39,
+   "ci": 5.69,
    "verdict": "unclear",
    "p_outlier": 0.11
   }
