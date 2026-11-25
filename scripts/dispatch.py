@@ -268,7 +268,7 @@ def main():
         req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
     if r.get("mode") == "tail":
         req["tail"] = {k: r[k] for k in ("margin", "tau", "p_outlier", "rank") if k in r}
-    if r.get("adaptive", True) and r.get("mode") == "audit":   # every Rank is adaptive unless a request says otherwise
+    if r.get("adaptive") and r.get("mode") == "audit":   # off by default (2026-11-25): more games beat targeted ones
         req["adaptive"] = True   # one-job Rank: targeted games for its uncertain cards in the second half (aggregate.py)
     if r.get("hidden"):
         req["hidden"] = True   # backend experiment: the app ignores its result (e.g. a Rank on another AI profile)
