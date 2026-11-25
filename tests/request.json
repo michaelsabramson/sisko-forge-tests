@@ -1,5 +1,5 @@
 {
-  "name": "ranking_of_kess_2",
+  "name": "ranking_of_kess_3",
   "title": "Ranking of Kess",
   "arms": [
     {
@@ -20,7 +20,7 @@
   "shards": 67,
   "mode": "audit",
   "queued_from": "20261125T165034-audit-kess.json",
-  "started": "2026-11-25T19:19:08Z",
+  "started": "2026-11-25T19:29:42Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -325,5 +325,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185457800
+  "seedbase": 185459800
 }
