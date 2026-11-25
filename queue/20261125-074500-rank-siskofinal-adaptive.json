@@ -6,6 +6,14 @@
   "hidden": true,
   "precision": 1.2,
   "shards": 38,
-  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
-  "submitted": "2026-11-25T07:45:00+00:00"
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-25T07:45:00+00:00",
+  "result_name": "rank_of_siskofinal_adaptive_test",
+  "chunk": 2
 }
