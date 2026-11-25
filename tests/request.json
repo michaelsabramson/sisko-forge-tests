@@ -20,7 +20,7 @@
   "shards": 31,
   "mode": "audit",
   "queued_from": "20261125T165034-audit-kess.json",
-  "started": "2026-11-25T19:34:50Z",
+  "started": "2026-11-25T19:38:25Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -182,5 +182,5 @@
   ],
   "capped": true,
   "allcached": false,
-  "seedbase": 185460800
+  "seedbase": 185461600
 }
