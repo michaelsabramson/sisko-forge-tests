@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_necrobloom",
-  "title": "Ranking of Necrobloom",
+  "name": "ranking_of_chatterfang",
+  "title": "Ranking of Chatterfang",
   "arms": [
     {
-      "deck": "Necrobloom",
+      "deck": "Chatterfang",
       "card": "@audit",
-      "label": "Audit of Necrobloom",
+      "label": "Audit of Chatterfang",
       "mc": "max",
-      "key": "d594e0d1b76401d2dd4a",
+      "key": "d7d1fbe88423e55c9894",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -19,8 +19,8 @@
   "minutes": 110,
   "shards": 67,
   "mode": "audit",
-  "queued_from": "20261125T165046-audit-necrobloom.json",
-  "started": "2026-11-25T19:12:11Z",
+  "queued_from": "20261125T165055-audit-chatterfang.json",
+  "started": "2026-11-25T19:15:56Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -325,5 +325,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185456400
+  "seedbase": 185457000
 }
