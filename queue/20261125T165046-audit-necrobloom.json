@@ -5,11 +5,16 @@
   "precision": 2,
   "shards": 38,
   "opponents": [
-    "Atraxa",
-    "Prossh",
-    "UrDragon",
     "Edgar",
-    "Meren"
+    "UrDragon",
+    "Prossh",
+    "Meren",
+    "Talrand_B3",
+    "Krenko_B3",
+    "RafiqoftheMany_B3",
+    "TuvasatheSunlit_B3",
+    "Tatyova_B3",
+    "Kykar_B3"
   ],
   "submitted": "2026-11-25T16:50:46.848Z"
 }

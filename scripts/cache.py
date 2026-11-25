@@ -70,4 +70,4 @@ def save(c):
         f.write("\n")
 
 
-DEFAULT_OPP = ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"]
+DEFAULT_OPP = ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"]   # bracket 3 pool since 2026-11-25

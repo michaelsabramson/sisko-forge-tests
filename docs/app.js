@@ -4,7 +4,7 @@
 // the repo this page is served from (<owner>.github.io/<repo>/), so the app keeps working if the repo moves accounts
 const REPO = (() => { const o = location.hostname.match(/^([\w-]+)\.github\.io$/), r = location.pathname.split('/')[1];
   return o && r ? `${o[1]}/${r}` : 'michaelsabramson/sisko-forge-tests'; })(), BR = 'main';
-const OPP_DEFAULT = ['Atraxa', 'Prossh', 'UrDragon', 'Edgar', 'Meren'];
+const OPP_DEFAULT = ['Edgar',  'UrDragon',  'Prossh',  'Meren',  'Talrand_B3',  'Krenko_B3',  'RafiqoftheMany_B3',  'TuvasatheSunlit_B3',  'Tatyova_B3',  'Kykar_B3'];   // bracket 3 pool since 2026-11-25 (decks/lab.json)
 const SHARDS = 38, GPM_FALLBACK = 1.1;  // runners per test (38 on Pro's 40-job limit; 58 on Team's 60); games per process-minute until runs have measured it
 let GPM = GPM_FALLBACK;                 // replaced by the measured speed (cache/speed.json) once loaded
 const BASE_P = 0.19;                    // typical win rate for precision estimates
