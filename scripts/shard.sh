@@ -22,6 +22,21 @@ if [ "$(jq -r '.earlystop // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-
       sleep 60
     done ) &
 fi
+PLAN=""
+if [ "$(jq -r '.adaptive // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
+  # adaptive Rank: the run's early reads publish plans/<run>.json (which cards to force, how often); keep a local copy
+  # the game processes read before each game. No plan yet = normal shuffled games.
+  PLAN="-Dplan=$PWD/out/plan.txt"; R=${MAIN_RUN:-$GITHUB_RUN_ID}
+  ( while true; do
+      if git fetch -q --depth=1 "https://github.com/${MAIN_REPO:-$GITHUB_REPOSITORY}" main 2>/dev/null &&
+         git show "FETCH_HEAD:plans/$R.json" 2>/dev/null | jq -r '.weights|to_entries[]|"\(.value)\t\(.key)"' > out/plan.tmp 2>/dev/null &&
+         [ -s out/plan.tmp ]; then
+        cmp -s out/plan.tmp out/plan.txt || { mv out/plan.tmp out/plan.txt; echo "$(date -u +%T) plan $(tr '\n' ' ' < out/plan.txt)" >> out/claims.log; }
+      fi
+      pgrep -f "Run forge" >/dev/null || [ ! -f out/started ] || break
+      sleep 90
+    done ) &
+fi
 for p in 0 1 2 3; do
   k=$((S*4+p))
   if [ "$(jq '.procs|length' $REQ)" -gt "$k" ] 2>/dev/null; then i=$(jq -r ".procs[$k]" $REQ); else i=${RUN[$((k % N))]}; fi
@@ -42,6 +57,7 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>/dev/null &
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) 120 nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>/dev/null &
 done
+touch out/started
 wait

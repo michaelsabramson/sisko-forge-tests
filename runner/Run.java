@@ -22,6 +22,15 @@ public class Run {
     }catch(Exception e){ return true; }   // if the pool file fails, fall back to the process's own game count
   }
   static int CardLists_count(Player p){ int n=0; for(var c:p.getCardsIn(forge.game.zone.ZoneType.Battlefield)) if(c.getType().hasCreatureType("Officer")) n++; return n; }
+  /* adaptive Rank: scripts/shard.sh keeps a plan file of "weight<TAB>card" lines up to date from the run's early reads;
+     each game draws from it which card (if any) to force into the opening hand. "@natural" = a normal shuffled game. */
+  static String planPick(String file,long seed,int g){
+    try{ List<String> L=java.nio.file.Files.readAllLines(java.nio.file.Paths.get(file)); double tot=0; List<double[]> w=new ArrayList<>(); List<String> c=new ArrayList<>();
+      for(String l:L){ String[] p=l.split("\t",2); if(p.length<2) continue; double x=Double.parseDouble(p[0]); if(x<=0) continue; tot+=x; w.add(new double[]{tot}); c.add(p[1].trim()); }
+      if(tot<=0) return null; double r=new Random(seed*1000003L+g).nextDouble()*tot;
+      for(int i=0;i<c.size();i++) if(r<w.get(i)[0]) return c.get(i).equals("@natural")?null:c.get(i);
+    }catch(Exception e){ }
+    return null; }
   public static void main(String[] a) throws Exception {
     String res=a[0]; int n=Integer.parseInt(a[1]); long seed=Long.parseLong(a[2]); int timeout=Integer.parseInt(a[3]); boolean log=a[4].equals("log");
     List<String> decks=Arrays.asList(a).subList(5,a.length);
@@ -143,6 +152,8 @@ public class Run {
         int[][] rng={{0,6},{1,3},{4,7},{8,12},{13,20},{21,35}};
         pos[0]=rng[band[0]][0]+gr.nextInt(rng[band[0]][1]-rng[band[0]][0]+1);
         final Map<String,String> want=new HashMap<>(); for(String kv:strat.split(";")){ String[] kvp=kv.split("=",2); String[] op=kvp[1].split("\\|"); want.put(kvp[0],op[Math.floorMod(g,op.length)]); } // "A|B|C": packages rotate which card is forced
+        { String pf=System.getProperty("plan"); String pc=pf==null?null:planPick(pf,seed,g);
+          if(pc!=null){ for(String k:new ArrayList<>(want.keySet())) want.put(k,pc); System.out.println("FORCE "+pc); } }
         final boolean[] done={false};
         game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void tb(forge.game.event.GameEventTurnBegan e){
           if(done[0]) return; done[0]=true;

@@ -41,6 +41,7 @@ jobs:
       - run: python3 scripts/aggregate.py
         env:
           PEEK: '1'
+          RANK_RUN: ${{ inputs.run_id }}   # an adaptive Rank's plan is plans/<run>.json
       - name: Stop the run if its answer is settled
         if: ${{ hashFiles('stop.flag') != '' }}
         env:
@@ -57,5 +58,6 @@ jobs:
           git checkout HEAD -- results/$n.md 2>/dev/null || true   # a run adding games to an existing result keeps it in place
           sed -i "1s/\$/ (early read, run still going)/" results/${n}_peek.md
           git config user.name "swaptest-bot"; git config user.email "actions@users.noreply.github.com"
-          git add results/ && git commit -m "Early read: $n" || exit 0
+          git add results/ plans/ 2>/dev/null || git add results/
+          git commit -m "Early read: $n" || exit 0
           git pull --rebase origin ${{ github.ref_name }} && git push origin HEAD:${{ github.ref_name }}

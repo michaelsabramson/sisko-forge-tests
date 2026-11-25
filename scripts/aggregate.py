@@ -11,11 +11,13 @@ usage = {}                     # usage runs: card -> how the AI handled it
 seen = {}                      # audit: card -> [games where it was in the kept hand + next 3 draws, wins in those games]
 side = [[{}, 0, 0] for _ in arms]   # other modes, per arm: same card tallies, games and wins with a logged opening (feeds the Rank)
 tops = []                      # audit: (first 10 cards, won) per game, for the land curve
+forced_g = {}                  # adaptive Rank: card -> [games where the plan forced it into the opening hand, wins]
 paced = []                     # audit: (won, round, stall) per game, for the speed curve (scripts/pace.py)
 import pace
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
-    i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None
+    i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None; fc = None
     for l in open(f, errors='ignore'):
+        if l.startswith('FORCE '): fc = l[6:].rstrip('\n'); continue
         if l.startswith('TOP '): topl = l[4:].rstrip('\n').split('|'); top = set(topl); continue
         if l.startswith('USE\t'):
             for ent in l.rstrip('\n').split('\t')[1:]:
@@ -30,7 +32,14 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             t = re.search(r' (\d+)ms', l)
             if t: speed[i][0] += 1; speed[i][1] += int(t.group(1))
             won = m.group(1) == me
-            if arms[i]['card'] == '@audit' and top is None: top = None; continue   # no draw log: skip the game for audits
+            if arms[i]['card'] == '@audit' and top is None: top = None; fc = None; continue   # no draw log: skip the game for audits
+            if arms[i]['card'] == '@audit' and fc:
+                # adaptive Rank, targeted game: the forced card's result goes to its verdict and the game is left out of
+                # that card's own comparison; every other card in the opening counts normally
+                e = forced_g.setdefault(fc, [0, 0]); e[0] += 1; e[1] += won
+                new[i][1] += 1; new[i][0] += won
+                for c in top - {fc}: e = seen.setdefault(c, [0, 0]); e[0] += 1; e[1] += won
+                top = None; fc = None; continue
             if arms[i]['card'] == '@audit':
                 pg = pace.game(l, me)
                 if pg: paced.append(pg)
@@ -41,7 +50,7 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             if top is not None:
                 for c in top: e = seen.setdefault(c, [0, 0]); e[0] += 1; e[1] += won
                 if arms[i]['card'] == '@audit': tops.append((topl, won))
-            top = None
+            top = None; fc = None
 # totals include games reused from the cache (recorded in the request when the run was dispatched)
 res = [[new[i][0] + a.get('prior_wins', 0), new[i][1] + a.get('prior_games', 0)] for i, a in enumerate(arms)]
 if PEEK and sum(g for _, g in new) == 0:
@@ -100,7 +109,8 @@ if req.get('mode') == 'audit':
     a0 = arms[0]; prior = cache.load().get(a0.get('key'), {}).get('cards', {})
     cards = {k: [v[0], v[1]] for k, v in prior.items()}
     for k, v in seen.items(): e = cards.setdefault(k, [0, 0]); e[0] += v[0]; e[1] += v[1]
-    W, N = res[0]; rows = []; excl = cache.load().get(a0.get('key'), {}).get('excl', {})
+    W, N = res[0]; rows = []; excl = {k: list(v) for k, v in cache.load().get(a0.get('key'), {}).get('excl', {}).items()}
+    for k, (g_, w_) in forced_g.items(): e = excl.setdefault(k, [0, 0]); e[0] += g_; e[1] += w_
     for k, (n1, w1) in cards.items():
         xn, xw = excl.get(k, [0, 0])   # slot-test games where this card was forced into the hand
         n0, w0 = N - xn - n1, W - xw - w1
@@ -109,7 +119,7 @@ if req.get('mode') == 'audit':
         se = math.sqrt(p1 * (1 - p1) / n1 + p0 * (1 - p0) / n0)
         rows.append({"card": k, "seen": n1, "wins": w1, "diff": round(100 * (p1 - p0), 2), "ci": round(196 * se, 2)})
     rows.sort(key=lambda r: r["diff"])
-    audit = {"cards": rows, "tallies": cards}
+    audit = {"cards": rows, "tallies": cards, "excl": excl}
     # land curve: win rate by lands in the first 10 cards, basics counted by copies (scripts/landcurve.py)
     import landcurve
     prior_l = cache.load().get(a0.get('key'), {}).get('lands', {})
@@ -141,6 +151,48 @@ if logs:
     lines = [l for f in logs for l in open(f, errors='ignore')]
     batching = {"runners": len(logs), "claimed": sum('claimed' in l for l in lines),
                 "retries": sum('attempt' in l for l in lines), "unclaimed": sum('without a claim' in l for l in lines)}
+if req.get('mode') == 'audit' and req.get('adaptive') and audit:
+    # adaptive Rank (one job, two phases): normal shuffled games until SPLIT of the run's games are in, then the early
+    # reads publish a plan that also forces the Rank's uncertain cards into the opening hand (each against a typical
+    # card, as in a tail check: scripts/tail.py). Settled cards drop out and their games go to the close calls.
+    import tail as tailmod, subprocess
+    SPLIT, NATURAL = 0.5, 0.25
+    run_id = os.environ.get('RANK_RUN') or os.environ.get('GITHUB_RUN_ID', 'local'); pf = f"plans/{run_id}.json"
+    plan = {}
+    try: plan = json.load(open(pf))
+    except Exception:
+        if PEEK: plan = {}   # early reads run on main: no file there means no plan yet
+        else:
+          try:   # the final tally runs on the commit the run started from: the early reads' plan is on main
+            subprocess.run(['git', 'fetch', '-q', 'origin', 'main'], check=True, timeout=120)
+            plan = json.loads(subprocess.run(['git', 'show', f'FETCH_HEAD:{pf}'], capture_output=True, text=True, check=True).stdout)
+          except Exception: plan = {}
+    nat_new = new[0][1] - sum(g_ for g_, _ in forced_g.values())
+    if not plan.get('targets') and nat_new >= SPLIT * (arms[0].get('target_new') or 0) > 0:
+        pick = tailmod.select(arms[0]['deck'], audit["cards"], res[0][1])
+        if pick:   # chosen once, then fixed so the forced games add up; no candidates yet = ask again at the next read
+            plan = {"targets": pick["cards"], "ref": pick["ref"], "margin": pick["margin"], "tau": pick["tau"], "p_outlier": pick["p_outlier"]}
+    if plan.get('targets'):
+        def fp(k): g_, w_ = forced_g.get(k, [0, 0]); return (w_ + 1) / (g_ + 2), g_   # lightly smoothed
+        pr, nr = fp(plan['ref']); vrows = []
+        for k in plan['targets']:
+            pk, nk = fp(k); se = math.sqrt(pk*(1-pk)/max(1, nk) + pr*(1-pr)/max(1, nr))
+            v = tailmod.verdict(100*(pk-pr), 100*se, plan['margin']) if min(nk, nr) >= 200 else "unclear"
+            vrows.append({"card": k, "games": nk, "gap": round(100*(pk-pr), 2), "ci": round(196*se, 2), "verdict": v,
+                          "p_outlier": plan.get('p_outlier', {}).get(k)})
+        open_ = [r['card'] for r in vrows if r['verdict'] not in tailmod.SETTLED]
+        if open_:
+            share = (1 - NATURAL) / (len(open_) + math.sqrt(len(open_)))
+            plan['weights'] = {"@natural": NATURAL, plan['ref']: round(share * math.sqrt(len(open_)), 4), **{k: round(share, 4) for k in open_}}
+        else:
+            plan['weights'] = {"@natural": 1.0}
+        plan['verdicts'] = vrows; audit['targeted'] = {"ref": plan['ref'], "ref_games": nr, "margin": plan['margin'], "rows": vrows}
+        t.append(f"\nTargeted games: the Rank's uncertain cards forced into the opening hand, each against a typical card ({plan['ref']}, {nr:,} games). The outlier line sits {plan['margin']:.1f} points below a typical card.\n")
+        t.append("| Card | Rank's chance it's an outlier | Forced games | Gap vs typical card | ± (95%) | Verdict |"); t.append("|---|---|---|---|---|---|")
+        for r in vrows:
+            t.append(f"| {r['card']} | {round(100*(r['p_outlier'] or 0))}% | {r['games']:,} | {r['gap']:+.1f} | {r['ci']:.1f} | {tailmod.LABEL[r['verdict']]} |")
+    if PEEK and plan:
+        os.makedirs('plans', exist_ok=True); json.dump(plan, open(pf, 'w'), indent=1)
 data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
@@ -153,7 +205,8 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
         **({"audit": {"deck": arms[0]['deck'], "cards": audit["cards"], "chunk": req.get('chunk'), "partial": bool(req.get('capped')),
                       **({"lands": audit["lands"]} if audit.get("lands") else {}),
-                      **({"pace": audit["pace"]} if audit.get("pace") else {})}} if audit else {})}
+                      **({"pace": audit["pace"]} if audit.get("pace") else {}),
+                      **({"targeted": audit["targeted"]} if audit.get("targeted") else {})}} if audit else {})}
 t.append("\n<!-- data " + json.dumps(data) + " -->")
 txt = "\n".join(t) + "\n"
 if all(res[i][1] for pr in pairs for i in pr):
@@ -171,6 +224,7 @@ if not PEEK:
         e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}"); changed = True
         if audit and i == 0:
             e["cards"] = audit["tallies"]
+            if audit.get("excl"): e["excl"] = audit["excl"]
             if audit.get("land_tallies"): e["lands"] = audit["land_tallies"]
             if audit.get("pace_tallies"): e["pace"] = audit["pace_tallies"]
     # slot tests, head-to-heads and pilots also play each list naturally apart from one forced card: add their opening-card
@@ -212,7 +266,7 @@ if not PEEK:
 # After a finished Rank, queue its tail check (scripts/tail.py): the cards whose outlier call is uncertain, plus the
 # clearest outliers to confirm them, each forced into the opening hand against a typical card. Same list, opponents
 # and AI settings as the Rank. Hidden (experimental) Ranks don't queue one unless they ask ("tail": true).
-if not PEEK and req.get('mode') == 'audit' and audit and (not req.get('hidden') or req.get('tail_auto')) and not req.get('no_tail'):
+if not PEEK and req.get('mode') == 'audit' and audit and (not req.get('hidden') or req.get('tail_auto')) and not req.get('no_tail') and not req.get('adaptive'):
     try:
         import tail as tailmod
         pick = tailmod.select(arms[0]['deck'], audit["cards"], res[0][1])
