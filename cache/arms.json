@@ -5593,6 +5593,371 @@
   ],
   "wins": 558
  },
+ "cea05b7502d79e02c5d8": {
+  "card": "@audit",
+  "cards": {
+   "An Offer You Can't Refuse": [
+    1670,
+    204
+   ],
+   "Arcane Signet": [
+    1509,
+    179
+   ],
+   "Archmage Emeritus": [
+    1526,
+    201
+   ],
+   "Archmage's Charm": [
+    1494,
+    170
+   ],
+   "Baleful Strix": [
+    1497,
+    192
+   ],
+   "Bedevil": [
+    1620,
+    205
+   ],
+   "Big Score": [
+    1655,
+    218
+   ],
+   "Blasphemous Act": [
+    1458,
+    181
+   ],
+   "Bloodstained Mire": [
+    1771,
+    234
+   ],
+   "Chaos Warp": [
+    1501,
+    195
+   ],
+   "Command Tower": [
+    1757,
+    206
+   ],
+   "Consider": [
+    1464,
+    171
+   ],
+   "Coruscation Mage": [
+    1492,
+    229
+   ],
+   "Counterspell": [
+    1591,
+    205
+   ],
+   "Diabolic Intent": [
+    1456,
+    176
+   ],
+   "Dig Through Time": [
+    1424,
+    186
+   ],
+   "Dimir Signet": [
+    1450,
+    165
+   ],
+   "Dragon's Rage Channeler": [
+    1392,
+    169
+   ],
+   "Dragonskull Summit": [
+    1881,
+    228
+   ],
+   "Drowned Catacomb": [
+    1766,
+    215
+   ],
+   "Evolving Wilds": [
+    1827,
+    211
+   ],
+   "Exotic Orchard": [
+    1833,
+    227
+   ],
+   "Expressive Iteration": [
+    1480,
+    203
+   ],
+   "Faithless Looting": [
+    1618,
+    207
+   ],
+   "Feed the Swarm": [
+    1668,
+    194
+   ],
+   "Force of Negation": [
+    1597,
+    180
+   ],
+   "Frantic Search": [
+    1562,
+    199
+   ],
+   "Glen Elendra's Answer": [
+    1653,
+    184
+   ],
+   "Goblin Electromancer": [
+    1521,
+    200
+   ],
+   "Guttersnipe": [
+    1451,
+    234
+   ],
+   "Harmonized Trio": [
+    1505,
+    156
+   ],
+   "Invert Polarity": [
+    1449,
+    201
+   ],
+   "Island": [
+    13509,
+    1704
+   ],
+   "Izzet Signet": [
+    1466,
+    176
+   ],
+   "Ledger Shredder": [
+    1486,
+    199
+   ],
+   "Lightning Bolt": [
+    1552,
+    160
+   ],
+   "Mission Briefing": [
+    1561,
+    182
+   ],
+   "Mountain": [
+    7597,
+    951
+   ],
+   "Murktide Regent": [
+    1435,
+    173
+   ],
+   "Narset's Reversal": [
+    1439,
+    163
+   ],
+   "Night's Whisper": [
+    1644,
+    232
+   ],
+   "Opt": [
+    1488,
+    187
+   ],
+   "Pact of Negation": [
+    1617,
+    187
+   ],
+   "Polluted Delta": [
+    1782,
+    223
+   ],
+   "Ponder": [
+    1553,
+    209
+   ],
+   "Preordain": [
+    1565,
+    200
+   ],
+   "Ruby Medallion": [
+    1458,
+    138
+   ],
+   "Sapphire Medallion": [
+    1459,
+    152
+   ],
+   "Serum Visions": [
+    1593,
+    191
+   ],
+   "Sheoldred's Edict": [
+    1527,
+    193
+   ],
+   "Sleight of Hand": [
+    1463,
+    184
+   ],
+   "Snapcaster Mage": [
+    1411,
+    161
+   ],
+   "Sol Ring": [
+    1514,
+    195
+   ],
+   "Spellbook Seeker": [
+    1434,
+    183
+   ],
+   "Spirebluff Canal": [
+    1797,
+    227
+   ],
+   "Steam Vents": [
+    1879,
+    214
+   ],
+   "Storm-Kiln Artist": [
+    1496,
+    195
+   ],
+   "Stormcarved Coast": [
+    1841,
+    240
+   ],
+   "Sulfur Falls": [
+    1772,
+    243
+   ],
+   "Swamp": [
+    10321,
+    1268
+   ],
+   "Talisman of Creativity": [
+    1486,
+    159
+   ],
+   "Talisman of Dominance": [
+    1498,
+    154
+   ],
+   "Talisman of Indulgence": [
+    1446,
+    140
+   ],
+   "Talrand, Sky Summoner": [
+    1491,
+    190
+   ],
+   "Temple of Epiphany": [
+    1799,
+    230
+   ],
+   "Third Path Iconoclast": [
+    1486,
+    143
+   ],
+   "This Town Ain't Big Enough": [
+    1433,
+    170
+   ],
+   "Three Steps Ahead": [
+    1484,
+    169
+   ],
+   "Torment of Hailfire": [
+    1469,
+    212
+   ],
+   "Toxic Deluge": [
+    1449,
+    144
+   ],
+   "Tyrant's Scorn": [
+    1502,
+    185
+   ],
+   "Unexpected Windfall": [
+    1632,
+    219
+   ],
+   "Unholy Heat": [
+    1444,
+    177
+   ],
+   "Vandalblast": [
+    1619,
+    182
+   ],
+   "Xander's Lounge": [
+    1810,
+    239
+   ],
+   "Young Pyromancer": [
+    1473,
+    163
+   ]
+  },
+  "deck": "Kess",
+  "games": 16370,
+  "lands": {
+   "1": [
+    20,
+    2
+   ],
+   "2": [
+    807,
+    81
+   ],
+   "3": [
+    3210,
+    380
+   ],
+   "4": [
+    5102,
+    623
+   ],
+   "5": [
+    4519,
+    565
+   ],
+   "6": [
+    2151,
+    287
+   ],
+   "7": [
+    494,
+    72
+   ],
+   "8": [
+    67,
+    8
+   ]
+  },
+  "pace": {
+   "games": 16370,
+   "stalls": 1499,
+   "won": [
+    2,
+    21,
+    78,
+    245,
+    493,
+    761,
+    1037,
+    1269,
+    1438,
+    1562
+   ]
+  },
+  "runs": [
+   "ranking_of_kess_4:45689169570"
+  ],
+  "wins": 2018
+ },
  "e0032c5c7c705f0bd28f": {
   "card": "",
   "deck": "EdgarMarkov_B4",
