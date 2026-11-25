@@ -1525,6 +1525,15 @@
   ],
   "wins": 6887
  },
+ "3cd43ed406019992540c": {
+  "card": "Chimil, the Inner Sun",
+  "deck": "Ironman",
+  "games": 9,
+  "runs": [
+   "tail_check_of_ironman:45655106926"
+  ],
+  "wins": 0
+ },
  "3dc13a692489c9183e06": {
   "card": "@audit",
   "cards": {
@@ -2389,6 +2398,15 @@
    "pilot_test_siskofinal_default_vs_hard_ai:45131319814"
   ],
   "wins": 1218
+ },
+ "4ce45401016aa4da00e0": {
+  "card": "Esoteric Duplicator",
+  "deck": "Ironman",
+  "games": 7,
+  "runs": [
+   "tail_check_of_ironman:45655106926"
+  ],
+  "wins": 0
  },
  "4e497ac4b88d3239e29a": {
   "card": "Assassin's Trophy",
@@ -3778,6 +3796,15 @@
   ],
   "wins": 1258
  },
+ "8427bf1f73c2da98675c": {
+  "card": "Cryogen Relic",
+  "deck": "Ironman",
+  "games": 5,
+  "runs": [
+   "tail_check_of_ironman:45655106926"
+  ],
+  "wins": 0
+ },
  "856f89b31bed2d8a47af": {
   "card": "@usage",
   "deck": "Ironman",
@@ -4370,6 +4397,15 @@
   ],
   "wins": 438
  },
+ "b1a6d394d1f423021c40": {
+  "card": "Fellwar Stone",
+  "deck": "Ironman",
+  "games": 4,
+  "runs": [
+   "tail_check_of_ironman:45655106926"
+  ],
+  "wins": 0
+ },
  "b2db4938f3e0bf73602e": {
   "card": "",
   "deck": "TheUrDragon_B2",
@@ -4687,6 +4723,15 @@
    "imperial_recruiter_for_pact_of_negation:45058426145"
   ],
   "wins": 1109
+ },
+ "cbaee386ea21bc6ebd01": {
+  "card": "Fiery Islet",
+  "deck": "Ironman",
+  "games": 7,
+  "runs": [
+   "tail_check_of_ironman:45655106926"
+  ],
+  "wins": 0
  },
  "cdaccf726c353099749f": {
   "card": "@usage",
@@ -5126,107 +5171,107 @@
   "card": "@audit",
   "cards": {
    "Abrade": [
-    3917,
+    3919,
     426
    ],
    "Academy Manufactor": [
-    3980,
+    3985,
     401
    ],
    "An Offer You Can't Refuse": [
-    4723,
+    4725,
     455
    ],
    "Arc Reactor": [
-    3769,
+    3770,
     354
    ],
    "Arcane Signet": [
-    3848,
+    3850,
     370
    ],
    "Arcbound Ravager": [
-    4042,
+    4047,
     391
    ],
    "Archway of Innovation": [
-    5569,
+    5571,
     600
    ],
    "Arid Mesa": [
-    5621,
+    5626,
     614
    ],
    "Armor Wars": [
-    4038,
+    4039,
     390
    ],
    "Blasphemous Act": [
-    3758,
+    3759,
     399
    ],
    "Bloodstained Mire": [
-    5552,
+    5553,
     575
    ],
    "Cascade Bluffs": [
-    5573,
+    5575,
     547
    ],
    "Chimil, the Inner Sun": [
-    3890,
+    3891,
     384
    ],
    "Command Tower": [
-    5438,
+    5440,
     581
    ],
    "Cosmic Cube": [
-    3770,
+    3771,
     397
    ],
    "Counterspell": [
-    4751,
+    4754,
     457
    ],
    "Cryogen Relic": [
-    3998,
+    4000,
     361
    ],
    "Cyberdrive Awakener": [
-    3777,
+    3778,
     404
    ],
    "Disruptor Flute": [
-    3983,
+    3986,
     361
    ],
    "Esoteric Duplicator": [
-    4539,
+    4542,
     408
    ],
    "Exotic Orchard": [
-    5581,
+    5586,
     587
    ],
    "Fellwar Stone": [
-    3939,
+    3941,
     354
    ],
    "Fiery Islet": [
-    5754,
+    5758,
     521
    ],
    "Force of Negation": [
-    4615,
+    4620,
     444
    ],
    "Futurist Forge": [
-    4222,
+    4228,
     388
    ],
    "Idol of Oblivion": [
-    4595,
+    4599,
     428
    ],
    "Invert Polarity": [
@@ -5234,87 +5279,87 @@
     428
    ],
    "Iron Lad, Diverging Destiny": [
-    3929,
+    3931,
     401
    ],
    "Iron Lad, Young Avenger": [
-    3982,
+    3986,
     391
    ],
    "Iron Man Armor": [
-    3961,
+    3964,
     386
    ],
    "Iron Man, Bleeding Edge": [
-    3886,
+    3888,
     444
    ],
    "Iron Man, Master of Machines": [
-    3896,
+    3902,
     446
    ],
    "Iron Suitcase": [
-    3987,
+    3988,
     419
    ],
    "Island": [
-    31332,
+    31351,
     3179
    ],
    "Izzet Signet": [
-    3959,
+    3964,
     408
    ],
    "Junk Diver": [
-    3946,
+    3948,
     383
    ],
    "Kappa Cannoneer": [
-    3929,
+    3930,
     513
    ],
    "Krang, Utrom Warlord": [
-    3793,
+    3795,
     483
    ],
    "Lightning Greaves": [
-    3803,
+    3805,
     363
    ],
    "Liquimetal Torque": [
-    3984,
+    3987,
     360
    ],
    "Lost Jitte": [
-    4028,
+    4032,
     371
    ],
    "Mistrise Village": [
-    5662,
+    5668,
     585
    ],
    "Misty Rainforest": [
-    5685,
+    5690,
     567
    ],
    "Mj\u00f6lnir, Hammer of Thor": [
-    4155,
+    4158,
     419
    ],
    "Molten Duplication": [
-    3812,
+    3819,
     357
    ],
    "Moonlit Meditation": [
-    3995,
+    3997,
     381
    ],
    "Mountain": [
-    19085,
+    19096,
     1959
    ],
    "Mox Amber": [
-    4042,
+    4046,
     437
    ],
    "Nettlecyst": [
@@ -5322,143 +5367,143 @@
     430
    ],
    "Pact of Negation": [
-    4225,
+    4228,
     390
    ],
    "Pinnacle Emissary": [
-    3824,
+    3827,
     369
    ],
    "Polluted Delta": [
-    5593,
+    5597,
     558
    ],
    "Pongify": [
-    4663,
+    4665,
     495
    ],
    "Power Depot": [
-    5719,
+    5725,
     595
    ],
    "Rescue, Pepper Potts": [
-    4020,
+    4022,
     363
    ],
    "Rhystic Study": [
-    3951,
+    3955,
     376
    ],
    "Ring of the Lucii": [
-    4000,
+    4002,
     370
    ],
    "Rise and Shine": [
-    3949,
+    3952,
     387
    ],
    "Roaming Throne": [
-    3591,
+    3595,
     331
    ],
    "S.H.I.E.L.D. Helicarrier": [
-    3549,
+    3554,
     321
    ],
    "Saheeli, the Sun's Brilliance": [
-    3923,
+    3929,
     370
    ],
    "Sai, Master Thopterist": [
-    4637,
+    4638,
     483
    ],
    "Scalding Tarn": [
-    5547,
+    5550,
     522
    ],
    "Scour for Scrap": [
-    3936,
+    3937,
     444
    ],
    "Seat of the Synod": [
-    5752,
+    5758,
     593
    ],
    "Secluded Starforge": [
-    5612,
+    5615,
     516
    ],
    "Sensei's Divining Top": [
-    4692,
+    4696,
     493
    ],
    "Shivan Reef": [
-    5570,
+    5572,
     547
    ],
    "Shuri, Wakandan Inventor": [
-    4014,
+    4015,
     408
    ],
    "Skullclamp": [
-    4003,
+    4007,
     369
    ],
    "Sol Ring": [
-    3922,
+    3924,
     449
    ],
    "Solemn Simulacrum": [
-    4110,
+    4111,
     404
    ],
    "Soul-Guide Lantern": [
-    4639,
+    4643,
     450
    ],
    "Spirebluff Canal": [
-    5468,
+    5469,
     574
    ],
    "Steam Vents": [
-    5675,
+    5676,
     613
    ],
    "Stormcarved Coast": [
-    5626,
+    5628,
     537
    ],
    "Sulfur Falls": [
-    5747,
+    5753,
     570
    ],
    "Talisman of Creativity": [
-    3632,
+    3634,
     326
    ],
    "Temple of Epiphany": [
-    5690,
+    5694,
     624
    ],
    "The Reaver Cleaver": [
-    4019,
+    4021,
     402
    ],
    "The Ten Rings": [
-    3875,
+    3878,
     397
    ],
    "Thought Vessel": [
-    3998,
+    4001,
     418
    ],
    "Three Steps Ahead": [
-    4000,
+    4004,
     365
    ],
    "Tolaria West": [
-    5525,
+    5530,
     566
    ],
    "Tony Stark": [
@@ -5466,24 +5511,44 @@
     434
    ],
    "Urza's Saga": [
-    3844,
+    3846,
     359
    ],
    "Uthros, Titanic Godcore": [
-    5656,
+    5661,
     590
    ],
    "Weapons Manufacturing": [
-    3897,
+    3901,
     378
    ],
    "Wooded Foothills": [
-    5548,
+    5550,
     544
    ]
   },
   "deck": "Ironman",
   "excl": {
+   "Chimil, the Inner Sun": [
+    9,
+    0
+   ],
+   "Cryogen Relic": [
+    5,
+    0
+   ],
+   "Esoteric Duplicator": [
+    7,
+    0
+   ],
+   "Fellwar Stone": [
+    4,
+    0
+   ],
+   "Fiery Islet": [
+    7,
+    0
+   ],
    "Futurist Forge": [
     4302,
     445
@@ -5513,7 +5578,7 @@
     428
    ]
   },
-  "games": 47129,
+  "games": 47161,
   "lands": {
    "0": [
     4,
@@ -5576,7 +5641,12 @@
    "tail_check_of_ironman_lookahead:45488510483:side",
    "tail_check_of_ironman_lookahead:45488510483:side",
    "tail_check_of_ironman_lookahead:45488510483:side",
-   "tail_check_of_ironman_lookahead:45488510483:side"
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman:45655106926:side",
+   "tail_check_of_ironman:45655106926:side",
+   "tail_check_of_ironman:45655106926:side",
+   "tail_check_of_ironman:45655106926:side",
+   "tail_check_of_ironman:45655106926:side"
   ],
   "wins": 4737
  },
