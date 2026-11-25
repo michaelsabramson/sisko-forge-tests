@@ -1,30 +1,25 @@
 {
-  "name": "seven_of_nine_for_sylvan_library_2",
-  "title": "Seven of Nine for Sylvan Library",
+  "name": "pilot_test_lookahead_with_a_6_minute_game_limit",
+  "title": "Pilot test: lookahead with a 6-minute game limit",
   "arms": [
     {
       "deck": "SiskoFinal",
-      "card": "Sylvan Library",
-      "mc": "max",
-      "key": "06324fc4d74636e3bbbd",
+      "card": "",
+      "profile": "Default",
+      "label": "Default AI",
+      "key": "3c85fcb629d1978f55e4",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 2957,
       "cached": false
     },
     {
-      "deck": "SiskoFinal__SevenOfNine__for__SylvanLibrary",
-      "card": "Seven of Nine",
-      "swap": {
-        "out": [
-          "Sylvan Library"
-        ],
-        "in": [
-          "Seven of Nine"
-        ]
-      },
+      "deck": "SiskoFinal",
+      "card": "",
+      "profile": "Default",
       "mc": "max",
-      "key": "fb32b649a82078487082",
+      "label": "Default AI + lookahead (desktop)",
+      "key": "5422bc55eedbae33ca9c",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 2956,
@@ -40,9 +35,9 @@
   "band": 0,
   "minutes": 41,
   "shards": 67,
-  "mode": "swap",
-  "queued_from": "20261125T163750-seven-of-nine-for-sylvan-library.json",
-  "started": "2026-11-25T16:38:00Z",
+  "mode": "pilot",
+  "queued_from": "20261125-165000-pilot-lookahead-longer-limit.json",
+  "started": "2026-11-25T16:49:57Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -50,6 +45,7 @@
     "Edgar",
     "Meren"
   ],
+  "game_timeout": 360,
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
   "precision": 2.0,
@@ -324,8 +320,8 @@
     1
   ],
   "gpm": [
-    0.807,
-    0.836
+    1.259,
+    0.805
   ],
   "quota": [
     23,
@@ -347,5 +343,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185425600
+  "seedbase": 185427800
 }
