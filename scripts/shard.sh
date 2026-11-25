@@ -22,6 +22,15 @@ if [ "$(jq -r '.earlystop // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-
       sleep 60
     done ) &
 fi
+if [ -n "${MAIN_RUN:-}" ]; then
+  # helper runners (another account): a cancelled or finished main run doesn't reach them, so check it every 2 minutes
+  # and quit when it's over (the main run's results no longer need these games)
+  ( sleep 120; while pgrep -f "Run forge" >/dev/null; do
+      st=$(curl -fsS -H "Authorization: Bearer ${GH_TOKEN:-}" "https://api.github.com/repos/${MAIN_REPO}/actions/runs/${MAIN_RUN}" 2>/dev/null | jq -r '.status // empty')
+      [ "$st" = "completed" ] && { touch out/STOP; pkill -f "Run forge"; echo "$(date -u +%T) main run over: stopped" >> out/claims.log; break; }
+      sleep 120
+    done ) &
+fi
 PLAN=""
 if [ "$(jq -r '.adaptive // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
   # adaptive Rank: the run's early reads publish plans/<run>.json (which cards to force, how often); keep a local copy
