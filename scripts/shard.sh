@@ -67,7 +67,7 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>/dev/null &
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
 done
 touch out/started
 wait
