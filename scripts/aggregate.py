@@ -5,6 +5,7 @@ import cache
 PEEK = bool(os.environ.get("PEEK"))
 req = json.load(open('tests/request.json')); arms = req['arms']
 new = [[0, 0] for _ in arms]   # wins, games played in this run
+stl = [[0, 0] for _ in arms]   # this run: games cut off at the time limit (stalls), clean wins (won with nobody else alive)
 speed = [[0, 0] for _ in arms]   # games, total game milliseconds (per process, so games per process-minute)
 usage_rows = None
 usage = {}                     # usage runs: card -> how the AI handled it
@@ -44,6 +45,8 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
                 pg = pace.game(l, me)
                 if pg: paced.append(pg)
             new[i][1] += 1; new[i][0] += won
+            pg2 = pace.game(l, me)
+            if pg2: stl[i][0] += pg2[2]; stl[i][1] += pg2[0]
             if top is not None and arms[i]['card'] != '@audit':
                 sd = side[i]; sd[1] += 1; sd[2] += won
                 for c in top: e = sd[0].setdefault(c, [0, 0]); e[0] += 1; e[1] += won
@@ -215,6 +218,7 @@ if req.get('mode') == 'audit' and req.get('adaptive') and audit:
 data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 'swap'), "run_id": os.environ.get('GITHUB_RUN_ID'),
         "finished": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
         "arms": [{"deck": a['deck'], "card": a['card'], "games": res[i][1], "wins": res[i][0],
+                  **({"run_games": new[i][1], "run_stalls": stl[i][0], "run_clean_wins": stl[i][1]} if new[i][1] else {}),
                   "reused": a.get('prior_games', 0), **({"profile": a['profile']} if a.get('profile') else {}), **({"mc": a['mc']} if a.get('mc') else {}), **({"label": a['label']} if a.get('label') else {}),
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"opp_profile": req['opp_profile']} if req.get('opp_profile') else {}), **({"hidden": True} if req.get('hidden') else {}), **({"stopped": True} if STOPPED else {}),
