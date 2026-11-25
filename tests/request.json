@@ -10,7 +10,7 @@
       "key": "b056bf769fa9125be7c8",
       "prior_games": 19164,
       "prior_wins": 4516,
-      "target_new": 34227,
+      "target_new": 26329,
       "cached": false
     }
   ],
@@ -20,7 +20,7 @@
   "shards": 61,
   "mode": "audit",
   "queued_from": "20261125-074500-rank-siskofinal-adaptive.json",
-  "started": "2026-11-25T07:24:34Z",
+  "started": "2026-11-25T07:36:45Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -32,7 +32,7 @@
   "hidden": true,
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
-  "precision": 1.2,
+  "precision": 1.3,
   "procs": [
     0,
     0,
@@ -283,19 +283,19 @@
     0.815
   ],
   "quota": [
-    141
+    108
   ],
   "earlystop": false,
   "first": [
-    84
+    64
   ],
   "batch": [
-    113
+    88
   ],
   "batches": [
     122
   ],
-  "capped": true,
+  "capped": false,
   "allcached": false,
-  "seedbase": 185314800
+  "seedbase": 185317200
 }
