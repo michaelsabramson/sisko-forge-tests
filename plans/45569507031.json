@@ -1,0 +1,81 @@
+{
+ "targets": [
+  "Collective Defiance",
+  "Ertai Resurrected",
+  "Test of Conviction",
+  "Make It So",
+  "Esper Charm",
+  "Rapid Hybridization"
+ ],
+ "ref": "Jeska's Will",
+ "margin": 3.12,
+ "tau": 2.08,
+ "p_outlier": {
+  "Collective Defiance": 0.41,
+  "Ertai Resurrected": 0.33,
+  "Test of Conviction": 0.32,
+  "Make It So": 0.27,
+  "Esper Charm": 0.13,
+  "Rapid Hybridization": 0.11
+ },
+ "weights": {
+  "@natural": 0.25,
+  "Jeska's Will": 0.2174,
+  "Collective Defiance": 0.0888,
+  "Ertai Resurrected": 0.0888,
+  "Test of Conviction": 0.0888,
+  "Make It So": 0.0888,
+  "Esper Charm": 0.0888,
+  "Rapid Hybridization": 0.0888
+ },
+ "verdicts": [
+  {
+   "card": "Collective Defiance",
+   "games": 0,
+   "gap": 0.0,
+   "ci": 138.59,
+   "verdict": "unclear",
+   "p_outlier": 0.41
+  },
+  {
+   "card": "Ertai Resurrected",
+   "games": 0,
+   "gap": 0.0,
+   "ci": 138.59,
+   "verdict": "unclear",
+   "p_outlier": 0.33
+  },
+  {
+   "card": "Test of Conviction",
+   "games": 0,
+   "gap": 0.0,
+   "ci": 138.59,
+   "verdict": "unclear",
+   "p_outlier": 0.32
+  },
+  {
+   "card": "Make It So",
+   "games": 0,
+   "gap": 0.0,
+   "ci": 138.59,
+   "verdict": "unclear",
+   "p_outlier": 0.27
+  },
+  {
+   "card": "Esper Charm",
+   "games": 0,
+   "gap": 0.0,
+   "ci": 138.59,
+   "verdict": "unclear",
+   "p_outlier": 0.13
+  },
+  {
+   "card": "Rapid Hybridization",
+   "games": 0,
+   "gap": 0.0,
+   "ci": 138.59,
+   "verdict": "unclear",
+   "p_outlier": 0.11
+  }
+ ]
+}
