@@ -838,7 +838,7 @@ async function drawAudit(body, name) {
   // an early read is dropped once its run's final result exists
   const audits = S.results.filter(r => r.audit?.deck === name && !(r.peek && finals.has(r.name.replace(/_peek$/, '')))).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
   const a = audits[0]; const act = activeFor(name).filter(x => /ranking|audit/i.test(x.label));
-  const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~2 h'], [1.5, 'Standard ±1.5 · ~3.5 h']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new ranking</button></div>`;
+  const runBtn = `<div class="row"><select id="aprec" style="width:auto">${[[2.0, 'Quick ±2.0 · ~1½ h'], [1.2, 'Standard ±1.2 · ~4 h'], [1.0, 'Thorough ±1.0 · ~5½ h']].map(([v, l]) => `<option value="${v}"${v === 1.2 ? ' selected' : ''}>${l}</option>`).join('')}</select><button class="primary" id="arun">Run a new ranking</button></div>`;
   let h = act.length ? `<div class="note" style="margin-bottom:12px">Ranking ${act.some(x => x.state === 'Testing now') ? 'running' : 'queued'} · <a href="#runs">Runs</a></div>` : '';
   if (!a) {
     body.innerHTML = h + `<div class="card stack"><h2>Find this deck's weakest slots</h2>
