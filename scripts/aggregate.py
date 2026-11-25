@@ -255,7 +255,7 @@ if not PEEK:
             tal, g, w = side[i]
             if not g or a['card'] == '@audit': continue
             rk = cache.full_key({"deck": a['deck'], "card": "@audit"}, opps_l, req.get('band', 0), eng,
-                                a.get('profile') or req.get('profile'), req.get('opp_profile'), a.get('mc') or req.get('mc'), req.get('opp_mc'))
+                                a.get('profile') or req.get('profile'), req.get('opp_profile'), a.get('mc') or req.get('mc'), req.get('opp_mc'), req.get('game_timeout'))
             e = c.setdefault(rk, {"deck": a['deck'], "card": "@audit", "games": 0, "wins": 0, "runs": []})
             e["games"] += g; e["wins"] += w; e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}:side")
             ct = e.setdefault("cards", {}); forced = a['card'] if req.get('mode', 'swap') in ('swap', 'tail') else ''

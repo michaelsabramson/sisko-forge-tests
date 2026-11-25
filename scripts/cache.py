@@ -49,11 +49,13 @@ def arm_key(arm, opponents, band, engine=None, profile=None, opp_profile=None):
     return _h(blob.encode())[:20]
 
 
-def full_key(arm, opponents, band, engine=None, profile=None, opp_profile=None, mc=None, opp_mc=None):
-    """arm_key plus Forge's lookahead switches (kept out of arm_key so older keys stay valid)."""
+def full_key(arm, opponents, band, engine=None, profile=None, opp_profile=None, mc=None, opp_mc=None, game_timeout=None):
+    """arm_key plus Forge's lookahead switches and the game time limit (kept out of arm_key so older keys stay valid)."""
     k = arm_key(arm, opponents, band, engine, profile, opp_profile)
     if (mc and mc != "off") or (opp_mc and opp_mc != "off"):
         k = _h((k + "|mc=" + (mc or "off") + "|opp_mc=" + (opp_mc or "off")).encode())[:20]
+    if game_timeout and int(game_timeout) != 120:
+        k = _h((k + "|t=" + str(int(game_timeout))).encode())[:20]
     return k
 
 

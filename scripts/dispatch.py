@@ -58,7 +58,8 @@ STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 
 
 DEFAULT_PROFILE = "Default"   # Hard without the lookahead is Default plus defending at 5 life; with it, no gain was measured
-DEFAULT_MC = "max"            # Forge's lookahead search (desktop budgets) for the tested lists, since 2026-11-25
+DEFAULT_MC = "off"            # lookahead off again (2026-11-25): under the 120 s game limit it doubled stalls and its
+                              # "gain" came from stall credits; being re-tested with a longer limit
 
 
 def speed_profile(a, req):
@@ -268,6 +269,8 @@ def main():
         req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
     if r.get("mode") == "tail":
         req["tail"] = {k: r[k] for k in ("margin", "tau", "p_outlier", "rank") if k in r}
+    if r.get("game_timeout"):
+        req["game_timeout"] = int(r["game_timeout"])   # seconds before a game is cut off (default 120)
     if r.get("adaptive") and r.get("mode") == "audit":   # off by default (2026-11-25): more games beat targeted ones
         req["adaptive"] = True   # one-job Rank: targeted games for its uncertain cards in the second half (aggregate.py)
     if r.get("hidden"):
@@ -294,7 +297,7 @@ def main():
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
         a["key"] = cache.full_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"),
-                                  a.get("mc") or req.get("mc"), req.get("opp_mc"))
+                                  a.get("mc") or req.get("mc"), req.get("opp_mc"), r.get("game_timeout"))
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4
