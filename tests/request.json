@@ -1,5 +1,5 @@
 {
-  "name": "pilot_test_lookahead_with_a_6_minute_game_limit",
+  "name": "pilot_test_lookahead_with_a_6_minute_game_limit_2",
   "title": "Pilot test: lookahead with a 6-minute game limit",
   "arms": [
     {
@@ -8,9 +8,9 @@
       "profile": "Default",
       "label": "Default AI",
       "key": "3c85fcb629d1978f55e4",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 2957,
+      "prior_games": 2960,
+      "prior_wins": 661,
+      "target_new": 2963,
       "cached": false
     },
     {
@@ -20,9 +20,9 @@
       "mc": "max",
       "label": "Default AI + lookahead (desktop)",
       "key": "5422bc55eedbae33ca9c",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 2956,
+      "prior_games": 2960,
+      "prior_wins": 682,
+      "target_new": 3095,
       "cached": false
     }
   ],
@@ -33,11 +33,11 @@
     ]
   ],
   "band": 0,
-  "minutes": 41,
+  "minutes": 42,
   "shards": 67,
   "mode": "pilot",
-  "queued_from": "20261125-165000-pilot-lookahead-longer-limit.json",
-  "started": "2026-11-25T16:49:57Z",
+  "queued_from": "20261125-171900-pilot-lookahead-longer-limit-topup.json",
+  "started": "2026-11-25T17:26:22Z",
   "opponents": [
     "Atraxa",
     "Prossh",
@@ -48,7 +48,7 @@
   "game_timeout": 360,
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
-  "precision": 2.0,
+  "precision": 1.5,
   "procs": [
     0,
     1,
@@ -312,16 +312,16 @@
     1,
     0,
     1,
-    0,
     1,
-    0,
     1,
-    0,
+    1,
+    1,
+    1,
     1
   ],
   "gpm": [
-    1.259,
-    0.805
+    1.235,
+    0.804
   ],
   "quota": [
     23,
@@ -335,13 +335,13 @@
   ],
   "batch": [
     11,
-    11
+    12
   ],
   "batches": [
-    196,
-    196
+    198,
+    190
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185427800
+  "seedbase": 185435200
 }
