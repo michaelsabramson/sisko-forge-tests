@@ -1,0 +1,15 @@
+{
+  "mode": "audit",
+  "base": "Chatterfang",
+  "name": "Ranking of Chatterfang",
+  "precision": 2,
+  "shards": 38,
+  "opponents": [
+    "Atraxa",
+    "Prossh",
+    "UrDragon",
+    "Edgar",
+    "Meren"
+  ],
+  "submitted": "2026-11-25T16:50:55.364Z"
+}
