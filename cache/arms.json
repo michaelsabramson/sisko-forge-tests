@@ -980,6 +980,15 @@
   ],
   "wins": 1380
  },
+ "1f1b7e55738efccbe56a": {
+  "card": "Talisman of Creativity",
+  "deck": "Ironman",
+  "games": 4308,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 428
+ },
  "204917c963529d057136": {
   "card": "Shattering Spree",
   "deck": "SiskoFinal__ShatteringSpree__for__PactOfNegation",
@@ -1026,6 +1035,15 @@
   ],
   "wins": 957
  },
+ "2b72c6ec7ee1f32b0dc0": {
+  "card": "S.H.I.E.L.D. Helicarrier",
+  "deck": "Ironman",
+  "games": 4385,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 326
+ },
  "30ac7c8515a6b078ba6f": {
   "card": "",
   "deck": "Breya_B3",
@@ -1053,6 +1071,15 @@
   ],
   "wins": 19
  },
+ "3203c5d39e46417724d3": {
+  "card": "Mj\u00f6lnir, Hammer of Thor",
+  "deck": "Ironman",
+  "games": 4539,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 450
+ },
  "32434645260cb19f18f0": {
   "card": "Delighted Halfling",
   "deck": "SiskoFinal__DelightedHalfling__for__Counterspell",
@@ -1061,6 +1088,15 @@
    "delighted_halfling_for_counterspell:45070976368"
   ],
   "wins": 1060
+ },
+ "361e47f6e3c1d7859d42": {
+  "card": "Pact of Negation",
+  "deck": "Ironman",
+  "games": 4549,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 447
  },
  "371d3b48ef245723af07": {
   "card": "",
@@ -1071,6 +1107,15 @@
    "pilot_test_norinb3_default_vs_hard_ai:45206535295"
   ],
   "wins": 1027
+ },
+ "3b9973b05eb0869617dc": {
+  "card": "Pinnacle Emissary",
+  "deck": "Ironman",
+  "games": 4150,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 420
  },
  "3bedd8d212673fa093d2": {
   "card": "@audit",
@@ -4285,6 +4330,15 @@
   ],
   "wins": 425
  },
+ "b19a66d98320ef20f43f": {
+  "card": "Roaming Throne",
+  "deck": "Ironman",
+  "games": 4240,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 438
+ },
  "b2db4938f3e0bf73602e": {
   "card": "",
   "deck": "TheUrDragon_B2",
@@ -5041,364 +5095,394 @@
   "card": "@audit",
   "cards": {
    "Abrade": [
-    1393,
-    171
+    3917,
+    426
    ],
    "Academy Manufactor": [
-    1416,
-    165
+    3980,
+    401
    ],
    "An Offer You Can't Refuse": [
-    1661,
-    176
+    4723,
+    455
    ],
    "Arc Reactor": [
-    1347,
-    136
+    3769,
+    354
    ],
    "Arcane Signet": [
-    1317,
-    129
+    3848,
+    370
    ],
    "Arcbound Ravager": [
-    1399,
-    132
+    4042,
+    391
    ],
    "Archway of Innovation": [
-    1974,
-    232
+    5569,
+    600
    ],
    "Arid Mesa": [
-    2041,
-    239
+    5621,
+    614
    ],
    "Armor Wars": [
-    1433,
-    158
+    4038,
+    390
    ],
    "Blasphemous Act": [
-    1315,
-    146
+    3758,
+    399
    ],
    "Bloodstained Mire": [
-    1995,
-    220
+    5552,
+    575
    ],
    "Cascade Bluffs": [
-    2006,
-    223
+    5573,
+    547
    ],
    "Chimil, the Inner Sun": [
-    1397,
-    140
+    3890,
+    384
    ],
    "Command Tower": [
-    1936,
-    217
+    5438,
+    581
    ],
    "Cosmic Cube": [
-    1342,
-    148
+    3770,
+    397
    ],
    "Counterspell": [
-    1677,
-    186
+    4751,
+    457
    ],
    "Cryogen Relic": [
-    1411,
-    137
+    3998,
+    361
    ],
    "Cyberdrive Awakener": [
-    1343,
-    161
+    3777,
+    404
    ],
    "Disruptor Flute": [
-    1413,
-    159
+    3983,
+    361
    ],
    "Esoteric Duplicator": [
-    1612,
-    154
+    4539,
+    408
    ],
    "Exotic Orchard": [
-    1996,
-    260
+    5581,
+    587
    ],
    "Fellwar Stone": [
-    1400,
-    138
+    3939,
+    354
    ],
    "Fiery Islet": [
-    2046,
-    211
+    5754,
+    521
    ],
    "Force of Negation": [
-    1613,
-    161
+    4615,
+    444
    ],
    "Futurist Forge": [
-    1589,
-    143
+    4222,
+    388
    ],
    "Idol of Oblivion": [
-    1629,
-    156
+    4595,
+    428
    ],
    "Invert Polarity": [
-    1423,
-    167
+    3952,
+    428
    ],
    "Iron Lad, Diverging Destiny": [
-    1365,
-    143
+    3929,
+    401
    ],
    "Iron Lad, Young Avenger": [
-    1392,
-    140
+    3982,
+    391
    ],
    "Iron Man Armor": [
-    1411,
-    151
+    3961,
+    386
    ],
    "Iron Man, Bleeding Edge": [
-    1366,
-    155
+    3886,
+    444
    ],
    "Iron Man, Master of Machines": [
-    1368,
-    164
+    3896,
+    446
    ],
    "Iron Suitcase": [
-    1409,
-    156
+    3987,
+    419
    ],
    "Island": [
-    10964,
-    1195
+    31332,
+    3179
    ],
    "Izzet Signet": [
-    1366,
-    154
+    3959,
+    408
    ],
    "Junk Diver": [
-    1332,
-    144
+    3946,
+    383
    ],
    "Kappa Cannoneer": [
-    1426,
-    218
+    3929,
+    513
    ],
    "Krang, Utrom Warlord": [
-    1331,
-    179
+    3793,
+    483
    ],
    "Lightning Greaves": [
-    1327,
-    122
+    3803,
+    363
    ],
    "Liquimetal Torque": [
-    1338,
-    145
+    3984,
+    360
    ],
    "Lost Jitte": [
-    1442,
-    142
+    4028,
+    371
    ],
    "Mistrise Village": [
-    2023,
-    219
+    5662,
+    585
    ],
    "Misty Rainforest": [
-    2019,
-    214
+    5685,
+    567
    ],
    "Mj\u00f6lnir, Hammer of Thor": [
-    1636,
-    173
+    4155,
+    419
    ],
    "Molten Duplication": [
-    1384,
-    132
+    3812,
+    357
    ],
    "Moonlit Meditation": [
-    1420,
-    136
+    3995,
+    381
    ],
    "Mountain": [
-    6775,
-    760
+    19085,
+    1959
    ],
    "Mox Amber": [
-    1473,
-    170
+    4042,
+    437
    ],
    "Nettlecyst": [
-    1364,
-    164
+    3992,
+    430
    ],
    "Pact of Negation": [
-    1661,
-    151
+    4225,
+    390
    ],
    "Pinnacle Emissary": [
-    1534,
-    139
+    3824,
+    369
    ],
    "Polluted Delta": [
-    1991,
-    198
+    5593,
+    558
    ],
    "Pongify": [
-    1659,
-    179
+    4663,
+    495
    ],
    "Power Depot": [
-    1987,
-    199
+    5719,
+    595
    ],
    "Rescue, Pepper Potts": [
-    1468,
-    141
+    4020,
+    363
    ],
    "Rhystic Study": [
-    1434,
-    151
+    3951,
+    376
    ],
    "Ring of the Lucii": [
-    1450,
-    150
+    4000,
+    370
    ],
    "Rise and Shine": [
-    1423,
-    149
+    3949,
+    387
    ],
    "Roaming Throne": [
-    1377,
-    120
+    3591,
+    331
    ],
    "S.H.I.E.L.D. Helicarrier": [
-    1373,
-    119
+    3549,
+    321
    ],
    "Saheeli, the Sun's Brilliance": [
-    1339,
-    139
+    3923,
+    370
    ],
    "Sai, Master Thopterist": [
-    1694,
-    166
+    4637,
+    483
    ],
    "Scalding Tarn": [
-    1920,
-    196
+    5547,
+    522
    ],
    "Scour for Scrap": [
-    1391,
-    182
+    3936,
+    444
    ],
    "Seat of the Synod": [
-    2115,
-    217
+    5752,
+    593
    ],
    "Secluded Starforge": [
-    2022,
-    195
+    5612,
+    516
    ],
    "Sensei's Divining Top": [
-    1682,
-    194
+    4692,
+    493
    ],
    "Shivan Reef": [
-    1912,
-    191
+    5570,
+    547
    ],
    "Shuri, Wakandan Inventor": [
-    1434,
-    160
+    4014,
+    408
    ],
    "Skullclamp": [
-    1407,
-    145
+    4003,
+    369
    ],
    "Sol Ring": [
-    1440,
-    206
+    3922,
+    449
    ],
    "Solemn Simulacrum": [
-    1426,
-    147
+    4110,
+    404
    ],
    "Soul-Guide Lantern": [
-    1656,
-    164
+    4639,
+    450
    ],
    "Spirebluff Canal": [
-    1889,
-    220
+    5468,
+    574
    ],
    "Steam Vents": [
-    1990,
-    217
+    5675,
+    613
    ],
    "Stormcarved Coast": [
-    1978,
-    209
+    5626,
+    537
    ],
    "Sulfur Falls": [
-    2033,
-    216
+    5747,
+    570
    ],
    "Talisman of Creativity": [
-    1427,
-    121
+    3632,
+    326
    ],
    "Temple of Epiphany": [
-    1992,
-    234
+    5690,
+    624
    ],
    "The Reaver Cleaver": [
-    1426,
-    146
+    4019,
+    402
    ],
    "The Ten Rings": [
-    1375,
-    146
+    3875,
+    397
    ],
    "Thought Vessel": [
-    1400,
-    153
+    3998,
+    418
    ],
    "Three Steps Ahead": [
-    1385,
-    137
+    4000,
+    365
    ],
    "Tolaria West": [
-    1961,
-    210
+    5525,
+    566
    ],
    "Tony Stark": [
-    1420,
-    167
+    3967,
+    434
    ],
    "Urza's Saga": [
-    1341,
-    125
+    3844,
+    359
    ],
    "Uthros, Titanic Godcore": [
-    2013,
-    205
+    5656,
+    590
    ],
    "Weapons Manufacturing": [
-    1367,
-    132
+    3897,
+    378
    ],
    "Wooded Foothills": [
-    1935,
-    195
+    5548,
+    544
    ]
   },
   "deck": "Ironman",
-  "games": 16656,
+  "excl": {
+   "Futurist Forge": [
+    4302,
+    445
+   ],
+   "Mj\u00f6lnir, Hammer of Thor": [
+    4539,
+    450
+   ],
+   "Pact of Negation": [
+    4549,
+    447
+   ],
+   "Pinnacle Emissary": [
+    4150,
+    420
+   ],
+   "Roaming Throne": [
+    4240,
+    438
+   ],
+   "S.H.I.E.L.D. Helicarrier": [
+    4385,
+    326
+   ],
+   "Talisman of Creativity": [
+    4308,
+    428
+   ]
+  },
+  "games": 47129,
   "lands": {
    "0": [
     4,
@@ -5454,9 +5538,25 @@
    ]
   },
   "runs": [
-   "rank_of_ironman_with_lookahead:45467154022"
+   "rank_of_ironman_with_lookahead:45467154022",
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman_lookahead:45488510483:side",
+   "tail_check_of_ironman_lookahead:45488510483:side"
   ],
-  "wins": 1783
+  "wins": 4737
+ },
+ "e4119faa0d0c684ef486": {
+  "card": "Futurist Forge",
+  "deck": "Ironman",
+  "games": 4302,
+  "runs": [
+   "tail_check_of_ironman_lookahead:45488510483"
+  ],
+  "wins": 445
  },
  "e8115078146a29ee460c": {
   "card": "",
