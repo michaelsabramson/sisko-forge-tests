@@ -285,8 +285,8 @@ function rankTiers(cards) {
 const tierCls = t => t === 'outlier' ? 'bad' : t === 'below' ? 'warn' : '';
 // adaptive Rank: verdicts from extra games where the card was forced into the opening hand vs a typical card
 const checkedOf = a => new Map((a?.audit?.targeted?.rows || []).map(r => [r.card, r]));
-const VERDICT = { outlier: ['bad', 'Confirmed weak'], weak: ['bad', 'Confirmed weak'], cleared: ['good', 'Cleared'], unclear: ['', 'Unclear'] };
-const vpill = r => r ? `<span class="pill ${VERDICT[r.verdict]?.[0] || ''}" title="Extra games with it forced into the opening hand: ${r.gap > 0 ? '+' : ''}${r.gap.toFixed(1)} ± ${r.ci.toFixed(1)} vs a typical card">${VERDICT[r.verdict]?.[1] || ''}</span>` : '';
+const VERDICT = { outlier: ['bad', 'Confirmed outlier'], weak: ['warn', 'Below typical'], cleared: ['', 'Not an outlier'], unclear: ['', 'Unclear'] };
+const vpill = r => r ? `<span class="pill ${VERDICT[r.verdict]?.[0] || ''}" title="Forced into the opening hand: ${r.gap > 0 ? '+' : ''}${r.gap.toFixed(1)} ± ${r.ci.toFixed(1)} vs a typical card">${VERDICT[r.verdict]?.[1] || ''}</span>` : '';
 // Mana balance (the user's method): compare how lands score in the Rank with how spells score. If an extra land in
 // the early cards is worth more than an extra spell on average, the deck is short on mana, and the reverse.
 // Ramp = permanents that make mana, or spells that fetch lands onto the battlefield; it is shown on its own.
@@ -874,8 +874,8 @@ async function drawAudit(body, name) {
     <p class="small muted" style="margin:4px 0 6px">${outliers.length ? '' : 'No outliers: nothing stands out from the deck\'s normal spread. '}Amber = below this deck's typical card; grey = within its normal spread or noise. Every deck has cards below zero, answers especially.</p>
     <table class="weak"><tbody>${weakest.map(weakRow).join('')}</tbody></table>
     ${chk.size ? `<div class="sect">Double-checked</div>
-    <p class="small muted" style="margin:4px 0 6px">The ranking's closest calls got extra games with the card forced into the opening hand, against a typical card from this deck (${esc(a.audit.targeted.ref.split(',')[0])}).</p>
-    <table class="weak"><tbody>${[...chk.values()].sort((x, y) => x.gap - y.gap).map(r => `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: r.card }))}'"><td data-card="${esc(r.card)}">${esc(r.card.split(',')[0])}</td><td class="r small muted num">${r.gap > 0 ? '+' : ''}${r.gap.toFixed(1)} ± ${r.ci.toFixed(1)}</td><td class="r">${vpill(r)}</td></tr>`).join('')}</tbody></table>` : ''}
+    <p class="small muted" style="margin:4px 0 6px">The ranking's closest calls got extra games with the card forced into the opening hand, against a typical card from this deck (${esc(a.audit.targeted.ref.split(',')[0])}). Their scores below and on the chart combine both kinds of games.</p>
+    <table class="weak"><tbody>${[...chk.values()].sort((x, y) => (x.diff ?? x.gap) - (y.diff ?? y.gap)).map(r => `<tr class="clickrow" onclick="location.hash='${esc(testLink({ label: r.card }))}'"><td data-card="${esc(r.card)}">${esc(r.card.split(',')[0])}</td><td class="r small muted num">${r.rank_diff != null ? `${r.rank_diff > 0 ? '+' : ''}${r.rank_diff.toFixed(1)} → ` : ''}<b>${(r.diff ?? r.gap) > 0 ? '+' : ''}${(r.diff ?? r.gap).toFixed(1)}</b></td><td class="r">${vpill(r)}</td></tr>`).join('')}</tbody></table>` : ''}
     <div class="sect">All spells <span style="text-transform:none;font-weight:500;letter-spacing:0">· tap one to test replacements</span></div>${forestSVG(spells.map(toGap), testLink)}
     <details><summary>Lands (${lands.length})</summary>${forestSVG(lands.map(toGap), testLink)}</details>
     <details class="info" style="margin-top:14px"><summary>Run a new ranking</summary><div style="margin-top:8px">${runBtn}</div></details>
