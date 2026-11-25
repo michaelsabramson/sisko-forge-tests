@@ -1,0 +1,9 @@
+{
+  "mode": "audit",
+  "base": "Ironman",
+  "name": "Ranking of Ironman",
+  "precision": 1.2,
+  "shards": 38,
+  "opponents": ["Atraxa", "Prossh", "UrDragon", "Edgar", "Meren"],
+  "submitted": "2026-11-25T16:34:00+00:00"
+}
