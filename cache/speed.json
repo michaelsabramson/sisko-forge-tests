@@ -27,10 +27,6 @@
  ],
  "*": [
   [
-   155,
-   9852148
-  ],
-  [
    147,
    9879937
   ],
@@ -49,6 +45,10 @@
   [
    2964,
    174100616
+  ],
+  [
+   2966,
+   156779872
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -363,14 +363,6 @@
  ],
  "*|Default+mc": [
   [
-   705,
-   58558860
-  ],
-  [
-   705,
-   58433762
-  ],
-  [
    2960,
    228350707
   ],
@@ -385,6 +377,14 @@
   [
    10693,
    1566130543
+  ],
+  [
+   2957,
+   176941652
+  ],
+  [
+   2957,
+   218361770
   ]
  ],
  "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard+mc": [
@@ -459,6 +459,22 @@
   [
    10693,
    1566130543
+  ]
+ ],
+ "SiskoFinal|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2966,
+   156779872
+  ]
+ ],
+ "SiskoFinal|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3|Default+mc": [
+  [
+   2957,
+   176941652
+  ],
+  [
+   2957,
+   218361770
   ]
  ]
 }
