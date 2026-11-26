@@ -363,10 +363,6 @@
  ],
  "*|Default+mc": [
   [
-   17144,
-   1497555966
-  ],
-  [
    3419,
    260370822
   ],
@@ -385,6 +381,10 @@
   [
    5034,
    435684002
+  ],
+  [
+   4704,
+   433227465
   ]
  ],
  "SiskoFinal|Atraxa,Prossh,UrDragon,Edgar,Meren|Hard+mc": [
@@ -509,6 +509,12 @@
   [
    16433,
    1812557908
+  ]
+ ],
+ "Ironman|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3|Default+mc": [
+  [
+   4704,
+   433227465
   ]
  ]
 }
