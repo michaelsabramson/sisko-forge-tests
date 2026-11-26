@@ -1,0 +1,23 @@
+name: slow-lines
+# Print the slow-game board summaries (SLOW lines) from an engine-bench run's saved game logs.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: 'engine-bench run id', required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bench-out-*
+          path: out
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - run: |
+          grep -h "^SLOW" out/*/g*_*.log | grep "t=900" | head -60
+          echo "== at 7.5 minutes"; grep -h "^SLOW" out/*/g*_*.log | grep "t=450" | head -40
+          echo "== counts"; grep -h "^SLOW" out/*/g*_*.log | awk '{print $2}' | sort | uniq -c
