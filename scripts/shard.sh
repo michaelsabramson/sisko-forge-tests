@@ -127,7 +127,9 @@ if [ "$(jq -r '.refill // true' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-}" ]
     sleep 15
   done
 fi
-wait
+# wait for the game processes only: the watchers in the background run until out/shard.done exists, so a plain
+# "wait" here would wait on them forever
+while pgrep -f "Run forge" >/dev/null; do sleep 10; done
 if ls out/rec_*.jfr >/dev/null 2>&1; then
   for r in out/rec_*.jfr; do "${JAVA_HOME:+$JAVA_HOME/bin/}jfr" print --events jdk.ExecutionSample "$r"; done | python3 scripts/jfrsummary.py > out/profile.txt 2>&1
 fi
