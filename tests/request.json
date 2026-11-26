@@ -1,14 +1,14 @@
 {
-  "name": "par_games_sisko_against_the_bracket_3_pool_played_to_the_end",
-  "title": "Par games: Sisko against the bracket 3 pool, played to the end",
+  "name": "par_games_iron_man_against_the_bracket_3_pool_played_to_the_end",
+  "title": "Par games: Iron Man against the bracket 3 pool, played to the end",
   "arms": [
     {
-      "deck": "SiskoFinal",
+      "deck": "Ironman",
       "card": "",
       "profile": "Default",
       "mc": "on",
       "label": "Default AI + lookahead",
-      "key": "12203c430b6946b51953",
+      "key": "126c9d445e4a30f089f9",
       "prior_games": 0,
       "prior_wins": 0,
       "cached": false
@@ -19,8 +19,8 @@
   "minutes": 30,
   "shards": 67,
   "mode": "pilot",
-  "queued_from": "20261126-1840000-par-siskofinal.json",
-  "started": "2026-11-26T18:32:07Z",
+  "queued_from": "20261126-1840001-par-ironman.json",
+  "started": "2026-11-26T19:08:59Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -40,5 +40,5 @@
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
   "allcached": false,
-  "seedbase": 185736400
+  "seedbase": 185743600
 }
