@@ -25,7 +25,7 @@ for f0 in sorted(glob.glob('out/**/b0_*.log', recursive=True)):
         for b in range(4):
             ms[b] += runs[b][g][3]
             if b: tot[b] += 1; same[b] += runs[b][g][:3] == runs[0][g][:3]
-names = {1: 'current engine again (control)', 2: 'candidate engine', 3: 'candidate engine, setting 2'}
+names = {1: 'process 1', 2: 'process 2', 3: 'process 3'}
 print(f"{n_common} games played by all four processes")
 for b in (1, 2, 3):
     print(f"- {names[b]}: same outcome as current engine in {same[b]}/{tot[b]} games ({100*same[b]/max(1,tot[b]):.1f}%); "
