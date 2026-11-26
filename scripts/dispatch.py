@@ -327,7 +327,7 @@ def main():
             # each process stops once it has played its share of its arm's games, so a run ends when the games are done;
             # the minutes are only a safety cap (generous, in case this run is slower than the measured speed)
             req["quota"] = [math.ceil(need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
-            # batches: ~60% of each arm's games are handed out up front (per process, no coordination needed); the rest is
+            # batches: ~30% of each arm's games are handed out up front (per process, no coordination needed); the rest is
             # split into small batches claimed while the run plays (scripts/claimbatch.sh), so fast runners take on more
             # and the run ends within a few minutes of its last game. At most ~2 claims per runner per arm keeps GitHub
             # API writes well inside its limits.
@@ -339,7 +339,9 @@ def main():
                 # about five looks per run: every 5 minutes for short runs, every 10 for the longest
                 est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, speed_profile(arms[i], req))) for i in todo)
                 req["checkpoint"] = int(min(10, max(5, math.ceil(est / 5))))
-            frac = 0.3 if req["earlystop"] else 0.6
+            # 30% up front for every run (2026-11-26: with 60%, a process that drew a few long games was still playing its
+            # up-front share an hour after most runners finished; Kess 6 ended shards between 74 and 136 minutes)
+            frac = 0.3
             first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
             rest = [max(0, need[i] - first[i] * per[i]) for i in range(len(arms))]
             # batch size: at most ~BATCH_MIN minutes of one runner's games (4 processes), so the last batch a runner takes
