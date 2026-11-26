@@ -9,9 +9,9 @@
       "mc": "max",
       "label": "Default AI + lookahead (desktop)",
       "key": "951099b891189e67d41d",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 47298,
+      "prior_games": 5765,
+      "prior_wins": 1385.1666666666663,
+      "target_new": 50336,
       "cached": false
     },
     {
@@ -22,9 +22,9 @@
       "jvm": "gc1",
       "label": "Default AI + lookahead (desktop) [gc1]",
       "key": "0606cae69e14137886e4",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 47298,
+      "prior_games": 5626,
+      "prior_wins": 1316.9166666666665,
+      "target_new": 49473,
       "cached": false
     },
     {
@@ -35,9 +35,9 @@
       "jvm": "xms",
       "label": "Default AI + lookahead (desktop) [xms]",
       "key": "1e41d6b32c057908eea4",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 47298,
+      "prior_games": 5217,
+      "prior_wins": 1215.8333333333333,
+      "target_new": 49714,
       "cached": false
     },
     {
@@ -48,9 +48,9 @@
       "jvm": "j25",
       "label": "Default AI + lookahead (desktop) [j25]",
       "key": "4fc94cf4cd990fed214a",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 47298,
+      "prior_games": 5261,
+      "prior_wins": 1254.1666666666665,
+      "target_new": 50537,
       "cached": false
     },
     {
@@ -61,9 +61,9 @@
       "jvm": "nolog",
       "label": "Default AI + lookahead (desktop) [nolog]",
       "key": "8e50d215c26a5565b6b5",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 47298,
+      "prior_games": 5104,
+      "prior_wins": 1145.0000000000002,
+      "target_new": 48373,
       "cached": false
     },
     {
@@ -74,9 +74,9 @@
       "jvm": "p3",
       "label": "Default AI + lookahead (desktop) [p3]",
       "key": "1e55e31a3976c67bbec8",
-      "prior_games": 0,
-      "prior_wins": 0,
-      "target_new": 47298,
+      "prior_games": 4787,
+      "prior_wins": 1069.9999999999998,
+      "target_new": 48552,
       "cached": false
     }
   ],
@@ -107,7 +107,7 @@
   "shards": 67,
   "mode": "pilot",
   "queued_from": "20261126-010000-speed-gc-profile.json",
-  "started": "2026-11-26T02:23:59Z",
+  "started": "2026-11-26T05:16:52Z",
   "game_timeout": 900,
   "round_cap": 15,
   "profile_jfr": true,
@@ -386,37 +386,37 @@
     0
   ],
   "gpm": [
-    0.898,
-    0.898,
-    0.898,
-    0.898,
-    0.898,
-    0.898
+    0.734,
+    0.734,
+    0.734,
+    0.734,
+    0.734,
+    0.734
   ],
   "quota": [
-    986,
-    1075,
-    1075,
-    1075,
-    1075,
-    1075
+    1049,
+    1125,
+    1130,
+    1149,
+    1100,
+    1104
   ],
   "earlystop": false,
   "first": [
-    591,
-    644,
-    644,
-    644,
-    644,
-    644
+    629,
+    674,
+    677,
+    689,
+    659,
+    662
   ],
   "batch": [
-    142,
-    142,
-    142,
-    142,
-    142,
-    142
+    151,
+    148,
+    149,
+    151,
+    145,
+    145
   ],
   "batches": [
     134,
@@ -428,5 +428,5 @@
   ],
   "capped": true,
   "allcached": false,
-  "seedbase": 185542600
+  "seedbase": 185577200
 }
