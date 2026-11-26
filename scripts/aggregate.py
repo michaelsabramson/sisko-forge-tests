@@ -13,7 +13,7 @@ seen = {}                      # audit: card -> [games where it was in the kept 
 side = [[{}, 0, 0] for _ in arms]   # other modes, per arm: same card tallies, games and wins with a logged opening (feeds the Rank)
 tops = []                      # audit: (first 10 cards, won) per game, for the land curve
 forced_g = {}                  # adaptive Rank: card -> [games where the plan forced it into the opening hand, wins]
-cutoffs = {"opp": {}, "alive": {}, "me_alive": 0, "n": 0, "life": []}   # round-cap draws: who/what was left
+cutoffs = {"opp": {}, "alive": {}, "me_alive": 0, "n": 0, "life": [], "why": {}, "opp_why": {}, "ms": []}   # round-cap draws: who/what was left
 paced = []                     # audit: (won, round, stall) per game, for the speed curve (scripts/pace.py)
 import pace
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
@@ -34,7 +34,7 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
         m = re.match(r'G\d+ winner=(\S+)', l)
         if m:
             t = re.search(r' (\d+)ms', l)
-            if t: speed[i][0] += 1; speed[i][1] += int(t.group(1))
+            if t: speed[i][0] += 1; speed[i][1] += int(t.group(1)); cutoffs["ms"].append(int(t.group(1)))
             won = m.group(1) == me
             for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[0] += 1
             if m.group(1) == 'Draw' and req.get('round_cap'):
@@ -42,11 +42,18 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
                 alive = [p.split('=')[0] for p in l.split('ms', 1)[-1].split() if '=' in p and not p.endswith('x')
                          and p.split('=')[1].lstrip('-').isdigit() and int(p.split('=')[1]) > 0]
                 won = 1 / len(alive) if me in alive else 0
+                if not alive and pod:
+                    # everyone lost at once: Forge's infinite-loop rule (CR 104.4b) drew the game for all players, so
+                    # it's an even split of the table, not a loss
+                    won = 1 / len(pod)
                 # cut-off diagnostics: which opponents were at the table, how many players were left, their life
                 for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[1] += 1
                 cutoffs["alive"][len(alive)] = cutoffs["alive"].get(len(alive), 0) + 1
-                if len(alive) == 0 and cutoffs["alive"][0] <= 6: print("DRAW0", pod, l.strip(), file=sys.stderr)
-                if len(alive) >= 3 and cutoffs["alive"][len(alive)] <= 3: print("DRAWN", pod, l.strip(), file=sys.stderr)
+                ms_ = int(t.group(1)) if t else 0; rd_ = re.search(r'\(round ([\d.]+)\)', l)
+                why = "loop" if not alive else "time" if ms_ >= 0.98 * 1000 * float(req.get('game_timeout') or 120) else \
+                      "cap" if rd_ and float(rd_.group(1)) >= float(req['round_cap']) else "other"
+                cutoffs["why"][why] = cutoffs["why"].get(why, 0) + 1
+                for o in pod[1:]: cutoffs["opp_why"].setdefault(o, {}).setdefault(why, 0); cutoffs["opp_why"][o][why] += 1
                 cutoffs["me_alive"] += me in alive; cutoffs["n"] += 1
                 for p_ in l.split('ms', 1)[-1].split():
                     if '=' in p_ and not p_.endswith('x') and p_.split('=')[1].lstrip('-').isdigit():
@@ -243,7 +250,9 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
         "compare": pairs, "opponents": req.get('opponents'),
         **({"cutoffs": {"n": cutoffs["n"], "alive": cutoffs["alive"], "me_alive": cutoffs["me_alive"],
                         "median_life": sorted(cutoffs["life"])[len(cutoffs["life"]) // 2] if cutoffs["life"] else None,
-                        "opp": cutoffs["opp"]}} if cutoffs["n"] else {}),
+                        "opp": cutoffs["opp"], "why": cutoffs["why"], "opp_why": cutoffs["opp_why"],
+                        "game_seconds": {q: round(sorted(cutoffs["ms"])[min(len(cutoffs["ms"]) - 1, int(q / 100 * len(cutoffs["ms"])))] / 1000)
+                                         for q in (50, 75, 90, 95, 98, 99)} if cutoffs["ms"] else None}} if cutoffs["n"] else {}),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"tail": {"deck": arms[0]['deck'], "ref": arms[0]['card'], "rows": tail_rows, **req.get('tail', {})}} if tail_rows is not None else {}),
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
