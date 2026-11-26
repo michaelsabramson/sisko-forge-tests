@@ -13,11 +13,14 @@ seen = {}                      # audit: card -> [games where it was in the kept 
 side = [[{}, 0, 0] for _ in arms]   # other modes, per arm: same card tallies, games and wins with a logged opening (feeds the Rank)
 tops = []                      # audit: (first 10 cards, won) per game, for the land curve
 forced_g = {}                  # adaptive Rank: card -> [games where the plan forced it into the opening hand, wins]
+cutoffs = {"opp": {}, "alive": {}, "me_alive": 0, "n": 0, "life": []}   # round-cap draws: who/what was left
 paced = []                     # audit: (won, round, stall) per game, for the speed curve (scripts/pace.py)
 import pace
 for f in glob.glob('out/**/arm*_*.log', recursive=True):
     i = int(re.match(r'arm(\d+)_', os.path.basename(f)).group(1)); me = arms[i]['deck']; top = None; fc = None
+    pod = []
     for l in open(f, errors='ignore'):
+        if l.startswith('POD '): pod = [x.strip() for x in l[4:].strip().strip('[]').split(',')]
         if l.startswith('FORCE '): fc = l[6:].rstrip('\n'); continue
         if l.startswith('TOP '): topl = l[4:].rstrip('\n').split('|'); top = set(topl); continue
         if l.startswith('USE\t'):
@@ -33,11 +36,19 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             t = re.search(r' (\d+)ms', l)
             if t: speed[i][0] += 1; speed[i][1] += int(t.group(1))
             won = m.group(1) == me
+            for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[0] += 1
             if m.group(1) == 'Draw' and req.get('round_cap'):
                 # a game cut off unfinished (round cap or time limit) is a draw shared by the players still in it
                 alive = [p.split('=')[0] for p in l.split('ms', 1)[-1].split() if '=' in p and not p.endswith('x')
                          and p.split('=')[1].lstrip('-').isdigit() and int(p.split('=')[1]) > 0]
                 won = 1 / len(alive) if me in alive else 0
+                # cut-off diagnostics: which opponents were at the table, how many players were left, their life
+                for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[1] += 1
+                cutoffs["alive"][len(alive)] = cutoffs["alive"].get(len(alive), 0) + 1
+                cutoffs["me_alive"] += me in alive; cutoffs["n"] += 1
+                for p_ in l.split('ms', 1)[-1].split():
+                    if '=' in p_ and not p_.endswith('x') and p_.split('=')[1].lstrip('-').isdigit():
+                        cutoffs["life"].append(int(p_.split('=')[1]))
             if arms[i]['card'] == '@audit' and top is None: top = None; fc = None; continue   # no draw log: skip the game for audits
             if arms[i]['card'] == '@audit' and fc:
                 # adaptive Rank, targeted game: the forced card's result goes to its verdict and the game is left out of
@@ -228,6 +239,9 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
                   **({"swap": a['swap']} if a.get('swap') else {})} for i, a in enumerate(arms)],
         "batching": batching, **({"profile": req['profile']} if req.get('profile') else {}), **({"opp_profile": req['opp_profile']} if req.get('opp_profile') else {}), **({"hidden": True} if req.get('hidden') else {}), **({"stopped": True} if STOPPED else {}),
         "compare": pairs, "opponents": req.get('opponents'),
+        **({"cutoffs": {"n": cutoffs["n"], "alive": cutoffs["alive"], "me_alive": cutoffs["me_alive"],
+                        "median_life": sorted(cutoffs["life"])[len(cutoffs["life"]) // 2] if cutoffs["life"] else None,
+                        "opp": cutoffs["opp"]}} if cutoffs["n"] else {}),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"tail": {"deck": arms[0]['deck'], "ref": arms[0]['card'], "rows": tail_rows, **req.get('tail', {})}} if tail_rows is not None else {}),
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
