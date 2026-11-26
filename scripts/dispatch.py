@@ -59,7 +59,8 @@ STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 
 DEFAULT_PROFILE = "Default"   # Hard without the lookahead is Default plus defending at 5 life; with it, no gain was measured
 DEFAULT_MC = "max"            # lookahead on for the tested lists (2026-11-25): +1.9 ± 1.5 clean wins with a 6-minute limit
-DEFAULT_TIMEOUT = 360         # seconds before a game is cut off; at 120 s about 7-8% of games (17% with the lookahead) stalled
+DEFAULT_TIMEOUT = 900         # seconds before a game is cut off: only a safety net now that games end at a round cap
+DEFAULT_ROUND_CAP = 15        # rounds before an unfinished game is ended as a draw shared by the players still in it
 
 
 def speed_profile(a, req):
@@ -270,6 +271,8 @@ def main():
     if r.get("mode") == "tail":
         req["tail"] = {k: r[k] for k in ("margin", "tau", "p_outlier", "rank") if k in r}
     req["game_timeout"] = int(r.get("game_timeout", DEFAULT_TIMEOUT))   # seconds before a game is cut off
+    req["round_cap"] = int(r.get("round_cap", DEFAULT_ROUND_CAP))       # 0 = no round cap (the time limit decides)
+    limits = str(req["game_timeout"]) + (f"r{req['round_cap']}" if req["round_cap"] else "")
     if r.get("adaptive") and r.get("mode") == "audit":   # off by default (2026-11-25): more games beat targeted ones
         req["adaptive"] = True   # one-job Rank: targeted games for its uncertain cards in the second half (aggregate.py)
     if r.get("hidden"):
@@ -296,7 +299,7 @@ def main():
     eng, c = cache.engine_sig(), cache.load()
     for a in arms:
         a["key"] = cache.full_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"),
-                                  a.get("mc") or req.get("mc"), req.get("opp_mc"), req["game_timeout"])
+                                  a.get("mc") or req.get("mc"), req.get("opp_mc"), limits)
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4

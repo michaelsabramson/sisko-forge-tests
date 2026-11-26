@@ -54,8 +54,8 @@ def full_key(arm, opponents, band, engine=None, profile=None, opp_profile=None, 
     k = arm_key(arm, opponents, band, engine, profile, opp_profile)
     if (mc and mc != "off") or (opp_mc and opp_mc != "off"):
         k = _h((k + "|mc=" + (mc or "off") + "|opp_mc=" + (opp_mc or "off")).encode())[:20]
-    if game_timeout and int(game_timeout) != 120:
-        k = _h((k + "|t=" + str(int(game_timeout))).encode())[:20]
+    if game_timeout and str(game_timeout) != "120":   # "360", or "900r15" with a round cap
+        k = _h((k + "|t=" + str(game_timeout)).encode())[:20]
     return k
 
 

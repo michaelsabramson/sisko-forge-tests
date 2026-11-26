@@ -32,6 +32,7 @@ if [ -n "${MAIN_RUN:-}" ]; then
     done ) &
 fi
 GT=$(jq -r '.game_timeout // 120' $REQ)   # seconds of real time before Forge cuts a game off (a "stall")
+RC=$(jq -r '.round_cap // 0' $REQ)        # rounds before an unfinished game ends as a draw (0 = none)
 PLAN=""
 if [ "$(jq -r '.adaptive // false' $REQ)" = "true" ] && [ -n "${GITHUB_RUN_ID:-}" ]; then
   # adaptive Rank: the run's early reads publish plans/<run>.json (which cards to force, how often); keep a local copy
@@ -67,7 +68,7 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
 done
 touch out/started
 wait

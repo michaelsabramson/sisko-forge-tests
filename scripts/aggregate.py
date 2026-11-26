@@ -33,6 +33,11 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             t = re.search(r' (\d+)ms', l)
             if t: speed[i][0] += 1; speed[i][1] += int(t.group(1))
             won = m.group(1) == me
+            if m.group(1) == 'Draw' and req.get('round_cap'):
+                # a game cut off unfinished (round cap or time limit) is a draw shared by the players still in it
+                alive = [p.split('=')[0] for p in l.split('ms', 1)[-1].split() if '=' in p and not p.endswith('x')
+                         and p.split('=')[1].lstrip('-').isdigit() and int(p.split('=')[1]) > 0]
+                won = 1 / len(alive) if me in alive else 0
             if arms[i]['card'] == '@audit' and top is None: top = None; fc = None; continue   # no draw log: skip the game for audits
             if arms[i]['card'] == '@audit' and fc:
                 # adaptive Rank, targeted game: the forced card's result goes to its verdict and the game is left out of
@@ -259,7 +264,7 @@ if not PEEK:
             tal, g, w = side[i]
             if not g or a['card'] == '@audit': continue
             rk = cache.full_key({"deck": a['deck'], "card": "@audit"}, opps_l, req.get('band', 0), eng,
-                                a.get('profile') or req.get('profile'), req.get('opp_profile'), a.get('mc') or req.get('mc'), req.get('opp_mc'), req.get('game_timeout'))
+                                a.get('profile') or req.get('profile'), req.get('opp_profile'), a.get('mc') or req.get('mc'), req.get('opp_mc'), (str(req['game_timeout']) + (f"r{req['round_cap']}" if req.get('round_cap') else "")) if req.get('game_timeout') else None)
             e = c.setdefault(rk, {"deck": a['deck'], "card": "@audit", "games": 0, "wins": 0, "runs": []})
             e["games"] += g; e["wins"] += w; e["runs"].append(f"{req['name']}:{os.environ.get('GITHUB_RUN_ID', 'local')}:side")
             ct = e.setdefault("cards", {}); forced = a['card'] if req.get('mode', 'swap') in ('swap', 'tail') else ''

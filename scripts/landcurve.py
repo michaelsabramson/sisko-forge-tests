@@ -33,7 +33,7 @@ def tally(games, lands, into=None):
     """games: [(names in the first 10 cards, won)] -> {lands in first 10: [games, wins]}"""
     cur = into if into is not None else {}
     for names, won in games:
-        e = cur.setdefault(str(sum(n in lands for n in names)), [0, 0]); e[0] += 1; e[1] += int(won)
+        e = cur.setdefault(str(sum(n in lands for n in names)), [0, 0]); e[0] += 1; e[1] += won
     return cur
 
 

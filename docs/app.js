@@ -328,9 +328,21 @@ function manaBalance(rows, games, curve, only) {
 // Speed curve: share of games the deck has won by the end of each round, against the pool's par (the average
 // opponent's share, cache/par.json). Stalls count as no win on both sides.
 function speedCurve(pace, pool, only) {
-  const par = S.par?.[pool]; if (!pace || !par) return '';
-  const R = pace.rounds.filter(r => r >= 6 && r <= 13), me = R.map(r => pace.won[pace.rounds.indexOf(r)]), pr = R.map(r => par.par[par.rounds.indexOf(r)]);
-  if (pr.some(v => v == null)) return '';
+  if (!pace) return '';
+  const R = pace.rounds.filter(r => r >= 6 && r <= 13), me = R.map(r => pace.won[pace.rounds.indexOf(r)]);
+  const par = S.par?.[pool], pr = par ? R.map(r => par.par[par.rounds.indexOf(r)]) : null;
+  if (!pr || pr.some(v => v == null)) {   // no par line for this opponent pool yet: the deck's own curve
+    if (only) return { cls: '', head: 'Win curve', say: 'No par line for this opponent pool yet.', win: me[me.length - 1], par: null };
+    const W = 340, H = 140, pl = 30, pr2 = 8, pt = 8, pb = 22, ymax = Math.max(10, Math.ceil(Math.max(...me) / 10) * 10);
+    const x = i => pl + i * (W - pl - pr2) / (R.length - 1), y = v => pt + (1 - v / ymax) * (H - pt - pb);
+    const ticks = []; for (let v = 0; v <= ymax; v += 10) ticks.push(v);
+    return `<div class="sect" id="speed">Speed</div>
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:520px;display:block;margin-top:6px" role="img" aria-label="Share of games won by each round">
+    ${ticks.map(v => `<line x1="${pl}" x2="${W - pr2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${pl - 5}" y="${y(v) + 3.5}" text-anchor="end" font-size="10" fill="var(--muted)">${v}%</text>`).join('')}
+    ${R.map((r, i) => i % 2 ? '' : `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="var(--muted)">${i ? '' : 'Round '}${r}</text>`).join('')}
+    <path d="${me.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('')}" fill="none" stroke="var(--accent)" stroke-width="2.5"/></svg>
+    <p class="small muted" style="margin:4px 0 0">Share of games won by each round. The par line (the average opponent) for this opponent pool is still being built.</p>`;
+  }
   const at = r => { const i = R.indexOf(r); return me[i] - pr[i]; }, early = at(8), end = me[me.length - 1] - pr[pr.length - 1], late = end - early;
   const head = early >= 1.5 ? 'Fast start' : early <= -2.5 ? 'Behind from the start' : 'Keeps pace early';
   const tail = late <= -2 ? ', fades late' : late >= 2 ? ', strong late' : '';
@@ -819,7 +831,7 @@ async function drawOverview(body, name) {
   // power: win rate against the pool's par, plus head-to-heads
   const h2h = tests.filter(g => g.mode === 'decks' && !g.peek);
   const h2hLatest = [...new Map(h2h.map(g => [g.other, g])).values()];
-  if (sp || h2hLatest.length) h += tile('Power', `#deck/${enc}/tests`, `${sp ? `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.win - sp.par >= -1 ? 'good' : sp.win - sp.par <= -3 ? 'warn' : ''}">Wins ${sp.win.toFixed(1)}%</span><span class="small muted">par ${sp.par.toFixed(1)}% (average opponent)</span></div>` : ''}
+  if (sp || h2hLatest.length) h += tile('Power', `#deck/${enc}/tests`, `${sp ? `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.par == null ? '' : sp.win - sp.par >= -1 ? 'good' : sp.win - sp.par <= -3 ? 'warn' : ''}">Wins ${(a.arms?.[0]?.games ? 100 * a.arms[0].wins / a.arms[0].games : sp.win).toFixed(1)}%</span><span class="small muted">${sp.par == null ? 'of all games' : `par ${sp.par.toFixed(1)}% (average opponent)`}</span></div>` : ''}
     ${h2hLatest.length ? `<div class="small" style="margin-top:6px">${h2hLatest.map(g => `${esc(g.label)}: <span class="pill ${verdict(g)[0]}">${f(g.diff)}</span>`).join(' · ')}</div>` : ''}`);
   // mana and speed in full, with their charts (the same sections as on the Cards tab)
   if (a) { const m = manaBalance(rows, a.arms?.[0]?.games, a.audit.lands), s = speedCurve(a.audit.pace, a.auditPool);

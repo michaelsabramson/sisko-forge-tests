@@ -72,6 +72,12 @@ public class Run {
         for(Player pl:game.getPlayers()) if(pl.getController() instanceof PlayerControllerAi){
           String m=trackedNames.contains(pl.getName()) ? mt : mo;
           ((PlayerControllerAi)pl.getController()).getAi().setFlatMonteCarloOverride(!m.equals("off")); } }
+      /* -DroundCap=N: end the game as a draw once round N is over (a round = every player's turn). Unlike the
+         real-time limit, every deck and AI setting gets the same amount of game, whatever its speed. */
+      final boolean[] cut={false};
+      { final int cap=Integer.getInteger("roundCap",0), np=game.getRegisteredPlayers().size();
+        if(cap>0) game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void rcap(forge.game.event.GameEventTurnBegan e){
+          if(!cut[0] && game.getPhaseHandler().getTurn() > cap*np){ cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} } } }); }
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
       if(!Boolean.getBoolean("full")) { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());   /* -Dfull=true: play every game to the end (power ladder needs every winner) */
@@ -212,11 +218,11 @@ public class Run {
       if(System.getProperty("dbg")!=null) game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void on(forge.game.event.GameEventTurnBegan e){ for(Player p:game.getPlayers()) if(p.getName().equals(System.getProperty("dbg")) && e.turnOwner().toString().contains(p.getName())) System.out.println("  DBG T"+e.turnNumber()+" life="+p.getLife()+" hand="+p.getCardsIn(forge.game.zone.ZoneType.Hand)+" bf="+p.getCardsIn(forge.game.zone.ZoneType.Battlefield)); } });
       long s=System.currentTimeMillis(); String res2;
       ExecutorService ex=Executors.newSingleThreadExecutor(); Future<?> f=ex.submit(()->mc.startGame(game));
-      try { f.get(timeout,TimeUnit.SECONDS); } catch(TimeoutException te){ try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} f.cancel(true); try{ f.get(20,TimeUnit.SECONDS);}catch(Throwable x){} } catch(Exception e){ e.printStackTrace(); }
+      try { f.get(timeout,TimeUnit.SECONDS); } catch(TimeoutException te){ cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} f.cancel(true); try{ f.get(20,TimeUnit.SECONDS);}catch(Throwable x){} } catch(Exception e){ e.printStackTrace(); }
       ex.shutdownNow();
       int turn=game.getPhaseHandler().getTurn();
       if(game.getOutcome()==null || game.getOutcome().isDraw()) res2="Draw"; else res2=game.getOutcome().getWinningLobbyPlayer().getName();
-      if(!game.isGameOver()) res2="Draw";
+      if(!game.isGameOver() || cut[0]) res2="Draw";   // cut off (round cap or time limit): nobody won; Forge would otherwise name an arbitrary winner
       if(trackedOut[0]) res2="TrackedOut";   // ended early once the tracked deck was eliminated (a loss for it)
       wins.merge(res2,1,Integer::sum);
       StringBuilder life=new StringBuilder(); for(Player p:game.getRegisteredPlayers()) life.append(p.getName().replaceAll(" .*","")).append("=").append(p.getLife()).append(p.hasLost()?"x ":" ");
