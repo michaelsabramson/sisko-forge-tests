@@ -4,106 +4,106 @@ Swapped card forced into opening hand (band 0). Same opponents for every list.
 
 | List | Card | Games | Wins | Win rate | Reused |
 |---|---|---|---|---|---|
-| Necrobloom | Audit of Necrobloom | 6062 | 697.5000000000006 | 11.5% | 0 |
+| Necrobloom | Audit of Necrobloom | 8182 | 920.0000000000016 | 11.2% | 0 |
 
 Gaps (95% interval):
 
 
-Deck audit: 6,062 games, 11.5% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
+Deck audit: 8,182 games, 11.2% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
 
 | Card | Games seen | Win rate seen | Change | ± |
 |---|---|---|---|---|
-| Springheart Nantuko | 627 | 8.7% | -3.1 | 2.4 |
-| Life from the Loam | 607 | 9.1% | -2.7 | 2.4 |
-| Flare of Cultivation | 596 | 9.1% | -2.7 | 2.5 |
-| Tireless Provisioner | 594 | 9.1% | -2.6 | 2.5 |
-| Shattered Sanctum | 664 | 9.3% | -2.5 | 2.4 |
-| Generous Gift | 603 | 9.6% | -2.1 | 2.5 |
-| Swords to Plowshares | 610 | 9.6% | -2.1 | 2.5 |
-| Three Visits | 615 | 9.7% | -2.0 | 2.5 |
-| Cache Grab | 618 | 9.7% | -2.0 | 2.5 |
-| Elvish Rejuvenator | 576 | 9.7% | -2.0 | 2.6 |
-| Yavimaya, Cradle of Growth | 556 | 9.8% | -1.9 | 2.6 |
-| Rampant Growth | 627 | 9.9% | -1.8 | 2.5 |
-| Search for Tomorrow | 567 | 10.0% | -1.7 | 2.6 |
-| Ramunap Excavator | 582 | 10.0% | -1.6 | 2.6 |
-| Sun Titan | 289 | 10.0% | -1.6 | 3.6 |
-| Crucible of Worlds | 568 | 10.2% | -1.4 | 2.6 |
-| Heroic Intervention | 612 | 10.3% | -1.3 | 2.6 |
-| Isolated Chapel | 641 | 10.4% | -1.2 | 2.5 |
-| Radiant Grove | 642 | 10.4% | -1.2 | 2.5 |
-| Terramorphic Expanse | 666 | 10.5% | -1.1 | 2.5 |
-| Twilight Mire | 676 | 10.5% | -1.1 | 2.5 |
-| Sylvan Safekeeper | 578 | 10.5% | -1.1 | 2.6 |
-| Disciple of Freyalise | 273 | 10.5% | -1.1 | 3.7 |
-| Sol Ring | 618 | 10.6% | -1.0 | 2.6 |
-| Razorverge Thicket | 664 | 10.7% | -0.9 | 2.5 |
-| Splendid Reclamation | 598 | 10.8% | -0.8 | 2.6 |
-| Avenger of Zendikar | 290 | 10.8% | -0.8 | 3.7 |
-| Hour of Promise | 604 | 10.8% | -0.7 | 2.6 |
-| Golgari Rot Farm | 620 | 10.9% | -0.7 | 2.6 |
-| Springbloom Druid | 574 | 10.9% | -0.7 | 2.7 |
-| Ash Barrens | 612 | 10.9% | -0.6 | 2.6 |
-| Tranquil Thicket | 668 | 11.0% | -0.6 | 2.5 |
-| Canopy Vista | 636 | 11.0% | -0.6 | 2.6 |
-| Woodland Cemetery | 613 | 11.0% | -0.5 | 2.6 |
-| Greensleeves, Maro-Sorcerer | 585 | 11.1% | -0.5 | 2.7 |
-| Austere Command | 595 | 11.1% | -0.5 | 2.7 |
-| Godless Shrine | 688 | 11.1% | -0.5 | 2.5 |
-| Foundation Breaker | 618 | 11.2% | -0.4 | 2.6 |
-| Haunted Mire | 665 | 11.2% | -0.3 | 2.5 |
-| Victimize | 703 | 11.3% | -0.2 | 2.5 |
-| Arcane Signet | 636 | 11.3% | -0.2 | 2.6 |
-| Evolving Wilds | 623 | 11.3% | -0.2 | 2.6 |
-| Crop Rotation | 564 | 11.3% | -0.2 | 2.8 |
-| Farseek | 621 | 11.4% | -0.1 | 2.6 |
-| Command Tower | 670 | 11.4% | -0.1 | 2.5 |
-| Ripples of Undeath | 575 | 11.4% | -0.1 | 2.7 |
-| Forest | 2266 | 11.5% | -0.1 | 1.7 |
-| Sandsteppe Citadel | 680 | 11.5% | +0.0 | 2.5 |
-| Aftermath Analyst | 571 | 11.6% | +0.1 | 2.8 |
-| Titania, Protector of Argoth | 610 | 11.6% | +0.1 | 2.7 |
-| Dryad of the Ilysian Grove | 616 | 11.6% | +0.1 | 2.7 |
-| Plains | 1749 | 11.6% | +0.1 | 1.8 |
-| Bojuka Bog | 630 | 11.7% | +0.2 | 2.6 |
-| World Shaper | 604 | 11.7% | +0.2 | 2.7 |
-| Overgrown Farmland | 648 | 11.7% | +0.2 | 2.6 |
-| Exotic Orchard | 617 | 11.8% | +0.3 | 2.7 |
-| Wight of the Reliquary | 558 | 11.8% | +0.3 | 2.8 |
-| Path to Exile | 615 | 11.8% | +0.3 | 2.7 |
-| Deadly Dispute | 601 | 11.9% | +0.4 | 2.7 |
-| Yedora, Grave Gardener | 554 | 11.9% | +0.4 | 2.8 |
-| Assassin's Trophy | 630 | 11.9% | +0.4 | 2.7 |
-| Lumra, Bellow of the Woods | 273 | 12.0% | +0.5 | 3.9 |
-| Marsh Flats | 674 | 12.0% | +0.5 | 2.6 |
-| Moldervine Reclamation | 603 | 12.0% | +0.5 | 2.7 |
-| Strip Mine | 618 | 12.0% | +0.6 | 2.7 |
-| Shamanic Revelation | 598 | 12.0% | +0.6 | 2.7 |
-| Oracle of Mul Daya | 612 | 12.0% | +0.6 | 2.7 |
-| Scute Swarm | 622 | 12.1% | +0.7 | 2.7 |
-| Barren Moor | 648 | 12.1% | +0.7 | 2.6 |
-| Beast Within | 559 | 12.1% | +0.7 | 2.8 |
-| Binding the Old Gods | 593 | 12.2% | +0.7 | 2.8 |
-| Sunpetal Grove | 651 | 12.2% | +0.8 | 2.6 |
-| Winding Way | 577 | 12.2% | +0.8 | 2.8 |
-| Swamp | 1765 | 12.1% | +0.8 | 1.8 |
-| Deceptive Landscape | 647 | 12.3% | +0.9 | 2.7 |
-| Zuran Orb | 610 | 12.3% | +0.9 | 2.7 |
-| Tireless Tracker | 575 | 12.4% | +1.0 | 2.8 |
-| Fetid Heath | 599 | 12.5% | +1.1 | 2.8 |
-| Conduit of Worlds | 587 | 12.8% | +1.5 | 2.8 |
-| Dread Return | 677 | 12.9% | +1.6 | 2.7 |
-| High Market | 657 | 12.9% | +1.6 | 2.7 |
-| Sakura-Tribe Elder | 607 | 13.1% | +1.8 | 2.8 |
-| Rampaging Baloths | 280 | 13.5% | +2.0 | 4.1 |
-| Damn | 623 | 13.4% | +2.1 | 2.8 |
-| Mirari's Wake | 607 | 13.8% | +2.5 | 2.9 |
-| Six | 597 | 13.9% | +2.7 | 2.9 |
-| Urza's Cave | 627 | 14.0% | +2.7 | 2.8 |
-| Deathcap Glade | 644 | 14.0% | +2.8 | 2.8 |
-| Skullclamp | 584 | 14.1% | +2.9 | 3.0 |
-| Eerie Ultimatum | 684 | 14.3% | +3.1 | 2.8 |
-| Field of the Dead | 618 | 15.0% | +3.8 | 2.9 |
-| Felidar Retreat | 600 | 15.6% | +4.6 | 3.0 |
+| Springheart Nantuko | 840 | 8.3% | -3.3 | 2.0 |
+| Life from the Loam | 841 | 9.1% | -2.4 | 2.1 |
+| Disciple of Freyalise | 398 | 9.3% | -2.1 | 2.9 |
+| Elvish Rejuvenator | 799 | 9.5% | -1.9 | 2.2 |
+| Ramunap Excavator | 770 | 9.5% | -1.9 | 2.2 |
+| Search for Tomorrow | 768 | 9.6% | -1.9 | 2.2 |
+| Crucible of Worlds | 795 | 9.7% | -1.7 | 2.2 |
+| Flare of Cultivation | 818 | 9.7% | -1.7 | 2.2 |
+| Sylvan Safekeeper | 778 | 9.9% | -1.5 | 2.2 |
+| Swords to Plowshares | 814 | 9.9% | -1.5 | 2.2 |
+| Radiant Grove | 871 | 10.0% | -1.4 | 2.1 |
+| Shattered Sanctum | 901 | 10.0% | -1.4 | 2.1 |
+| Tireless Provisioner | 778 | 10.0% | -1.4 | 2.2 |
+| Springbloom Druid | 786 | 10.0% | -1.3 | 2.2 |
+| Sol Ring | 832 | 10.2% | -1.2 | 2.2 |
+| Razorverge Thicket | 893 | 10.2% | -1.2 | 2.1 |
+| Haunted Mire | 902 | 10.2% | -1.1 | 2.1 |
+| Three Visits | 852 | 10.2% | -1.1 | 2.2 |
+| Heroic Intervention | 811 | 10.2% | -1.1 | 2.2 |
+| Cache Grab | 819 | 10.2% | -1.1 | 2.2 |
+| Generous Gift | 792 | 10.3% | -1.1 | 2.2 |
+| Canopy Vista | 879 | 10.3% | -1.0 | 2.1 |
+| Rampant Growth | 829 | 10.4% | -0.9 | 2.2 |
+| Arcane Signet | 858 | 10.5% | -0.8 | 2.2 |
+| Tranquil Thicket | 880 | 10.5% | -0.8 | 2.1 |
+| Ash Barrens | 801 | 10.5% | -0.8 | 2.2 |
+| Crop Rotation | 782 | 10.5% | -0.8 | 2.3 |
+| Greensleeves, Maro-Sorcerer | 790 | 10.6% | -0.7 | 2.3 |
+| Twilight Mire | 905 | 10.6% | -0.7 | 2.1 |
+| Aftermath Analyst | 789 | 10.7% | -0.6 | 2.3 |
+| Avenger of Zendikar | 403 | 10.8% | -0.5 | 3.1 |
+| Austere Command | 828 | 10.8% | -0.5 | 2.2 |
+| Farseek | 838 | 10.8% | -0.5 | 2.2 |
+| Woodland Cemetery | 850 | 10.8% | -0.5 | 2.2 |
+| Conduit of Worlds | 811 | 10.9% | -0.4 | 2.3 |
+| Shamanic Revelation | 804 | 11.0% | -0.3 | 2.3 |
+| Yavimaya, Cradle of Growth | 757 | 11.0% | -0.3 | 2.3 |
+| Sandsteppe Citadel | 893 | 11.0% | -0.3 | 2.2 |
+| Golgari Rot Farm | 862 | 11.0% | -0.3 | 2.2 |
+| Splendid Reclamation | 797 | 11.0% | -0.2 | 2.3 |
+| Barren Moor | 867 | 11.0% | -0.2 | 2.2 |
+| Forest | 3053 | 11.1% | -0.2 | 1.4 |
+| Plains | 2302 | 11.2% | -0.1 | 1.5 |
+| Godless Shrine | 914 | 11.1% | -0.1 | 2.2 |
+| Foundation Breaker | 785 | 11.1% | -0.1 | 2.3 |
+| Isolated Chapel | 858 | 11.2% | -0.1 | 2.2 |
+| Evolving Wilds | 849 | 11.2% | -0.1 | 2.2 |
+| Oracle of Mul Daya | 813 | 11.2% | -0.0 | 2.3 |
+| Marsh Flats | 898 | 11.3% | +0.1 | 2.2 |
+| Yedora, Grave Gardener | 786 | 11.3% | +0.1 | 2.3 |
+| Strip Mine | 845 | 11.3% | +0.1 | 2.3 |
+| Assassin's Trophy | 841 | 11.4% | +0.1 | 2.3 |
+| Titania, Protector of Argoth | 823 | 11.4% | +0.2 | 2.3 |
+| Overgrown Farmland | 860 | 11.4% | +0.2 | 2.2 |
+| Binding the Old Gods | 808 | 11.5% | +0.3 | 2.3 |
+| Path to Exile | 828 | 11.5% | +0.3 | 2.3 |
+| Dryad of the Ilysian Grove | 847 | 11.5% | +0.3 | 2.3 |
+| Scute Swarm | 825 | 11.5% | +0.3 | 2.3 |
+| Wight of the Reliquary | 751 | 11.5% | +0.3 | 2.4 |
+| Victimize | 960 | 11.5% | +0.3 | 2.1 |
+| Swamp | 2370 | 11.5% | +0.4 | 1.5 |
+| Sun Titan | 378 | 11.7% | +0.4 | 3.3 |
+| Terramorphic Expanse | 913 | 11.6% | +0.4 | 2.2 |
+| Hour of Promise | 800 | 11.7% | +0.5 | 2.3 |
+| Tireless Tracker | 766 | 11.7% | +0.5 | 2.4 |
+| Command Tower | 910 | 11.7% | +0.6 | 2.2 |
+| Sunpetal Grove | 871 | 11.7% | +0.6 | 2.3 |
+| World Shaper | 817 | 11.9% | +0.7 | 2.3 |
+| High Market | 880 | 11.9% | +0.7 | 2.3 |
+| Dread Return | 933 | 12.0% | +0.8 | 2.2 |
+| Ripples of Undeath | 781 | 12.0% | +0.9 | 2.4 |
+| Fetid Heath | 826 | 12.1% | +0.9 | 2.3 |
+| Exotic Orchard | 842 | 12.1% | +0.9 | 2.3 |
+| Bojuka Bog | 844 | 12.1% | +1.0 | 2.3 |
+| Zuran Orb | 850 | 12.1% | +1.0 | 2.3 |
+| Deceptive Landscape | 874 | 12.1% | +1.0 | 2.3 |
+| Winding Way | 772 | 12.2% | +1.1 | 2.4 |
+| Deadly Dispute | 798 | 12.3% | +1.1 | 2.4 |
+| Moldervine Reclamation | 820 | 12.3% | +1.2 | 2.4 |
+| Mirari's Wake | 817 | 12.4% | +1.3 | 2.4 |
+| Damn | 862 | 12.6% | +1.5 | 2.3 |
+| Beast Within | 755 | 12.7% | +1.6 | 2.5 |
+| Urza's Cave | 860 | 12.8% | +1.7 | 2.3 |
+| Deathcap Glade | 855 | 12.8% | +1.8 | 2.4 |
+| Skullclamp | 783 | 13.3% | +2.2 | 2.5 |
+| Lumra, Bellow of the Woods | 385 | 13.4% | +2.3 | 3.5 |
+| Sakura-Tribe Elder | 820 | 13.6% | +2.6 | 2.5 |
+| Rampaging Baloths | 377 | 13.9% | +2.8 | 3.6 |
+| Eerie Ultimatum | 932 | 13.8% | +2.8 | 2.3 |
+| Field of the Dead | 827 | 14.1% | +3.2 | 2.5 |
+| Six | 783 | 14.2% | +3.2 | 2.5 |
+| Felidar Retreat | 806 | 15.0% | +4.1 | 2.6 |
 
-<!-- data {"name": "ranking_of_necrobloom_3", "title": "Ranking of Necrobloom", "mode": "audit", "run_id": "45809590747", "finished": "2026-11-26T11:20:05Z", "arms": [{"deck": "Necrobloom", "card": "@audit", "games": 6062, "wins": 697.5000000000006, "run_games": 6062, "run_stalls": 302, "run_clean_wins": 601, "reused": 0, "mc": "on", "label": "Audit of Necrobloom"}], "batching": {"runners": 1, "claimed": 1, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"], "cutoffs": {"n": 302, "alive": {"3": 117, "2": 61, "4": 124}, "me_alive": 293, "median_life": 34, "opp": {"Krenko_B3": [1826, 92], "Meren": [1839, 71], "Prossh": [1816, 81], "Tatyova_B3": [1731, 185], "UrDragon": [1842, 60], "Edgar": [1864, 77], "Talrand_B3": [1790, 109], "TuvasatheSunlit_B3": [1798, 101], "RafiqoftheMany_B3": [1851, 48], "Kykar_B3": [1829, 82]}, "why": {"time": 269, "other": 33}, "opp_why": {"Krenko_B3": {"time": 85, "other": 7}, "Prossh": {"time": 70, "other": 11}, "Meren": {"time": 65, "other": 6}, "TuvasatheSunlit_B3": {"time": 95, "other": 6}, "Tatyova_B3": {"time": 152, "other": 33}, "Talrand_B3": {"time": 100, "other": 9}, "Edgar": {"time": 68, "other": 9}, "Kykar_B3": {"time": 75, "other": 7}, "RafiqoftheMany_B3": {"time": 44, "other": 4}, "UrDragon": {"other": 7, "time": 53}}, "game_seconds": {"50": 70, "75": 147, "90": 360, "95": 792, "98": 900, "99": 900}}, "par_tally": {"games": 6062, "seats": 18186, "won": [59, 237, 587, 1022, 1403, 1710, 1885, 2002, 2063, 2097], "opponents": ["Edgar", "Krenko_B3", "Kykar_B3", "Meren", "Prossh", "RafiqoftheMany_B3", "Talrand_B3", "Tatyova_B3", "TuvasatheSunlit_B3", "UrDragon"], "round_cap": 0, "game_timeout": 900}, "speed": 0.404, "audit": {"deck": "Necrobloom", "cards": [{"card": "Springheart Nantuko", "seen": 627, "wins": 54.66666666666667, "diff": -3.11, "ci": 2.37}, {"card": "Life from the Loam", "seen": 607, "wins": 55.08333333333334, "diff": -2.7, "ci": 2.44}, {"card": "Flare of Cultivation", "seen": 596, "wins": 54.16666666666668, "diff": -2.68, "ci": 2.46}, {"card": "Tireless Provisioner", "seen": 594, "wins": 54.333333333333336, "diff": -2.62, "ci": 2.47}, {"card": "Shattered Sanctum", "seen": 664, "wins": 61.83333333333334, "diff": -2.46, "ci": 2.37}, {"card": "Generous Gift", "seen": 603, "wins": 57.750000000000014, "diff": -2.14, "ci": 2.5}, {"card": "Swords to Plowshares", "seen": 610, "wins": 58.66666666666667, "diff": -2.1, "ci": 2.49}, {"card": "Three Visits", "seen": 615, "wins": 59.58333333333334, "diff": -2.02, "ci": 2.49}, {"card": "Cache Grab", "seen": 618, "wins": 60.0, "diff": -2.0, "ci": 2.49}, {"card": "Elvish Rejuvenator", "seen": 576, "wins": 56.000000000000014, "diff": -1.97, "ci": 2.56}, {"card": "Yavimaya, Cradle of Growth", "seen": 556, "wins": 54.416666666666664, "diff": -1.89, "ci": 2.61}, {"card": "Rampant Growth", "seen": 627, "wins": 62.25000000000001, "diff": -1.76, "ci": 2.49}, {"card": "Search for Tomorrow", "seen": 567, "wins": 56.500000000000014, "diff": -1.7, "ci": 2.61}, {"card": "Ramunap Excavator", "seen": 582, "wins": 58.33333333333335, "diff": -1.64, "ci": 2.58}, {"card": "Sun Titan", "seen": 289, "wins": 28.999999999999993, "diff": -1.55, "ci": 3.56}, {"card": "Crucible of Worlds", "seen": 568, "wins": 57.91666666666667, "diff": -1.44, "ci": 2.63}, {"card": "Heroic Intervention", "seen": 612, "wins": 63.16666666666668, "diff": -1.32, "ci": 2.56}, {"card": "Isolated Chapel", "seen": 641, "wins": 66.58333333333334, "diff": -1.25, "ci": 2.51}, {"card": "Radiant Grove", "seen": 642, "wins": 66.83333333333333, "diff": -1.23, "ci": 2.51}, {"card": "Terramorphic Expanse", "seen": 666, "wins": 70.16666666666667, "diff": -1.09, "ci": 2.48}, {"card": "Twilight Mire", "seen": 676, "wins": 71.25, "diff": -1.09, "ci": 2.47}, {"card": "Sylvan Safekeeper", "seen": 578, "wins": 60.916666666666686, "diff": -1.07, "ci": 2.64}, {"card": "Disciple of Freyalise", "seen": 273, "wins": 28.666666666666664, "diff": -1.05, "ci": 3.73}, {"card": "Sol Ring", "seen": 618, "wins": 65.58333333333334, "diff": -1.0, "ci": 2.57}, {"card": "Razorverge Thicket", "seen": 664, "wins": 71.25000000000001, "diff": -0.87, "ci": 2.5}, {"card": "Splendid Reclamation", "seen": 598, "wins": 64.33333333333333, "diff": -0.83, "ci": 2.62}, {"card": "Avenger of Zendikar", "seen": 290, "wins": 31.249999999999996, "diff": -0.77, "ci": 3.66}, {"card": "Hour of Promise", "seen": 604, "wins": 65.5, "diff": -0.73, "ci": 2.62}, {"card": "Golgari Rot Farm", "seen": 620, "wins": 67.41666666666667, "diff": -0.7, "ci": 2.59}, {"card": "Springbloom Druid", "seen": 574, "wins": 62.66666666666668, "diff": -0.65, "ci": 2.69}, {"card": "Ash Barrens", "seen": 612, "wins": 66.91666666666667, "diff": -0.64, "ci": 2.61}, {"card": "Tranquil Thicket", "seen": 668, "wins": 73.16666666666667, "diff": -0.62, "ci": 2.52}, {"card": "Canopy Vista", "seen": 636, "wins": 69.83333333333334, "diff": -0.59, "ci": 2.57}, {"card": "Woodland Cemetery", "seen": 613, "wins": 67.58333333333334, "diff": -0.54, "ci": 2.62}, {"card": "Greensleeves, Maro-Sorcerer", "seen": 585, "wins": 64.66666666666667, "diff": -0.5, "ci": 2.68}, {"card": "Austere Command", "seen": 595, "wins": 66.00000000000003, "diff": -0.46, "ci": 2.66}, {"card": "Godless Shrine", "seen": 688, "wins": 76.33333333333333, "diff": -0.46, "ci": 2.5}, {"card": "Foundation Breaker", "seen": 618, "wins": 69.08333333333334, "diff": -0.36, "ci": 2.63}, {"card": "Haunted Mire", "seen": 665, "wins": 74.66666666666666, "diff": -0.31, "ci": 2.55}, {"card": "Victimize", "seen": 703, "wins": 79.33333333333331, "diff": -0.25, "ci": 2.49}, {"card": "Arcane Signet", "seen": 636, "wins": 72.0, "diff": -0.21, "ci": 2.6}, {"card": "Evolving Wilds", "seen": 623, "wins": 70.66666666666667, "diff": -0.18, "ci": 2.63}, {"card": "Crop Rotation", "seen": 564, "wins": 64.0, "diff": -0.17, "ci": 2.75}, {"card": "Farseek", "seen": 621, "wins": 70.66666666666669, "diff": -0.14, "ci": 2.64}, {"card": "Command Tower", "seen": 670, "wins": 76.41666666666666, "diff": -0.11, "ci": 2.55}, {"card": "Ripples of Undeath", "seen": 575, "wins": 65.75000000000001, "diff": -0.08, "ci": 2.73}, {"card": "Forest", "seen": 2266, "wins": 260.00000000000006, "diff": -0.05, "ci": 1.66}, {"card": "Sandsteppe Citadel", "seen": 680, "wins": 78.49999999999999, "diff": 0.04, "ci": 2.55}, {"card": "Aftermath Analyst", "seen": 571, "wins": 66.08333333333334, "diff": 0.07, "ci": 2.76}, {"card": "Titania, Protector of Argoth", "seen": 610, "wins": 70.66666666666667, "diff": 0.09, "ci": 2.68}, {"card": "Dryad of the Ilysian Grove", "seen": 616, "wins": 71.66666666666669, "diff": 0.14, "ci": 2.67}, {"card": "Plains", "seen": 1749, "wins": 203.00000000000006, "diff": 0.14, "ci": 1.78}, {"card": "Bojuka Bog", "seen": 630, "wins": 73.41666666666667, "diff": 0.16, "ci": 2.65}, {"card": "World Shaper", "seen": 604, "wins": 70.5, "diff": 0.18, "ci": 2.7}, {"card": "Overgrown Farmland", "seen": 648, "wins": 76.00000000000001, "diff": 0.25, "ci": 2.62}, {"card": "Exotic Orchard", "seen": 617, "wins": 72.66666666666667, "diff": 0.3, "ci": 2.68}, {"card": "Wight of the Reliquary", "seen": 558, "wins": 65.75000000000001, "diff": 0.31, "ci": 2.8}, {"card": "Path to Exile", "seen": 615, "wins": 72.58333333333333, "diff": 0.33, "ci": 2.69}, {"card": "Deadly Dispute", "seen": 601, "wins": 71.25000000000001, "diff": 0.39, "ci": 2.72}, {"card": "Yedora, Grave Gardener", "seen": 554, "wins": 65.83333333333334, "diff": 0.42, "ci": 2.82}, {"card": "Assassin's Trophy", "seen": 630, "wins": 75.00000000000001, "diff": 0.44, "ci": 2.67}, {"card": "Lumra, Bellow of the Woods", "seen": 273, "wins": 32.666666666666664, "diff": 0.48, "ci": 3.94}, {"card": "Marsh Flats", "seen": 674, "wins": 80.58333333333333, "diff": 0.51, "ci": 2.59}, {"card": "Moldervine Reclamation", "seen": 603, "wins": 72.33333333333334, "diff": 0.54, "ci": 2.73}, {"card": "Strip Mine", "seen": 618, "wins": 74.16666666666667, "diff": 0.55, "ci": 2.7}, {"card": "Shamanic Revelation", "seen": 598, "wins": 71.91666666666666, "diff": 0.58, "ci": 2.74}, {"card": "Oracle of Mul Daya", "seen": 612, "wins": 73.58333333333333, "diff": 0.58, "ci": 2.71}, {"card": "Scute Swarm", "seen": 622, "wins": 75.41666666666666, "diff": 0.69, "ci": 2.7}, {"card": "Barren Moor", "seen": 648, "wins": 78.66666666666667, "diff": 0.71, "ci": 2.65}, {"card": "Beast Within", "seen": 559, "wins": 67.91666666666666, "diff": 0.71, "ci": 2.84}, {"card": "Binding the Old Gods", "seen": 593, "wins": 72.08333333333333, "diff": 0.72, "ci": 2.76}, {"card": "Sunpetal Grove", "seen": 651, "wins": 79.24999999999999, "diff": 0.75, "ci": 2.65}, {"card": "Winding Way", "seen": 577, "wins": 70.33333333333334, "diff": 0.76, "ci": 2.8}, {"card": "Swamp", "seen": 1765, "wins": 213.25000000000003, "diff": 0.81, "ci": 1.79}, {"card": "Deceptive Landscape", "seen": 647, "wins": 79.50000000000001, "diff": 0.87, "ci": 2.67}, {"card": "Zuran Orb", "seen": 610, "wins": 75.24999999999999, "diff": 0.92, "ci": 2.74}, {"card": "Tireless Tracker", "seen": 575, "wins": 71.24999999999999, "diff": 0.98, "ci": 2.82}, {"card": "Fetid Heath", "seen": 599, "wins": 74.75, "diff": 1.08, "ci": 2.78}, {"card": "Conduit of Worlds", "seen": 587, "wins": 75.41666666666667, "diff": 1.49, "ci": 2.83}, {"card": "Dread Return", "seen": 677, "wins": 87.24999999999999, "diff": 1.56, "ci": 2.66}, {"card": "High Market", "seen": 657, "wins": 84.91666666666666, "diff": 1.59, "ci": 2.7}, {"card": "Sakura-Tribe Elder", "seen": 607, "wins": 79.41666666666664, "diff": 1.75, "ci": 2.81}, {"card": "Rampaging Baloths", "seen": 280, "wins": 37.66666666666667, "diff": 2.04, "ci": 4.08}, {"card": "Damn", "seen": 623, "wins": 83.33333333333333, "diff": 2.08, "ci": 2.8}, {"card": "Mirari's Wake", "seen": 607, "wins": 83.74999999999999, "diff": 2.55, "ci": 2.87}, {"card": "Six", "seen": 597, "wins": 83.0, "diff": 2.66, "ci": 2.9}, {"card": "Urza's Cave", "seen": 627, "wins": 87.5, "diff": 2.73, "ci": 2.84}, {"card": "Deathcap Glade", "seen": 644, "wins": 89.91666666666664, "diff": 2.75, "ci": 2.81}, {"card": "Skullclamp", "seen": 584, "wins": 82.50000000000001, "diff": 2.9, "ci": 2.95}, {"card": "Eerie Ultimatum", "seen": 684, "wins": 97.58333333333331, "diff": 3.11, "ci": 2.75}, {"card": "Field of the Dead", "seen": 618, "wins": 92.41666666666667, "diff": 3.84, "ci": 2.93}, {"card": "Felidar Retreat", "seen": 600, "wins": 93.83333333333334, "diff": 4.59, "ci": 3.02}], "chunk": null, "partial": false, "lands": {"curve": [["1-2", 439, 45.66666666666666], [3, 1292, 137.24999999999997], [4, 1892, 224.2500000000001], [5, 1483, 188.75000000000006], ["6-8", 956, 101.58333333333334]], "value": 0.04, "ci": 0.6, "mean": 4.24, "games": 6062}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.0, 0.1, 0.69, 2.13, 4.17, 6.17, 7.9, 8.92, 9.32, 9.63], "games": 6062, "stalls": 5.0}}} -->
+<!-- data {"name": "ranking_of_necrobloom_3", "title": "Ranking of Necrobloom", "mode": "audit", "run_id": "45812844273", "finished": "2026-11-26T11:41:41Z", "arms": [{"deck": "Necrobloom", "card": "@audit", "games": 8182, "wins": 920.0000000000016, "run_games": 8182, "run_stalls": 426, "run_clean_wins": 783, "reused": 0, "mc": "on", "label": "Audit of Necrobloom"}], "batching": {"runners": 15, "claimed": 23, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"], "cutoffs": {"n": 426, "alive": {"3": 168, "4": 172, "2": 86}, "me_alive": 414, "median_life": 33, "opp": {"Krenko_B3": [2483, 134], "Meren": [2480, 90], "Prossh": [2472, 119], "Tatyova_B3": [2336, 267], "UrDragon": [2498, 89], "Edgar": [2496, 99], "Talrand_B3": [2417, 155], "TuvasatheSunlit_B3": [2423, 143], "RafiqoftheMany_B3": [2495, 66], "Kykar_B3": [2446, 116]}, "why": {"time": 386, "other": 40}, "opp_why": {"Krenko_B3": {"time": 125, "other": 9}, "Prossh": {"time": 103, "other": 16}, "Meren": {"time": 84, "other": 6}, "Talrand_B3": {"time": 143, "other": 12}, "TuvasatheSunlit_B3": {"time": 136, "other": 7}, "Tatyova_B3": {"time": 227, "other": 40}, "UrDragon": {"time": 82, "other": 7}, "Edgar": {"time": 89, "other": 10}, "Kykar_B3": {"time": 109, "other": 7}, "RafiqoftheMany_B3": {"time": 60, "other": 6}}, "game_seconds": {"50": 69, "75": 146, "90": 374, "95": 824, "98": 900, "99": 900}}, "par_tally": {"games": 8182, "seats": 24546, "won": [76, 306, 769, 1358, 1873, 2284, 2535, 2686, 2771, 2819], "opponents": ["Edgar", "Krenko_B3", "Kykar_B3", "Meren", "Prossh", "RafiqoftheMany_B3", "Talrand_B3", "Tatyova_B3", "TuvasatheSunlit_B3", "UrDragon"], "round_cap": 0, "game_timeout": 900}, "speed": 0.4, "audit": {"deck": "Necrobloom", "cards": [{"card": "Springheart Nantuko", "seen": 840, "wins": 69.41666666666669, "diff": -3.32, "ci": 2.0}, {"card": "Life from the Loam", "seen": 841, "wins": 76.83333333333333, "diff": -2.35, "ci": 2.08}, {"card": "Disciple of Freyalise", "seen": 398, "wins": 36.83333333333334, "diff": -2.09, "ci": 2.93}, {"card": "Elvish Rejuvenator", "seen": 799, "wins": 76.00000000000001, "diff": -1.92, "ci": 2.16}, {"card": "Ramunap Excavator", "seen": 770, "wins": 73.5, "diff": -1.88, "ci": 2.2}, {"card": "Search for Tomorrow", "seen": 768, "wins": 73.41666666666667, "diff": -1.86, "ci": 2.2}, {"card": "Crucible of Worlds", "seen": 795, "wins": 77.16666666666667, "diff": -1.7, "ci": 2.18}, {"card": "Flare of Cultivation", "seen": 818, "wins": 79.58333333333331, "diff": -1.68, "ci": 2.16}, {"card": "Sylvan Safekeeper", "seen": 778, "wins": 76.75, "diff": -1.52, "ci": 2.22}, {"card": "Swords to Plowshares", "seen": 814, "wins": 80.75000000000001, "diff": -1.47, "ci": 2.18}, {"card": "Radiant Grove", "seen": 871, "wins": 86.74999999999999, "diff": -1.44, "ci": 2.12}, {"card": "Shattered Sanctum", "seen": 901, "wins": 89.91666666666667, "diff": -1.42, "ci": 2.09}, {"card": "Tireless Provisioner", "seen": 778, "wins": 77.58333333333333, "diff": -1.41, "ci": 2.23}, {"card": "Springbloom Druid", "seen": 786, "wins": 78.83333333333333, "diff": -1.34, "ci": 2.22}, {"card": "Sol Ring", "seen": 832, "wins": 84.74999999999997, "diff": -1.18, "ci": 2.18}, {"card": "Razorverge Thicket", "seen": 893, "wins": 91.0833333333333, "diff": -1.17, "ci": 2.11}, {"card": "Haunted Mire", "seen": 902, "wins": 92.16666666666663, "diff": -1.15, "ci": 2.11}, {"card": "Three Visits", "seen": 852, "wins": 87.08333333333333, "diff": -1.14, "ci": 2.16}, {"card": "Heroic Intervention", "seen": 811, "wins": 82.99999999999999, "diff": -1.12, "ci": 2.21}, {"card": "Cache Grab", "seen": 819, "wins": 83.83333333333333, "diff": -1.12, "ci": 2.2}, {"card": "Generous Gift", "seen": 792, "wins": 81.24999999999999, "diff": -1.09, "ci": 2.23}, {"card": "Canopy Vista", "seen": 879, "wins": 90.74999999999999, "diff": -1.03, "ci": 2.14}, {"card": "Rampant Growth", "seen": 829, "wins": 86.33333333333334, "diff": -0.92, "ci": 2.2}, {"card": "Arcane Signet", "seen": 858, "wins": 90.16666666666666, "diff": -0.82, "ci": 2.18}, {"card": "Tranquil Thicket", "seen": 880, "wins": 92.58333333333331, "diff": -0.81, "ci": 2.15}, {"card": "Ash Barrens", "seen": 801, "wins": 84.25, "diff": -0.8, "ci": 2.24}, {"card": "Crop Rotation", "seen": 782, "wins": 82.24999999999999, "diff": -0.8, "ci": 2.27}, {"card": "Greensleeves, Maro-Sorcerer", "seen": 790, "wins": 83.58333333333333, "diff": -0.73, "ci": 2.26}, {"card": "Twilight Mire", "seen": 905, "wins": 95.99999999999997, "diff": -0.72, "ci": 2.13}, {"card": "Aftermath Analyst", "seen": 789, "wins": 84.74999999999999, "diff": -0.56, "ci": 2.28}, {"card": "Avenger of Zendikar", "seen": 403, "wins": 43.416666666666664, "diff": -0.5, "ci": 3.11}, {"card": "Austere Command", "seen": 828, "wins": 89.41666666666666, "diff": -0.5, "ci": 2.23}, {"card": "Farseek", "seen": 838, "wins": 90.66666666666666, "diff": -0.47, "ci": 2.22}, {"card": "Woodland Cemetery", "seen": 850, "wins": 92.16666666666666, "diff": -0.45, "ci": 2.21}, {"card": "Conduit of Worlds", "seen": 811, "wins": 88.58333333333331, "diff": -0.36, "ci": 2.27}, {"card": "Shamanic Revelation", "seen": 804, "wins": 88.08333333333331, "diff": -0.32, "ci": 2.28}, {"card": "Yavimaya, Cradle of Growth", "seen": 757, "wins": 82.91666666666667, "diff": -0.32, "ci": 2.34}, {"card": "Sandsteppe Citadel", "seen": 893, "wins": 97.83333333333331, "diff": -0.32, "ci": 2.17}, {"card": "Golgari Rot Farm", "seen": 862, "wins": 94.58333333333331, "diff": -0.3, "ci": 2.21}, {"card": "Splendid Reclamation", "seen": 797, "wins": 87.99999999999999, "diff": -0.22, "ci": 2.29}, {"card": "Barren Moor", "seen": 867, "wins": 95.74999999999999, "diff": -0.22, "ci": 2.21}, {"card": "Forest", "seen": 3053, "wins": 339.8333333333332, "diff": -0.18, "ci": 1.41}, {"card": "Plains", "seen": 2302, "wins": 256.7500000000002, "diff": -0.13, "ci": 1.52}, {"card": "Godless Shrine", "seen": 914, "wins": 101.74999999999999, "diff": -0.13, "ci": 2.16}, {"card": "Foundation Breaker", "seen": 785, "wins": 87.33333333333333, "diff": -0.13, "ci": 2.31}, {"card": "Isolated Chapel", "seen": 858, "wins": 95.74999999999997, "diff": -0.09, "ci": 2.23}, {"card": "Evolving Wilds", "seen": 849, "wins": 94.99999999999999, "diff": -0.06, "ci": 2.24}, {"card": "Oracle of Mul Daya", "seen": 813, "wins": 91.33333333333331, "diff": -0.01, "ci": 2.29}, {"card": "Marsh Flats", "seen": 898, "wins": 101.41666666666664, "diff": 0.06, "ci": 2.19}, {"card": "Yedora, Grave Gardener", "seen": 786, "wins": 88.99999999999997, "diff": 0.09, "ci": 2.33}, {"card": "Strip Mine", "seen": 845, "wins": 95.8333333333333, "diff": 0.11, "ci": 2.26}, {"card": "Assassin's Trophy", "seen": 841, "wins": 95.5833333333333, "diff": 0.14, "ci": 2.26}, {"card": "Titania, Protector of Argoth", "seen": 823, "wins": 94.08333333333333, "diff": 0.21, "ci": 2.29}, {"card": "Overgrown Farmland", "seen": 860, "wins": 98.41666666666667, "diff": 0.22, "ci": 2.25}, {"card": "Binding the Old Gods", "seen": 808, "wins": 92.74999999999997, "diff": 0.26, "ci": 2.31}, {"card": "Path to Exile", "seen": 828, "wins": 95.0, "diff": 0.26, "ci": 2.29}, {"card": "Dryad of the Ilysian Grove", "seen": 847, "wins": 97.41666666666666, "diff": 0.29, "ci": 2.27}, {"card": "Scute Swarm", "seen": 825, "wins": 94.99999999999997, "diff": 0.3, "ci": 2.29}, {"card": "Wight of the Reliquary", "seen": 751, "wins": 86.49999999999999, "diff": 0.3, "ci": 2.39}, {"card": "Victimize", "seen": 960, "wins": 110.8333333333333, "diff": 0.34, "ci": 2.15}, {"card": "Swamp", "seen": 2370, "wins": 272.5000000000001, "diff": 0.36, "ci": 1.52}, {"card": "Sun Titan", "seen": 378, "wins": 44.08333333333335, "diff": 0.44, "ci": 3.31}, {"card": "Terramorphic Expanse", "seen": 913, "wins": 106.24999999999997, "diff": 0.44, "ci": 2.2}, {"card": "Hour of Promise", "seen": 800, "wins": 93.25, "diff": 0.46, "ci": 2.34}, {"card": "Tireless Tracker", "seen": 766, "wins": 89.41666666666666, "diff": 0.47, "ci": 2.38}, {"card": "Command Tower", "seen": 910, "wins": 106.74999999999997, "diff": 0.55, "ci": 2.21}, {"card": "Sunpetal Grove", "seen": 871, "wins": 102.3333333333333, "diff": 0.56, "ci": 2.26}, {"card": "World Shaper", "seen": 817, "wins": 97.08333333333331, "diff": 0.71, "ci": 2.33}, {"card": "High Market", "seen": 880, "wins": 104.58333333333333, "diff": 0.72, "ci": 2.26}, {"card": "Dread Return", "seen": 933, "wins": 111.83333333333333, "diff": 0.84, "ci": 2.21}, {"card": "Ripples of Undeath", "seen": 781, "wins": 94.08333333333331, "diff": 0.89, "ci": 2.39}, {"card": "Fetid Heath", "seen": 826, "wins": 99.58333333333333, "diff": 0.9, "ci": 2.33}, {"card": "Exotic Orchard", "seen": 842, "wins": 101.74999999999997, "diff": 0.94, "ci": 2.32}, {"card": "Bojuka Bog", "seen": 844, "wins": 102.33333333333333, "diff": 0.98, "ci": 2.32}, {"card": "Zuran Orb", "seen": 850, "wins": 103.08333333333334, "diff": 0.99, "ci": 2.31}, {"card": "Deceptive Landscape", "seen": 874, "wins": 106.16666666666667, "diff": 1.01, "ci": 2.28}, {"card": "Winding Way", "seen": 772, "wins": 94.16666666666664, "diff": 1.05, "ci": 2.42}, {"card": "Deadly Dispute", "seen": 798, "wins": 97.83333333333331, "diff": 1.13, "ci": 2.39}, {"card": "Moldervine Reclamation", "seen": 820, "wins": 101.16666666666667, "diff": 1.21, "ci": 2.36}, {"card": "Mirari's Wake", "seen": 817, "wins": 101.24999999999997, "diff": 1.28, "ci": 2.37}, {"card": "Damn", "seen": 862, "wins": 108.41666666666664, "diff": 1.49, "ci": 2.33}, {"card": "Beast Within", "seen": 755, "wins": 95.66666666666667, "diff": 1.57, "ci": 2.48}, {"card": "Urza's Cave", "seen": 860, "wins": 110.00000000000001, "diff": 1.73, "ci": 2.34}, {"card": "Deathcap Glade", "seen": 855, "wins": 109.83333333333333, "diff": 1.79, "ci": 2.35}, {"card": "Skullclamp", "seen": 783, "wins": 103.91666666666664, "diff": 2.24, "ci": 2.48}, {"card": "Lumra, Bellow of the Woods", "seen": 385, "wins": 51.583333333333336, "diff": 2.26, "ci": 3.47}, {"card": "Sakura-Tribe Elder", "seen": 820, "wins": 111.16666666666664, "diff": 2.57, "ci": 2.45}, {"card": "Rampaging Baloths", "seen": 377, "wins": 52.41666666666667, "diff": 2.79, "ci": 3.56}, {"card": "Eerie Ultimatum", "seen": 932, "wins": 128.24999999999994, "diff": 2.84, "ci": 2.33}, {"card": "Field of the Dead", "seen": 827, "wins": 116.66666666666666, "diff": 3.18, "ci": 2.48}, {"card": "Six", "seen": 783, "wins": 111.08333333333333, "diff": 3.25, "ci": 2.55}, {"card": "Felidar Retreat", "seen": 806, "wins": 120.5833333333333, "diff": 4.12, "ci": 2.56}], "chunk": null, "partial": false, "lands": {"curve": [["0-2", 604, 65.75], [3, 1771, 192.83333333333343], [4, 2540, 284.83333333333337], [5, 1996, 239.7500000000001], ["6-8", 1271, 136.83333333333331]], "value": 0.01, "ci": 0.52, "mean": 4.23, "games": 8182}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.0, 0.09, 0.61, 1.99, 3.97, 6.03, 7.7, 8.65, 9.01, 9.33], "games": 8182, "stalls": 5.2}}} -->
