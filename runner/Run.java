@@ -225,10 +225,10 @@ public class Run {
       long s=System.currentTimeMillis(); String res2;
       ExecutorService ex=Executors.newSingleThreadExecutor(); Future<?> f=ex.submit(()->mc.startGame(game));
       // slow games: a board summary at 3 and 7.5 minutes and at the cut ("SLOW" lines, diagnostics only)
-      final long t0=System.currentTimeMillis();
-      for(long chk: new long[]{180,450}){ if(chk>=timeout) break; long left=chk*1000-(System.currentTimeMillis()-t0); if(left<=0) continue;
+      final long w0=System.currentTimeMillis();
+      for(long chk: new long[]{180,450}){ if(chk>=timeout) break; long left=chk*1000-(System.currentTimeMillis()-w0); if(left<=0) continue;
         try{ f.get(left,TimeUnit.MILLISECONDS); break; }catch(TimeoutException te0){ System.out.println(slowLine(game,chk)); }catch(Exception e0){ break; } }
-      try { if(!f.isDone()) f.get(Math.max(1,timeout*1000-(System.currentTimeMillis()-t0)),TimeUnit.MILLISECONDS); } catch(TimeoutException te){ System.out.println(slowLine(game,timeout)); cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} f.cancel(true); try{ f.get(20,TimeUnit.SECONDS);}catch(Throwable x){} } catch(Exception e){ e.printStackTrace(); }
+      try { if(!f.isDone()) f.get(Math.max(1,timeout*1000-(System.currentTimeMillis()-w0)),TimeUnit.MILLISECONDS); } catch(TimeoutException te){ System.out.println(slowLine(game,timeout)); cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} f.cancel(true); try{ f.get(20,TimeUnit.SECONDS);}catch(Throwable x){} } catch(Exception e){ e.printStackTrace(); }
       ex.shutdownNow();
       int turn=game.getPhaseHandler().getTurn();
       if(game.getOutcome()==null || game.getOutcome().isDraw()) res2="Draw"; else res2=game.getOutcome().getWinningLobbyPlayer().getName();
