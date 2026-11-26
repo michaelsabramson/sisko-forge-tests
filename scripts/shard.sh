@@ -55,7 +55,14 @@ for p in 0 1 2 3; do
   PROF=$(jq -r ".arms[$i].profile // .profile // \"Default\"" $REQ); OPROF=$(jq -r ".opp_profile // \"Default\"" $REQ); MC=$(jq -r ".arms[$i].mc // .mc // \"off\"" $REQ); OMC=$(jq -r ".opp_mc // \"off\"" $REQ)
   AO=$OPP; [ -n "$(jq -r ".arms[$i].opponents // empty | length" $REQ)" ] && AO=$(dk $(jq -r ".arms[$i].opponents[]" $REQ))   # per-deck opponents (ladder)   # tested deck's AI settings (forge-gui/res/ai/<profile>.ai)
   AUD="-Daudit=$D"; [ "$(jq -r '.mode // "swap"' $REQ)" = "package" ] && AUD="";   # opening cards logged for the Rank (package games force a rotating card)
-  JX=""; [ "$(jq -r ".arms[$i].jvm // .jvm // empty" $REQ)" = "gc1" ] && JX="-XX:ParallelGCThreads=1"   # one GC thread per game process
+  # speed variants ("jvm", comma-separated): gc1 = one GC thread per process, xms = start at full heap, j25 = Java 25 with
+  # compact object headers, nolog = skip game-log formatting (forge.patch), p3 = 3 game processes on this runner
+  JV=",$(jq -r ".arms[$i].jvm // .jvm // empty" $REQ),"; JX=""; JAVA=java
+  case $JV in *,gc1,*) JX="$JX -XX:ParallelGCThreads=1";; esac
+  case $JV in *,xms,*) JX="$JX -Xms3g";; esac
+  case $JV in *,nolog,*) JX="$JX -Dsisko.nolog=true";; esac
+  case $JV in *,j25,*) [ -n "${JAVA_HOME_25_X64:-}" ] && { JAVA="$JAVA_HOME_25_X64/bin/java"; JX="$JX -XX:+UseCompactObjectHeaders"; };; esac
+  case $JV in *,p3,*) [ $p -eq 3 ] && continue;; esac
   # CPU profile (request "profile_jfr"): the first runner's first two processes record 10 minutes, after a 3-minute warm-up
   [ "$(jq -r '.profile_jfr // false' $REQ)" = "true" ] && [ "$S" = "0" ] && [ $p -lt 2 ] && JX="$JX -XX:StartFlightRecording=delay=3m,duration=10m,filename=out/rec_$k.jfr,settings=profile"
   [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
@@ -71,7 +78,7 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
+  timeout ${MIN}m $JAVA -Xmx3g -XX:+UseParallelGC $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
 done
 touch out/started
 wait

@@ -10,14 +10,35 @@
       "profile": "Default",
       "mc": "max",
       "jvm": "gc1"
+    },
+    {
+      "profile": "Default",
+      "mc": "max",
+      "jvm": "xms"
+    },
+    {
+      "profile": "Default",
+      "mc": "max",
+      "jvm": "j25"
+    },
+    {
+      "profile": "Default",
+      "mc": "max",
+      "jvm": "nolog"
+    },
+    {
+      "profile": "Default",
+      "mc": "max",
+      "jvm": "p3"
     }
   ],
-  "name": "Speed test: one GC thread per game process, with a CPU profile",
+  "name": "Speed test: engine and Java settings, with a CPU profile",
   "whole_runners": true,
+  "no_earlystop": true,
   "profile_jfr": true,
   "hidden": true,
-  "precision": 6.0,
-  "minutes": 20,
+  "precision": 0.5,
+  "minutes": 25,
   "shards": 38,
   "submitted": "2026-11-26T01:00:00+00:00"
 }

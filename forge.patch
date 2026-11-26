@@ -278,10 +278,23 @@ index 265d1549..635e4fb4 100644
              sa.resetTargets();
              if (!sa.canTarget(opp)) {
 diff --git a/forge-game/src/main/java/forge/game/Game.java b/forge-game/src/main/java/forge/game/Game.java
-index 90e80e71..b0d4b37f 100644
+index 90e80e71..87e32aa7 100644
 --- a/forge-game/src/main/java/forge/game/Game.java
 +++ b/forge-game/src/main/java/forge/game/Game.java
-@@ -679,6 +679,10 @@ public class Game {
+@@ -408,7 +408,11 @@ public class Game {
+ 
+         view.updatePlayers(this);
+ 
+-        subscribeToEvents(gameLog.getEventVisitor());
++        // -Dsisko.nolog=true: headless test runs never read the game log, so skip formatting a log line for every
++        // event (in every game, including the lookahead's simulated copies)
++        if (!Boolean.getBoolean("sisko.nolog")) {
++            subscribeToEvents(gameLog.getEventVisitor());
++        }
+     }
+ 
+     public GameView getView() {
+@@ -679,6 +683,10 @@ public class Game {
          if (zones == null) {
              return CardCollection.EMPTY;
          }

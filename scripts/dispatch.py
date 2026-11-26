@@ -331,7 +331,7 @@ def main():
             sh = req["shards"]
             # slot tests can stop early once settled (scripts/aggregate.py): a smaller first round leaves more of the run
             # in batches, which runners stop claiming, and early reads come every 10 minutes instead of 20
-            req["earlystop"] = req["mode"] in ("swap", "package", "pilot", "tail") and not r.get("full")
+            req["earlystop"] = req["mode"] in ("swap", "package", "pilot", "tail") and not r.get("full") and not r.get("no_earlystop")
             if req["earlystop"]:
                 # about five looks per run: every 5 minutes for short runs, every 10 for the longest
                 est = max(need[i] / (per[i] * measured_gpm(arms[i]["deck"], opps, speed_profile(arms[i], req))) for i in todo)

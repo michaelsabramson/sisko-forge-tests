@@ -14,7 +14,7 @@ on:
       MAIN_TOKEN: { required: true }
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: the 2026-11-22 ubuntu-latest image breaks Forge's Maven build
     outputs:
       shards: ${{ steps.m.outputs.shards }}
     steps:
@@ -31,6 +31,12 @@ jobs:
           GIT_LFS_SKIP_SMUDGE=1 git fetch --depth 1 origin $(cat ../FORGE_COMMIT)
           git -c advice.detachedHead=false checkout FETCH_HEAD
           git apply ../forge.patch
+      - name: Reuse downloaded build dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('FORGE_COMMIT') }}
+          restore-keys: maven-
       - name: Build engine (core, game, ai)
         run: |
           cd forge
@@ -58,7 +64,11 @@ jobs:
       - uses: actions/checkout@v4
         with: { repository: '${{ inputs.repo }}', ref: '${{ inputs.sha }}' }
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '21' }
+        with:
+          distribution: temurin
+          java-version: |   # 25 for speed experiments (JAVA_HOME_25_X64); the last one, 21, stays the default
+            25
+            21
       - uses: actions/download-artifact@v4
         with: { name: build }
       - run: tar xzf build.tgz
