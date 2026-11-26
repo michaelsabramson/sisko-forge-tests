@@ -55,6 +55,9 @@ for p in 0 1 2 3; do
   PROF=$(jq -r ".arms[$i].profile // .profile // \"Default\"" $REQ); OPROF=$(jq -r ".opp_profile // \"Default\"" $REQ); MC=$(jq -r ".arms[$i].mc // .mc // \"off\"" $REQ); OMC=$(jq -r ".opp_mc // \"off\"" $REQ)
   AO=$OPP; [ -n "$(jq -r ".arms[$i].opponents // empty | length" $REQ)" ] && AO=$(dk $(jq -r ".arms[$i].opponents[]" $REQ))   # per-deck opponents (ladder)   # tested deck's AI settings (forge-gui/res/ai/<profile>.ai)
   AUD="-Daudit=$D"; [ "$(jq -r '.mode // "swap"' $REQ)" = "package" ] && AUD="";   # opening cards logged for the Rank (package games force a rotating card)
+  JX=""; [ "$(jq -r ".arms[$i].jvm // .jvm // empty" $REQ)" = "gc1" ] && JX="-XX:ParallelGCThreads=1"   # one GC thread per game process
+  # CPU profile (request "profile_jfr"): the first runner's first two processes record 10 minutes, after a 3-minute warm-up
+  [ "$(jq -r '.profile_jfr // false' $REQ)" = "true" ] && [ "$S" = "0" ] && [ $p -lt 2 ] && JX="$JX -XX:StartFlightRecording=delay=3m,duration=10m,filename=out/rec_$k.jfr,settings=profile"
   [ "$C" = "@audit" ] && AUD="-Daudit=$D"; [ "$C" = "@usage" ] && AUD="-Daudit=$D -Dusage=1"; [ "$(jq -r ".arms[$i].usage // false" $REQ)" = "true" ] && AUD="-Daudit=$D -Dusage=1"
   # precision-sized runs: this runner's processes on the same arm share one pool of games (quota x processes),
   # so the runner finishes together instead of waiting on whichever process drew the slowest games
@@ -68,7 +71,11 @@ for p in 0 1 2 3; do
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
+  timeout ${MIN}m java -Xmx3g -XX:+UseParallelGC $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $((SB+k)) $GT nolog $(dk $D) $AO > out/arm${i}_${k}.log 2>out/arm${i}_${k}.err &
 done
 touch out/started
 wait
+if ls out/rec_*.jfr >/dev/null 2>&1; then
+  for r in out/rec_*.jfr; do "${JAVA_HOME:+$JAVA_HOME/bin/}jfr" print --events jdk.ExecutionSample "$r"; done | python3 scripts/jfrsummary.py > out/profile.txt 2>&1
+fi
+touch out/profile.done

@@ -192,7 +192,9 @@ def main():
             # a pilot: an AI profile, optionally with Forge's lookahead search ("mc": on = profile budgets, max = desktop)
             mc = p.get("mc", "off")
             arms.append({"deck": r["base"], "card": "", "profile": p["profile"], **({"mc": mc} if mc != "off" else {}),
-                         "label": f"{p['profile']} AI" + {"off": "", "on": " + lookahead", "max": " + lookahead (desktop)"}[mc]})
+                         **({"jvm": p["jvm"]} if p.get("jvm") else {}),
+                         "label": f"{p['profile']} AI" + {"off": "", "on": " + lookahead", "max": " + lookahead (desktop)"}[mc]
+                                  + (f" [{p['jvm']}]" if p.get("jvm") else "")})
         compare = [[0, i] for i in range(1, len(arms))]
     elif r.get("mode", "swap") == "swap":
         base = r["base"]
@@ -273,6 +275,7 @@ def main():
     req["game_timeout"] = int(r.get("game_timeout", DEFAULT_TIMEOUT))   # seconds before a game is cut off
     req["round_cap"] = int(r.get("round_cap", DEFAULT_ROUND_CAP))       # 0 = no round cap (the time limit decides)
     limits = str(req["game_timeout"]) + (f"r{req['round_cap']}" if req["round_cap"] else "")
+    if r.get("profile_jfr"): req["profile_jfr"] = True   # CPU profile of a few game processes (scripts/shard.sh)
     if r.get("adaptive") and r.get("mode") == "audit":   # off by default (2026-11-25): more games beat targeted ones
         req["adaptive"] = True   # one-job Rank: targeted games for its uncertain cards in the second half (aggregate.py)
     if r.get("hidden"):
@@ -300,6 +303,7 @@ def main():
     for a in arms:
         a["key"] = cache.full_key(a, opps, req["band"], eng, a.get("profile") or req.get("profile"), req.get("opp_profile"),
                                   a.get("mc") or req.get("mc"), req.get("opp_mc"), limits)
+        if a.get("jvm"): a["key"] = cache._h((a["key"] + "|jvm=" + a["jvm"]).encode())[:20]   # speed experiments stay apart
         e = c.get(a["key"], {})
         a["prior_games"], a["prior_wins"] = e.get("games", 0), e.get("wins", 0)
     procs_total = req["shards"] * 4
@@ -312,6 +316,8 @@ def main():
         todo = [i for i, n_new in enumerate(need) if n_new > 0]
         if todo:
             req["procs"] = allocate(need, todo, procs_total)
+            if r.get("whole_runners"):   # speed experiments: each runner plays one arm only, so arms don't share a machine
+                req["procs"] = [todo[(k // 4) % len(todo)] for k in range(procs_total)]
             per = [req["procs"].count(i) for i in range(len(arms))]
             gpm = [measured_gpm(a["deck"], opps, speed_profile(a, req)) for a in arms]
             req["gpm"] = [round(g, 3) for g in gpm]

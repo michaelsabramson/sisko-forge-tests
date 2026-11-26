@@ -1,0 +1,13 @@
+{
+  "mode": "pilot",
+  "base": "SiskoFinal",
+  "pilots": [{"profile": "Default", "mc": "max"}, {"profile": "Default", "mc": "max", "jvm": "gc1"}],
+  "name": "Speed test: one GC thread per game process, with a CPU profile",
+  "whole_runners": true,
+  "profile_jfr": true,
+  "hidden": true,
+  "precision": 4.0,
+  "minutes": 45,
+  "shards": 38,
+  "submitted": "2026-11-26T01:00:00+00:00"
+}
