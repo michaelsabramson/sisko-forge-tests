@@ -7,9 +7,9 @@
       "mc": "on"
     }
   ],
-  "name": "Pool probe: Lathril and Isshin in place of Tuvasa and Tatyova",
+  "name": "Pool check: current 10-deck pool with the loop fix and no round cap",
   "hidden": true,
-  "minutes": 15,
+  "minutes": 20,
   "shards": 38,
   "opponents": [
     "Edgar",
@@ -19,8 +19,8 @@
     "Talrand_B3",
     "Krenko_B3",
     "RafiqoftheMany_B3",
-    "Lathril_B3",
-    "Isshin_B3",
+    "TuvasatheSunlit_B3",
+    "Tatyova_B3",
     "Kykar_B3"
   ],
   "submitted": "2026-11-26T07:30:00+00:00"
