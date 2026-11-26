@@ -37,8 +37,8 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             if t: speed[i][0] += 1; speed[i][1] += int(t.group(1)); cutoffs["ms"].append(int(t.group(1)))
             won = m.group(1) == me
             for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[0] += 1
-            if m.group(1) == 'Draw' and req.get('round_cap'):
-                # a game cut off unfinished (round cap or time limit) is a draw shared by the players still in it
+            if m.group(1) == 'Draw' and (req.get('round_cap') or req.get('game_timeout')):
+                # a game cut off unfinished (time limit, or a round cap if one is set) is a draw shared by the players still in it
                 alive = [p.split('=')[0] for p in l.split('ms', 1)[-1].split() if '=' in p and not p.endswith('x')
                          and p.split('=')[1].lstrip('-').isdigit() and int(p.split('=')[1]) > 0]
                 won = 1 / len(alive) if me in alive else 0
@@ -51,7 +51,7 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
                 cutoffs["alive"][len(alive)] = cutoffs["alive"].get(len(alive), 0) + 1
                 ms_ = int(t.group(1)) if t else 0; rd_ = re.search(r'\(round ([\d.]+)\)', l)
                 why = "loop" if not alive else "time" if ms_ >= 0.98 * 1000 * float(req.get('game_timeout') or 120) else \
-                      "cap" if rd_ and float(rd_.group(1)) >= float(req['round_cap']) else "other"
+                      "cap" if rd_ and req.get('round_cap') and float(rd_.group(1)) >= float(req['round_cap']) else "other"
                 cutoffs["why"][why] = cutoffs["why"].get(why, 0) + 1
                 for o in pod[1:]: cutoffs["opp_why"].setdefault(o, {}).setdefault(why, 0); cutoffs["opp_why"][o][why] += 1
                 cutoffs["me_alive"] += me in alive; cutoffs["n"] += 1
