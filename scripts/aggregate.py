@@ -13,6 +13,7 @@ seen = {}                      # audit: card -> [games where it was in the kept 
 side = [[{}, 0, 0] for _ in arms]   # other modes, per arm: same card tallies, games and wins with a logged opening (feeds the Rank)
 tops = []                      # audit: (first 10 cards, won) per game, for the land curve
 forced_g = {}                  # adaptive Rank: card -> [games where the plan forced it into the opening hand, wins]
+partally = {"games": 0, "seats": 0, "won": [0] * 10}   # opponents' wins by round (for the pool's par line)
 cutoffs = {"opp": {}, "alive": {}, "me_alive": 0, "n": 0, "life": [], "why": {}, "opp_why": {}, "ms": []}   # round-cap draws: who/what was left
 paced = []                     # audit: (won, round, stall) per game, for the speed curve (scripts/pace.py)
 import pace
@@ -37,6 +38,14 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
             if t: speed[i][0] += 1; speed[i][1] += int(t.group(1)); cutoffs["ms"].append(int(t.group(1)))
             won = m.group(1) == me
             for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[0] += 1
+            # par: how fast the opponents win (the average opponent's share of games won by each round), from this run's games
+            if pod:
+                partally["games"] += 1; partally["seats"] += len(pod) - 1
+                if m.group(1) in pod[1:]:
+                    pw = pace.game(l, m.group(1))
+                    if pw and pw[0]:
+                        for k_, b_ in enumerate(pace.ROUNDS):
+                            if pw[1] < b_ + 1: partally["won"][k_] += 1
             if m.group(1) == 'Draw' and (req.get('round_cap') or req.get('game_timeout')):
                 # a game cut off unfinished (time limit, or a round cap if one is set) is a draw shared by the players still in it
                 alive = [p.split('=')[0] for p in l.split('ms', 1)[-1].split() if '=' in p and not p.endswith('x')
@@ -253,6 +262,8 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
                         "opp": cutoffs["opp"], "why": cutoffs["why"], "opp_why": cutoffs["opp_why"],
                         "game_seconds": {q: round(sorted(cutoffs["ms"])[min(len(cutoffs["ms"]) - 1, int(q / 100 * len(cutoffs["ms"])))] / 1000)
                                          for q in (50, 75, 90, 95, 98, 99)} if cutoffs["ms"] else None}} if cutoffs["n"] else {}),
+        **({"par_tally": {**partally, "opponents": sorted(req.get('opponents') or []), "round_cap": req.get('round_cap', 0),
+                          "game_timeout": req.get('game_timeout')}} if partally["games"] else {}),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"tail": {"deck": arms[0]['deck'], "ref": arms[0]['card'], "rows": tail_rows, **req.get('tail', {})}} if tail_rows is not None else {}),
         **({"usage": {"deck": arms[0]['deck'], "cards": usage_rows, "forced": [x['card'] for x in arms if x.get('usage')]}} if usage_rows else {}),
