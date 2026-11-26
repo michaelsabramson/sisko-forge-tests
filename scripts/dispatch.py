@@ -58,7 +58,7 @@ STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 
 
 DEFAULT_PROFILE = "Default"   # Hard without the lookahead is Default plus defending at 5 life; with it, no gain was measured
-DEFAULT_MC = "max"            # lookahead on for the tested lists (2026-11-25): +1.9 ± 1.5 clean wins with a 6-minute limit
+DEFAULT_MC = "on"             # lookahead on for the tested lists, normal budget (2026-11-26): same strength as desktop max (-0.1 ± 2.2), a third of the thinking budget
 DEFAULT_TIMEOUT = 900         # seconds before a game is cut off: only a safety net now that games end at a round cap
 DEFAULT_ROUND_CAP = 15        # rounds before an unfinished game is ended as a draw shared by the players still in it
 

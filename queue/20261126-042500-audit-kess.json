@@ -1,7 +1,7 @@
 {
   "mode": "audit",
-  "base": "Chatterfang",
-  "name": "Ranking of Chatterfang",
+  "base": "Kess",
+  "name": "Ranking of Kess",
   "precision": 2,
   "shards": 38,
   "opponents": [
@@ -16,5 +16,5 @@
     "Tatyova_B3",
     "Kykar_B3"
   ],
-  "submitted": "2026-11-25T19:52:00+00:00"
+  "submitted": "2026-11-26T04:25:00+00:00"
 }
