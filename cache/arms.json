@@ -17,6 +17,15 @@
   ],
   "wins": 33
  },
+ "0606cae69e14137886e4": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 5626,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514"
+  ],
+  "wins": 1316.9166666666665
+ },
  "06324fc4d74636e3bbbd": {
   "card": "Sylvan Library",
   "deck": "SiskoFinal",
@@ -979,6 +988,24 @@
    "power_ladder_calibration:45290614068"
   ],
   "wins": 68
+ },
+ "1e41d6b32c057908eea4": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 5217,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514"
+  ],
+  "wins": 1215.8333333333333
+ },
+ "1e55e31a3976c67bbec8": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 4787,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514"
+  ],
+  "wins": 1069.9999999999998
  },
  "1e6d15b1854b7ad4d71f": {
   "card": "Cultivate",
@@ -2853,6 +2880,15 @@
   ],
   "wins": 1021
  },
+ "4fc94cf4cd990fed214a": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 5261,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514"
+  ],
+  "wins": 1254.1666666666665
+ },
  "4fd029efa8839bd464f5": {
   "card": "Manamorphose",
   "deck": "SiskoFinal",
@@ -4215,6 +4251,418 @@
   ],
   "wins": 43
  },
+ "760db97dcf41da40fa3c": {
+  "card": "@audit",
+  "cards": {
+   "Abrade": [
+    2705,
+    574.0833333333334
+   ],
+   "Abzan Charm": [
+    2703,
+    583.75
+   ],
+   "Academy Instructor": [
+    2649,
+    584.4999999999999
+   ],
+   "Agate Instigator": [
+    2736,
+    729.4166666666667
+   ],
+   "An Offer You Can't Refuse": [
+    2972,
+    646.4999999999999
+   ],
+   "Arid Mesa": [
+    3752,
+    923.0
+   ],
+   "Assassin's Trophy": [
+    3062,
+    586.0
+   ],
+   "Badlands": [
+    3797,
+    966.5000000000001
+   ],
+   "Bayou": [
+    3865,
+    922.1666666666667
+   ],
+   "Birds of Paradise": [
+    2649,
+    617.6666666666666
+   ],
+   "Black Market Connections": [
+    2663,
+    612.4166666666666
+   ],
+   "Blood Crypt": [
+    3776,
+    926.7500000000001
+   ],
+   "Bloodstained Mire": [
+    3861,
+    931.9999999999998
+   ],
+   "Bloom Tender": [
+    2744,
+    704.9166666666667
+   ],
+   "Boros Charm": [
+    2756,
+    596.4166666666666
+   ],
+   "Captain James T. Kirk": [
+    2600,
+    526.5833333333334
+   ],
+   "City of Brass": [
+    3756,
+    814.25
+   ],
+   "Collective Defiance": [
+    2670,
+    584.6666666666667
+   ],
+   "Collective Effort": [
+    2775,
+    590.25
+   ],
+   "Command Decision": [
+    2659,
+    638.25
+   ],
+   "Command Tower": [
+    3820,
+    976.6666666666665
+   ],
+   "Consider the Prime Directive": [
+    2578,
+    556.9166666666666
+   ],
+   "Corpse Knight": [
+    2770,
+    643.3333333333334
+   ],
+   "Counterspell": [
+    2909,
+    628.9166666666666
+   ],
+   "Cultivate": [
+    2695,
+    667.5
+   ],
+   "Deadly Rollick": [
+    2630,
+    599.75
+   ],
+   "Diabolic Intent": [
+    2711,
+    621.6666666666666
+   ],
+   "Elesh Norn, Mother of Machines": [
+    2512,
+    648.9166666666666
+   ],
+   "Elim Garak, Simple Tailor": [
+    2713,
+    656.9166666666666
+   ],
+   "Ertai Resurrected": [
+    2673,
+    501.99999999999994
+   ],
+   "Esper Charm": [
+    2739,
+    546.7499999999999
+   ],
+   "Esper Sentinel": [
+    2717,
+    659.7499999999999
+   ],
+   "Farseek": [
+    2692,
+    653.3333333333333
+   ],
+   "Fatal Push": [
+    3109,
+    660.5833333333333
+   ],
+   "Federation Outpost": [
+    3801,
+    905.9166666666667
+   ],
+   "Fierce Guardianship": [
+    3046,
+    633.75
+   ],
+   "Flooded Strand": [
+    3847,
+    875.3333333333334
+   ],
+   "Forest": [
+    3829,
+    914.5
+   ],
+   "Gala Greeters": [
+    2687,
+    807.4166666666667
+   ],
+   "Godless Shrine": [
+    3801,
+    913.3333333333335
+   ],
+   "Heartless Act": [
+    2745,
+    621.1666666666667
+   ],
+   "Impact Tremors": [
+    2771,
+    662.1666666666666
+   ],
+   "Impossible Choice": [
+    2669,
+    596.1666666666666
+   ],
+   "Island": [
+    3779,
+    907.4166666666667
+   ],
+   "Jeska's Will": [
+    2721,
+    615.1666666666666
+   ],
+   "Llanowar Elves": [
+    2642,
+    552.5833333333333
+   ],
+   "Make It So": [
+    2716,
+    579.4166666666666
+   ],
+   "Mana Confluence": [
+    3787,
+    853.1666666666667
+   ],
+   "Manamorphose": [
+    2698,
+    609.4166666666666
+   ],
+   "Marsh Flats": [
+    3743,
+    879.25
+   ],
+   "Misty Rainforest": [
+    3906,
+    854.0
+   ],
+   "Molten Gatekeeper": [
+    2652,
+    641.4166666666667
+   ],
+   "Ni'Var Science Academy": [
+    3749,
+    863.9166666666667
+   ],
+   "Noble Hierarch": [
+    2707,
+    603.0
+   ],
+   "Norin the Wary": [
+    2646,
+    833.8333333333334
+   ],
+   "Ojer Axonil, Deepest Might": [
+    2687,
+    723.0833333333333
+   ],
+   "Outlaws' Merriment": [
+    2677,
+    581.6666666666666
+   ],
+   "Overgrown Tomb": [
+    3878,
+    898.5833333333334
+   ],
+   "Panharmonicon": [
+    2664,
+    566.6666666666666
+   ],
+   "Parallel Lives": [
+    2701,
+    571.3333333333334
+   ],
+   "Path to Exile": [
+    2627,
+    534.8333333333333
+   ],
+   "Plains": [
+    3731,
+    855.3333333333335
+   ],
+   "Plateau": [
+    3814,
+    948.75
+   ],
+   "Polluted Delta": [
+    3831,
+    888.75
+   ],
+   "Prismari Command": [
+    2643,
+    559.1666666666667
+   ],
+   "Purphoros, God of the Forge": [
+    2628,
+    732.0833333333333
+   ],
+   "Pyroblast": [
+    2658,
+    555.8333333333333
+   ],
+   "Q Continuum": [
+    3907,
+    917.0833333333333
+   ],
+   "Quark's Bar": [
+    3942,
+    1014.8333333333334
+   ],
+   "Rapid Hybridization": [
+    3080,
+    676.4166666666666
+   ],
+   "Resistance Is Futile": [
+    2727,
+    610.3333333333334
+   ],
+   "Retreat to Hagra": [
+    2610,
+    641.2500000000001
+   ],
+   "Rhystic Study": [
+    2716,
+    686.4166666666666
+   ],
+   "Riku of Many Paths": [
+    2649,
+    610.4166666666667
+   ],
+   "Roaming Throne": [
+    2669,
+    596.25
+   ],
+   "Sacred Foundry": [
+    3819,
+    946.1666666666667
+   ],
+   "Savannah": [
+    3835,
+    940.7500000000001
+   ],
+   "Scalding Tarn": [
+    3837,
+    896.9999999999998
+   ],
+   "Scrubland": [
+    3816,
+    901.3333333333334
+   ],
+   "Smuggler's Surprise": [
+    2673,
+    631.25
+   ],
+   "Sol Ring": [
+    2706,
+    793.5
+   ],
+   "Steam Vents": [
+    3891,
+    922.2500000000001
+   ],
+   "Swords to Plowshares": [
+    2610,
+    529.8333333333334
+   ],
+   "Sylvan Library": [
+    2701,
+    549.9166666666667
+   ],
+   "Taiga": [
+    3840,
+    984.5833333333333
+   ],
+   "Test of Conviction": [
+    2720,
+    552.6666666666666
+   ],
+   "Test of Loyalty": [
+    2705,
+    626.25
+   ],
+   "Test of Priorities": [
+    2657,
+    573.3333333333333
+   ],
+   "The Unicomplex": [
+    3887,
+    955.4166666666666
+   ],
+   "Tropical Island": [
+    3820,
+    953.0000000000001
+   ],
+   "Tundra": [
+    3787,
+    880.3333333333334
+   ],
+   "Underground Sea": [
+    3908,
+    938.5
+   ],
+   "Utopia Sprawl": [
+    2723,
+    623.1666666666666
+   ],
+   "Verdant Catacombs": [
+    3755,
+    902.0833333333334
+   ],
+   "Volcanic Island": [
+    3719,
+    913.3333333333334
+   ],
+   "Warleader's Call": [
+    2622,
+    681.8333333333334
+   ],
+   "Windswept Heath": [
+    3757,
+    863.3333333333334
+   ],
+   "Witty Roastmaster": [
+    2642,
+    635.7499999999999
+   ],
+   "Wooded Foothills": [
+    3867,
+    945.8333333333335
+   ]
+  },
+  "deck": "SiskoFinal",
+  "games": 31760,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514:side",
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514:side",
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514:side",
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514:side",
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514:side",
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514:side"
+  ],
+  "wins": 7387.083333333332
+ },
  "7ad5f95706a09802c121": {
   "card": "Caesar, Legion's Emperor",
   "deck": "SiskoCaesarCult",
@@ -4694,6 +5142,15 @@
   ],
   "wins": 66
  },
+ "8e50d215c26a5565b6b5": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 5104,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514"
+  ],
+  "wins": 1145.0000000000002
+ },
  "903f21f8280f8976303b": {
   "card": "",
   "deck": "Talrand_B4",
@@ -4711,6 +5168,15 @@
    "imperial_recruiter_for_pact_of_negation_hard_ai:45112943288"
   ],
   "wins": 1095
+ },
+ "951099b891189e67d41d": {
+  "card": "",
+  "deck": "SiskoFinal",
+  "games": 5765,
+  "runs": [
+   "speed_test_engine_and_java_settings_with_a_cpu_profile:45742157514"
+  ],
+  "wins": 1385.1666666666663
  },
  "9a4a4ca0650cf4d137f5": {
   "card": "Shattering Spree",
