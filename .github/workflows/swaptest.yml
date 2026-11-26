@@ -38,10 +38,18 @@ jobs:
           GIT_LFS_SKIP_SMUDGE=1 git fetch --depth 1 origin $(cat ../FORGE_COMMIT)
           git -c advice.detachedHead=false checkout FETCH_HEAD
           git apply ../forge.patch
+      - name: Reuse downloaded build dependencies
+        # Forge's build pulls a few hundred packages from Maven Central; keeping them between runs makes the build
+        # faster and lets a run go ahead when Maven Central is briefly unreachable
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ hashFiles('FORGE_COMMIT') }}
+          restore-keys: maven-
       - name: Build engine (core, game, ai)
         run: |
           cd forge
-          mvn -B -pl forge-ai -am package dependency:copy-dependencies -DoutputDirectory=$GITHUB_WORKSPACE/lib -DincludeScope=runtime -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
+          mvn -B -Dmaven.wagon.http.retryHandler.count=3 -pl forge-ai -am package dependency:copy-dependencies -DoutputDirectory=$GITHUB_WORKSPACE/lib -DincludeScope=runtime -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
           rm -f ../lib/forge-core-*.jar ../lib/forge-game-*.jar ../lib/forge-ai-*.jar
           cp forge-core/target/forge-core-*.jar forge-game/target/forge-game-*.jar forge-ai/target/forge-ai-*.jar ../lib/
           ls ../lib | head -50 >> ../build.log
