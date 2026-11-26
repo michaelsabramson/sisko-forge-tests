@@ -1,1 +1,1 @@
-{"repo": "magic-the-science/sisko-forge-helper", "shards": 29, "_note": "the Team organization runs about 29 jobs at once (probe 2026-11-25 morning); raise when GitHub lifts the cap"}
+{"repo": "magic-the-science/sisko-forge-helper", "shards": 58, "_note": "the Team organization runs 60 jobs at once (probe 2026-11-26: 60 of 60); 58 shards leaves room for the helper's build job"}
