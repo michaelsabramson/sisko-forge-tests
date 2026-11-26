@@ -4,90 +4,90 @@ Swapped card forced into opening hand (band 0). Same opponents for every list.
 
 | List | Card | Games | Wins | Win rate | Reused |
 |---|---|---|---|---|---|
-| Kess | Audit of Kess | 8351 | 1163.7499999999998 | 13.9% | 0 |
+| Kess | Audit of Kess | 12908 | 1790.2499999999977 | 13.9% | 0 |
 
 Gaps (95% interval):
 
 
-Deck audit: 8,351 games, 13.9% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
+Deck audit: 12,908 games, 13.9% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
 
 | Card | Games seen | Win rate seen | Change | ± |
 |---|---|---|---|---|
-| Snapcaster Mage | 738 | 10.8% | -3.4 | 2.4 |
-| Goblin Electromancer | 719 | 11.0% | -3.3 | 2.4 |
-| Sapphire Medallion | 775 | 11.2% | -3.0 | 2.4 |
-| Izzet Signet | 759 | 11.3% | -3.0 | 2.4 |
-| Third Path Iconoclast | 724 | 11.2% | -3.0 | 2.4 |
-| Polluted Delta | 954 | 11.5% | -2.8 | 2.2 |
-| Young Pyromancer | 765 | 11.6% | -2.6 | 2.4 |
-| Talisman of Creativity | 717 | 11.6% | -2.6 | 2.5 |
-| Talisman of Indulgence | 736 | 11.8% | -2.4 | 2.5 |
-| Steam Vents | 933 | 12.2% | -1.9 | 2.2 |
-| Sol Ring | 761 | 12.3% | -1.9 | 2.5 |
-| Preordain | 754 | 12.3% | -1.8 | 2.5 |
-| Feed the Swarm | 792 | 12.4% | -1.8 | 2.4 |
-| Arcane Signet | 742 | 12.5% | -1.6 | 2.5 |
-| Talisman of Dominance | 796 | 12.5% | -1.6 | 2.4 |
-| Baleful Strix | 776 | 12.5% | -1.6 | 2.5 |
-| Sheoldred's Edict | 776 | 12.7% | -1.4 | 2.5 |
-| Harmonized Trio | 707 | 12.7% | -1.3 | 2.6 |
-| Ledger Shredder | 761 | 12.7% | -1.3 | 2.5 |
-| An Offer You Can't Refuse | 827 | 12.8% | -1.3 | 2.4 |
-| Spellbook Seeker | 780 | 12.8% | -1.3 | 2.5 |
-| Dimir Signet | 775 | 12.8% | -1.2 | 2.5 |
-| Dig Through Time | 794 | 13.0% | -1.1 | 2.5 |
-| Lightning Bolt | 719 | 13.0% | -1.0 | 2.6 |
-| Mission Briefing | 782 | 13.1% | -0.9 | 2.5 |
-| Diabolic Intent | 748 | 13.1% | -0.9 | 2.5 |
-| Evolving Wilds | 914 | 13.1% | -0.9 | 2.3 |
-| Night's Whisper | 820 | 13.2% | -0.8 | 2.5 |
-| Serum Visions | 808 | 13.2% | -0.8 | 2.5 |
-| Invert Polarity | 793 | 13.3% | -0.7 | 2.5 |
-| Exotic Orchard | 926 | 13.4% | -0.6 | 2.3 |
-| Archmage's Charm | 735 | 13.5% | -0.5 | 2.6 |
-| Glen Elendra's Answer | 801 | 13.5% | -0.5 | 2.5 |
-| Swamp | 5331 | 13.8% | -0.4 | 1.6 |
-| Dragon's Rage Channeler | 741 | 13.6% | -0.4 | 2.6 |
-| Murktide Regent | 752 | 13.7% | -0.2 | 2.6 |
-| Frantic Search | 785 | 13.7% | -0.2 | 2.5 |
-| Ruby Medallion | 738 | 13.8% | -0.1 | 2.6 |
-| Pact of Negation | 831 | 13.9% | +0.0 | 2.5 |
-| Chaos Warp | 756 | 14.1% | +0.2 | 2.6 |
-| Sulfur Falls | 980 | 14.1% | +0.2 | 2.3 |
-| Xander's Lounge | 948 | 14.2% | +0.2 | 2.4 |
-| Temple of Epiphany | 929 | 14.2% | +0.3 | 2.4 |
-| Three Steps Ahead | 760 | 14.2% | +0.3 | 2.6 |
-| Unholy Heat | 782 | 14.3% | +0.4 | 2.6 |
-| Stormcarved Coast | 905 | 14.3% | +0.4 | 2.4 |
-| Storm-Kiln Artist | 782 | 14.3% | +0.4 | 2.6 |
-| Mountain | 3840 | 14.1% | +0.4 | 1.5 |
-| Narset's Reversal | 731 | 14.4% | +0.5 | 2.7 |
-| Island | 6831 | 14.0% | +0.5 | 1.9 |
-| Spirebluff Canal | 943 | 14.5% | +0.6 | 2.4 |
-| Drowned Catacomb | 974 | 14.5% | +0.7 | 2.4 |
-| Force of Negation | 789 | 14.6% | +0.7 | 2.6 |
-| Sleight of Hand | 776 | 14.8% | +0.9 | 2.6 |
-| Unexpected Windfall | 793 | 14.9% | +1.1 | 2.6 |
-| Blasphemous Act | 748 | 15.0% | +1.1 | 2.7 |
-| Dragonskull Summit | 954 | 15.0% | +1.1 | 2.4 |
-| Vandalblast | 806 | 15.1% | +1.2 | 2.6 |
-| Bloodstained Mire | 903 | 15.1% | +1.3 | 2.5 |
-| Counterspell | 822 | 15.2% | +1.4 | 2.6 |
-| Toxic Deluge | 737 | 15.3% | +1.5 | 2.7 |
-| Tyrant's Scorn | 737 | 15.4% | +1.6 | 2.7 |
-| Big Score | 899 | 15.5% | +1.8 | 2.5 |
-| Command Tower | 996 | 15.6% | +1.9 | 2.4 |
-| Opt | 821 | 15.7% | +1.9 | 2.6 |
-| Archmage Emeritus | 751 | 15.7% | +2.0 | 2.7 |
-| Bedevil | 845 | 15.7% | +2.0 | 2.6 |
-| This Town Ain't Big Enough | 747 | 15.9% | +2.1 | 2.7 |
-| Talrand, Sky Summoner | 767 | 15.9% | +2.2 | 2.7 |
-| Guttersnipe | 735 | 16.4% | +2.7 | 2.8 |
-| Torment of Hailfire | 724 | 16.4% | +2.7 | 2.8 |
-| Faithless Looting | 838 | 16.7% | +3.1 | 2.6 |
-| Expressive Iteration | 794 | 16.8% | +3.2 | 2.7 |
-| Ponder | 803 | 16.9% | +3.3 | 2.7 |
-| Consider | 739 | 17.1% | +3.4 | 2.8 |
-| Coruscation Mage | 780 | 17.7% | +4.2 | 2.8 |
+| Young Pyromancer | 1169 | 11.3% | -2.8 | 1.9 |
+| Talisman of Indulgence | 1146 | 11.8% | -2.2 | 2.0 |
+| Sapphire Medallion | 1209 | 11.8% | -2.2 | 1.9 |
+| Izzet Signet | 1175 | 12.0% | -2.1 | 2.0 |
+| Goblin Electromancer | 1153 | 12.0% | -2.1 | 2.0 |
+| Snapcaster Mage | 1150 | 12.1% | -1.9 | 2.0 |
+| Evolving Wilds | 1396 | 12.2% | -1.9 | 1.8 |
+| Polluted Delta | 1466 | 12.3% | -1.8 | 1.8 |
+| Third Path Iconoclast | 1135 | 12.3% | -1.7 | 2.0 |
+| Talisman of Dominance | 1214 | 12.4% | -1.6 | 2.0 |
+| Lightning Bolt | 1123 | 12.4% | -1.6 | 2.0 |
+| Preordain | 1150 | 12.5% | -1.5 | 2.0 |
+| Steam Vents | 1483 | 12.6% | -1.4 | 1.8 |
+| Feed the Swarm | 1239 | 12.6% | -1.4 | 1.9 |
+| Talisman of Creativity | 1121 | 12.6% | -1.4 | 2.0 |
+| Night's Whisper | 1235 | 12.7% | -1.3 | 2.0 |
+| Arcane Signet | 1163 | 12.7% | -1.3 | 2.0 |
+| Baleful Strix | 1189 | 12.7% | -1.2 | 2.0 |
+| Sol Ring | 1186 | 12.8% | -1.1 | 2.0 |
+| An Offer You Can't Refuse | 1322 | 12.9% | -1.1 | 1.9 |
+| Dimir Signet | 1183 | 12.9% | -1.1 | 2.0 |
+| Sheoldred's Edict | 1183 | 13.0% | -0.9 | 2.0 |
+| Harmonized Trio | 1137 | 13.0% | -0.9 | 2.0 |
+| Chaos Warp | 1179 | 13.1% | -0.9 | 2.0 |
+| Diabolic Intent | 1164 | 13.2% | -0.7 | 2.0 |
+| Exotic Orchard | 1463 | 13.3% | -0.7 | 1.9 |
+| Frantic Search | 1204 | 13.3% | -0.6 | 2.0 |
+| Glen Elendra's Answer | 1249 | 13.3% | -0.6 | 2.0 |
+| Swamp | 8272 | 13.7% | -0.6 | 1.2 |
+| Spellbook Seeker | 1206 | 13.4% | -0.5 | 2.0 |
+| Dig Through Time | 1207 | 13.4% | -0.5 | 2.0 |
+| Ruby Medallion | 1141 | 13.5% | -0.4 | 2.1 |
+| Mission Briefing | 1216 | 13.6% | -0.3 | 2.0 |
+| Island | 10576 | 13.8% | -0.3 | 1.6 |
+| Archmage's Charm | 1144 | 13.6% | -0.3 | 2.1 |
+| Murktide Regent | 1115 | 13.7% | -0.2 | 2.1 |
+| Unholy Heat | 1173 | 13.7% | -0.2 | 2.1 |
+| Stormcarved Coast | 1392 | 13.7% | -0.2 | 1.9 |
+| Mountain | 5937 | 13.8% | -0.1 | 1.2 |
+| Invert Polarity | 1221 | 13.9% | -0.0 | 2.0 |
+| Counterspell | 1323 | 14.0% | +0.2 | 2.0 |
+| Serum Visions | 1252 | 14.1% | +0.2 | 2.0 |
+| Pact of Negation | 1271 | 14.1% | +0.3 | 2.0 |
+| Xander's Lounge | 1423 | 14.1% | +0.3 | 1.9 |
+| Vandalblast | 1226 | 14.1% | +0.3 | 2.0 |
+| Spirebluff Canal | 1443 | 14.1% | +0.3 | 1.9 |
+| Ledger Shredder | 1163 | 14.2% | +0.3 | 2.1 |
+| Tyrant's Scorn | 1155 | 14.3% | +0.5 | 2.1 |
+| Three Steps Ahead | 1195 | 14.3% | +0.5 | 2.1 |
+| Dragon's Rage Channeler | 1142 | 14.4% | +0.6 | 2.1 |
+| Sulfur Falls | 1483 | 14.4% | +0.6 | 1.9 |
+| Bedevil | 1281 | 14.5% | +0.7 | 2.0 |
+| Narset's Reversal | 1173 | 14.5% | +0.7 | 2.1 |
+| Temple of Epiphany | 1430 | 14.5% | +0.7 | 1.9 |
+| Storm-Kiln Artist | 1180 | 14.6% | +0.8 | 2.1 |
+| Drowned Catacomb | 1511 | 14.6% | +0.8 | 1.9 |
+| Sleight of Hand | 1203 | 14.7% | +0.9 | 2.1 |
+| Blasphemous Act | 1116 | 14.7% | +0.9 | 2.2 |
+| Force of Negation | 1230 | 14.7% | +1.0 | 2.1 |
+| Opt | 1230 | 14.9% | +1.1 | 2.1 |
+| Command Tower | 1514 | 14.9% | +1.1 | 1.9 |
+| Big Score | 1322 | 15.0% | +1.2 | 2.0 |
+| Bloodstained Mire | 1384 | 15.0% | +1.2 | 2.0 |
+| Talrand, Sky Summoner | 1186 | 15.1% | +1.4 | 2.1 |
+| Unexpected Windfall | 1255 | 15.2% | +1.5 | 2.1 |
+| Toxic Deluge | 1161 | 15.3% | +1.6 | 2.2 |
+| Dragonskull Summit | 1440 | 15.3% | +1.7 | 2.0 |
+| Ponder | 1209 | 15.5% | +1.9 | 2.1 |
+| Torment of Hailfire | 1126 | 15.6% | +1.9 | 2.2 |
+| Archmage Emeritus | 1167 | 15.9% | +2.3 | 2.2 |
+| This Town Ain't Big Enough | 1152 | 16.0% | +2.3 | 2.2 |
+| Expressive Iteration | 1230 | 16.0% | +2.4 | 2.1 |
+| Consider | 1147 | 16.2% | +2.6 | 2.2 |
+| Faithless Looting | 1268 | 16.2% | +2.6 | 2.1 |
+| Guttersnipe | 1148 | 17.0% | +3.5 | 2.3 |
+| Coruscation Mage | 1197 | 17.1% | +3.6 | 2.2 |
 
-<!-- data {"name": "ranking_of_kess_6", "title": "Ranking of Kess", "mode": "audit", "run_id": "45856204855", "finished": "2026-11-26T16:10:24Z", "arms": [{"deck": "Kess", "card": "@audit", "games": 8351, "wins": 1163.7499999999998, "run_games": 8351, "run_stalls": 108, "run_clean_wins": 1128, "reused": 0, "mc": "on", "label": "Audit of Kess"}], "batching": {"runners": 18, "claimed": 24, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"], "cutoffs": {"n": 108, "alive": {"3": 37, "2": 30, "4": 41}, "me_alive": 104, "median_life": 32, "opp": {"Krenko_B3": [2513, 37], "Meren": [2540, 36], "Tatyova_B3": [2486, 67], "TuvasatheSunlit_B3": [2536, 48], "Kykar_B3": [2417, 23], "Edgar": [2520, 24], "RafiqoftheMany_B3": [2561, 14], "Prossh": [2478, 25], "Talrand_B3": [2471, 36], "UrDragon": [2531, 14]}, "why": {"time": 76, "other": 32}, "opp_why": {"TuvasatheSunlit_B3": {"time": 41, "other": 7}, "UrDragon": {"time": 10, "other": 4}, "Meren": {"time": 27, "other": 9}, "Talrand_B3": {"time": 26, "other": 10}, "Tatyova_B3": {"time": 38, "other": 29}, "Kykar_B3": {"time": 14, "other": 9}, "Krenko_B3": {"other": 6, "time": 31}, "Edgar": {"time": 13, "other": 11}, "RafiqoftheMany_B3": {"time": 9, "other": 5}, "Prossh": {"time": 19, "other": 6}}, "game_seconds": {"50": 41, "75": 68, "90": 127, "95": 214, "98": 464, "99": 797}}, "par_tally": {"games": 8351, "seats": 25053, "won": [69, 272, 672, 1194, 1783, 2321, 2715, 2984, 3166, 3271], "opponents": ["Edgar", "Krenko_B3", "Kykar_B3", "Meren", "Prossh", "RafiqoftheMany_B3", "Talrand_B3", "Tatyova_B3", "TuvasatheSunlit_B3", "UrDragon"], "round_cap": 0, "game_timeout": 900}, "speed": 0.835, "audit": {"deck": "Kess", "cards": [{"card": "Snapcaster Mage", "seen": 738, "wins": 79.74999999999999, "diff": -3.43, "ci": 2.37}, {"card": "Goblin Electromancer", "seen": 719, "wins": 78.74999999999999, "diff": -3.26, "ci": 2.41}, {"card": "Sapphire Medallion", "seen": 775, "wins": 86.83333333333333, "diff": -3.01, "ci": 2.36}, {"card": "Izzet Signet", "seen": 759, "wins": 85.41666666666667, "diff": -2.95, "ci": 2.38}, {"card": "Third Path Iconoclast", "seen": 724, "wins": 81.41666666666667, "diff": -2.95, "ci": 2.43}, {"card": "Polluted Delta", "seen": 954, "wins": 109.33333333333331, "diff": -2.79, "ci": 2.17}, {"card": "Young Pyromancer", "seen": 765, "wins": 88.83333333333333, "diff": -2.56, "ci": 2.4}, {"card": "Talisman of Creativity", "seen": 717, "wins": 83.16666666666666, "diff": -2.56, "ci": 2.47}, {"card": "Talisman of Indulgence", "seen": 736, "wins": 86.66666666666666, "diff": -2.37, "ci": 2.46}, {"card": "Steam Vents", "seen": 933, "wins": 114.16666666666666, "diff": -1.91, "ci": 2.25}, {"card": "Sol Ring", "seen": 761, "wins": 93.24999999999999, "diff": -1.85, "ci": 2.46}, {"card": "Preordain", "seen": 754, "wins": 92.74999999999999, "diff": -1.8, "ci": 2.47}, {"card": "Feed the Swarm", "seen": 792, "wins": 97.83333333333331, "diff": -1.75, "ci": 2.42}, {"card": "Arcane Signet", "seen": 742, "wins": 92.58333333333333, "diff": -1.6, "ci": 2.5}, {"card": "Talisman of Dominance", "seen": 796, "wins": 99.41666666666666, "diff": -1.6, "ci": 2.43}, {"card": "Baleful Strix", "seen": 776, "wins": 97.24999999999999, "diff": -1.55, "ci": 2.46}, {"card": "Sheoldred's Edict", "seen": 776, "wins": 98.66666666666666, "diff": -1.35, "ci": 2.47}, {"card": "Harmonized Trio", "seen": 707, "wins": 90.0, "diff": -1.32, "ci": 2.58}, {"card": "Ledger Shredder", "seen": 761, "wins": 96.91666666666666, "diff": -1.32, "ci": 2.49}, {"card": "An Offer You Can't Refuse", "seen": 827, "wins": 105.58333333333333, "diff": -1.3, "ci": 2.41}, {"card": "Spellbook Seeker", "seen": 780, "wins": 99.49999999999999, "diff": -1.3, "ci": 2.47}, {"card": "Dimir Signet", "seen": 775, "wins": 99.58333333333331, "diff": -1.2, "ci": 2.48}, {"card": "Dig Through Time", "seen": 794, "wins": 103.08333333333333, "diff": -1.05, "ci": 2.47}, {"card": "Lightning Bolt", "seen": 719, "wins": 93.41666666666666, "diff": -1.03, "ci": 2.58}, {"card": "Mission Briefing", "seen": 782, "wins": 102.25, "diff": -0.95, "ci": 2.49}, {"card": "Diabolic Intent", "seen": 748, "wins": 98.0, "diff": -0.92, "ci": 2.54}, {"card": "Evolving Wilds", "seen": 914, "wins": 120.0, "diff": -0.91, "ci": 2.33}, {"card": "Night's Whisper", "seen": 820, "wins": 108.41666666666664, "diff": -0.79, "ci": 2.45}, {"card": "Serum Visions", "seen": 808, "wins": 106.99999999999999, "diff": -0.77, "ci": 2.46}, {"card": "Invert Polarity", "seen": 793, "wins": 105.58333333333331, "diff": -0.69, "ci": 2.49}, {"card": "Exotic Orchard", "seen": 926, "wins": 124.49999999999999, "diff": -0.55, "ci": 2.33}, {"card": "Archmage's Charm", "seen": 735, "wins": 99.0, "diff": -0.51, "ci": 2.59}, {"card": "Glen Elendra's Answer", "seen": 801, "wins": 107.91666666666666, "diff": -0.51, "ci": 2.49}, {"card": "Swamp", "seen": 5331, "wins": 734.3333333333336, "diff": -0.44, "ci": 1.55}, {"card": "Dragon's Rage Channeler", "seen": 741, "wins": 100.58333333333333, "diff": -0.4, "ci": 2.59}, {"card": "Murktide Regent", "seen": 752, "wins": 103.24999999999999, "diff": -0.23, "ci": 2.58}, {"card": "Frantic Search", "seen": 785, "wins": 107.91666666666666, "diff": -0.21, "ci": 2.53}, {"card": "Ruby Medallion", "seen": 738, "wins": 101.83333333333331, "diff": -0.15, "ci": 2.61}, {"card": "Pact of Negation", "seen": 831, "wins": 115.83333333333331, "diff": 0.0, "ci": 2.48}, {"card": "Chaos Warp", "seen": 756, "wins": 106.66666666666666, "diff": 0.19, "ci": 2.6}, {"card": "Sulfur Falls", "seen": 980, "wins": 138.5, "diff": 0.22, "ci": 2.32}, {"card": "Xander's Lounge", "seen": 948, "wins": 134.16666666666666, "diff": 0.24, "ci": 2.35}, {"card": "Temple of Epiphany", "seen": 929, "wins": 131.58333333333331, "diff": 0.26, "ci": 2.38}, {"card": "Three Steps Ahead", "seen": 760, "wins": 108.24999999999999, "diff": 0.34, "ci": 2.6}, {"card": "Unholy Heat", "seen": 782, "wins": 111.49999999999999, "diff": 0.36, "ci": 2.57}, {"card": "Stormcarved Coast", "seen": 905, "wins": 129.08333333333331, "diff": 0.37, "ci": 2.41}, {"card": "Storm-Kiln Artist", "seen": 782, "wins": 111.66666666666664, "diff": 0.38, "ci": 2.57}, {"card": "Mountain", "seen": 3840, "wins": 543.0833333333334, "diff": 0.38, "ci": 1.49}, {"card": "Narset's Reversal", "seen": 731, "wins": 105.25, "diff": 0.51, "ci": 2.66}, {"card": "Island", "seen": 6831, "wins": 958.5833333333338, "diff": 0.54, "ci": 1.91}, {"card": "Spirebluff Canal", "seen": 943, "wins": 136.75000000000003, "diff": 0.64, "ci": 2.38}, {"card": "Drowned Catacomb", "seen": 974, "wins": 141.50000000000003, "diff": 0.67, "ci": 2.35}, {"card": "Force of Negation", "seen": 789, "wins": 114.91666666666666, "diff": 0.7, "ci": 2.58}, {"card": "Sleight of Hand", "seen": 776, "wins": 114.74999999999999, "diff": 0.94, "ci": 2.62}, {"card": "Unexpected Windfall", "seen": 793, "wins": 118.5, "diff": 1.11, "ci": 2.6}, {"card": "Blasphemous Act", "seen": 748, "wins": 112.0, "diff": 1.14, "ci": 2.67}, {"card": "Dragonskull Summit", "seen": 954, "wins": 142.66666666666669, "diff": 1.15, "ci": 2.4}, {"card": "Vandalblast", "seen": 806, "wins": 121.41666666666666, "diff": 1.25, "ci": 2.59}, {"card": "Bloodstained Mire", "seen": 903, "wins": 136.58333333333331, "diff": 1.33, "ci": 2.46}, {"card": "Counterspell", "seen": 822, "wins": 124.91666666666666, "diff": 1.4, "ci": 2.57}, {"card": "Toxic Deluge", "seen": 737, "wins": 112.91666666666664, "diff": 1.52, "ci": 2.71}, {"card": "Tyrant's Scorn", "seen": 737, "wins": 113.16666666666666, "diff": 1.56, "ci": 2.72}, {"card": "Big Score", "seen": 899, "wins": 139.5, "diff": 1.77, "ci": 2.49}, {"card": "Command Tower", "seen": 996, "wins": 155.5, "diff": 1.9, "ci": 2.39}, {"card": "Opt", "seen": 821, "wins": 128.83333333333331, "diff": 1.95, "ci": 2.61}, {"card": "Archmage Emeritus", "seen": 751, "wins": 118.16666666666667, "diff": 1.98, "ci": 2.72}, {"card": "Bedevil", "seen": 845, "wins": 132.83333333333334, "diff": 1.99, "ci": 2.57}, {"card": "This Town Ain't Big Enough", "seen": 747, "wins": 118.58333333333331, "diff": 2.13, "ci": 2.73}, {"card": "Talrand, Sky Summoner", "seen": 767, "wins": 122.33333333333334, "diff": 2.22, "ci": 2.7}, {"card": "Guttersnipe", "seen": 735, "wins": 120.41666666666666, "diff": 2.68, "ci": 2.79}, {"card": "Torment of Hailfire", "seen": 724, "wins": 118.74999999999999, "diff": 2.7, "ci": 2.81}, {"card": "Faithless Looting", "seen": 838, "wins": 140.08333333333334, "diff": 3.09, "ci": 2.64}, {"card": "Expressive Iteration", "seen": 794, "wins": 133.66666666666663, "diff": 3.2, "ci": 2.72}, {"card": "Ponder", "seen": 803, "wins": 135.83333333333331, "diff": 3.3, "ci": 2.71}, {"card": "Consider", "seen": 739, "wins": 125.99999999999999, "diff": 3.42, "ci": 2.82}, {"card": "Coruscation Mage", "seen": 780, "wins": 138.16666666666666, "diff": 4.17, "ci": 2.79}], "chunk": null, "partial": false, "lands": {"curve": [["0-2", 414, 53.66666666666667], [3, 1630, 213.75000000000006], [4, 2643, 379.24999999999994], [5, 2249, 333.7499999999999], [6, 1095, 146.66666666666669], ["7-8", 320, 36.66666666666667]], "value": -0.24, "ci": 0.63, "mean": 4.36, "games": 8351}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.01, 0.06, 0.51, 1.69, 3.81, 6.01, 8.14, 9.88, 11.1, 12.11], "games": 8351, "stalls": 1.3}}} -->
+<!-- data {"name": "ranking_of_kess_6", "title": "Ranking of Kess", "mode": "audit", "run_id": "45859613159", "finished": "2026-11-26T16:32:05Z", "arms": [{"deck": "Kess", "card": "@audit", "games": 12908, "wins": 1790.2499999999977, "run_games": 12908, "run_stalls": 190, "run_clean_wins": 1728, "reused": 0, "mc": "on", "label": "Audit of Kess"}], "batching": {"runners": 61, "claimed": 163, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"], "cutoffs": {"n": 190, "alive": {"3": 71, "2": 48, "4": 71}, "me_alive": 183, "median_life": 33, "opp": {"Krenko_B3": [3918, 67], "Meren": [3835, 47], "Tatyova_B3": [3871, 122], "TuvasatheSunlit_B3": [3894, 81], "Kykar_B3": [3778, 43], "Edgar": [3914, 50], "RafiqoftheMany_B3": [3920, 23], "Prossh": [3827, 52], "Talrand_B3": [3874, 56], "UrDragon": [3893, 29]}, "why": {"time": 129, "other": 61}, "opp_why": {"TuvasatheSunlit_B3": {"time": 72, "other": 9}, "UrDragon": {"time": 17, "other": 12}, "Meren": {"time": 32, "other": 15}, "Prossh": {"other": 13, "time": 39}, "Edgar": {"other": 23, "time": 27}, "Tatyova_B3": {"other": 57, "time": 65}, "Talrand_B3": {"time": 39, "other": 17}, "RafiqoftheMany_B3": {"time": 14, "other": 9}, "Kykar_B3": {"time": 27, "other": 16}, "Krenko_B3": {"other": 12, "time": 55}}, "game_seconds": {"50": 40, "75": 66, "90": 125, "95": 219, "98": 507, "99": 888}}, "par_tally": {"games": 12908, "seats": 38724, "won": [99, 406, 1017, 1840, 2732, 3541, 4157, 4589, 4865, 5037], "opponents": ["Edgar", "Krenko_B3", "Kykar_B3", "Meren", "Prossh", "RafiqoftheMany_B3", "Talrand_B3", "Tatyova_B3", "TuvasatheSunlit_B3", "UrDragon"], "round_cap": 0, "game_timeout": 900}, "speed": 0.833, "audit": {"deck": "Kess", "cards": [{"card": "Young Pyromancer", "seen": 1169, "wins": 132.08333333333331, "diff": -2.83, "ci": 1.92}, {"card": "Talisman of Indulgence", "seen": 1146, "wins": 135.50000000000003, "diff": -2.24, "ci": 1.97}, {"card": "Sapphire Medallion", "seen": 1209, "wins": 143.08333333333334, "diff": -2.24, "ci": 1.93}, {"card": "Izzet Signet", "seen": 1175, "wins": 140.66666666666666, "diff": -2.09, "ci": 1.96}, {"card": "Goblin Electromancer", "seen": 1153, "wins": 138.08333333333334, "diff": -2.08, "ci": 1.98}, {"card": "Snapcaster Mage", "seen": 1150, "wins": 139.25000000000003, "diff": -1.93, "ci": 1.99}, {"card": "Evolving Wilds", "seen": 1396, "wins": 170.5, "diff": -1.86, "ci": 1.83}, {"card": "Polluted Delta", "seen": 1466, "wins": 180.08333333333334, "diff": -1.79, "ci": 1.8}, {"card": "Third Path Iconoclast", "seen": 1135, "wins": 139.75, "diff": -1.71, "ci": 2.01}, {"card": "Talisman of Dominance", "seen": 1214, "wins": 150.33333333333334, "diff": -1.64, "ci": 1.96}, {"card": "Lightning Bolt", "seen": 1123, "wins": 139.75000000000003, "diff": -1.56, "ci": 2.03}, {"card": "Preordain", "seen": 1150, "wins": 143.33333333333331, "diff": -1.54, "ci": 2.01}, {"card": "Steam Vents", "seen": 1483, "wins": 186.6666666666667, "diff": -1.45, "ci": 1.8}, {"card": "Feed the Swarm", "seen": 1239, "wins": 155.66666666666669, "diff": -1.44, "ci": 1.95}, {"card": "Talisman of Creativity", "seen": 1121, "wins": 141.5, "diff": -1.37, "ci": 2.04}, {"card": "Night's Whisper", "seen": 1235, "wins": 156.91666666666666, "diff": -1.29, "ci": 1.96}, {"card": "Arcane Signet", "seen": 1163, "wins": 147.83333333333334, "diff": -1.27, "ci": 2.01}, {"card": "Baleful Strix", "seen": 1189, "wins": 151.41666666666669, "diff": -1.25, "ci": 2.0}, {"card": "Sol Ring", "seen": 1186, "wins": 152.08333333333331, "diff": -1.15, "ci": 2.0}, {"card": "An Offer You Can't Refuse", "seen": 1322, "wins": 170.08333333333334, "diff": -1.12, "ci": 1.91}, {"card": "Dimir Signet", "seen": 1183, "wins": 152.5, "diff": -1.08, "ci": 2.01}, {"card": "Sheoldred's Edict", "seen": 1183, "wins": 154.0, "diff": -0.94, "ci": 2.02}, {"card": "Harmonized Trio", "seen": 1137, "wins": 148.16666666666669, "diff": -0.92, "ci": 2.05}, {"card": "Chaos Warp", "seen": 1179, "wins": 154.33333333333334, "diff": -0.86, "ci": 2.02}, {"card": "Diabolic Intent", "seen": 1164, "wins": 153.75000000000003, "diff": -0.73, "ci": 2.04}, {"card": "Exotic Orchard", "seen": 1463, "wins": 194.08333333333337, "diff": -0.68, "ci": 1.85}, {"card": "Frantic Search", "seen": 1204, "wins": 160.16666666666669, "diff": -0.62, "ci": 2.02}, {"card": "Glen Elendra's Answer", "seen": 1249, "wins": 166.33333333333331, "diff": -0.61, "ci": 1.99}, {"card": "Swamp", "seen": 8272, "wins": 1130.6666666666667, "diff": -0.56, "ci": 1.25}, {"card": "Spellbook Seeker", "seen": 1206, "wins": 162.00000000000003, "diff": -0.48, "ci": 2.02}, {"card": "Dig Through Time", "seen": 1207, "wins": 162.33333333333337, "diff": -0.46, "ci": 2.02}, {"card": "Ruby Medallion", "seen": 1141, "wins": 153.75, "diff": -0.43, "ci": 2.08}, {"card": "Mission Briefing", "seen": 1216, "wins": 164.91666666666666, "diff": -0.34, "ci": 2.02}, {"card": "Island", "seen": 10576, "wins": 1460.6666666666654, "diff": -0.32, "ci": 1.56}, {"card": "Archmage's Charm", "seen": 1144, "wins": 155.41666666666666, "diff": -0.31, "ci": 2.08}, {"card": "Murktide Regent", "seen": 1115, "wins": 152.33333333333334, "diff": -0.23, "ci": 2.11}, {"card": "Unholy Heat", "seen": 1173, "wins": 160.83333333333337, "diff": -0.17, "ci": 2.07}, {"card": "Stormcarved Coast", "seen": 1392, "wins": 191.08333333333334, "diff": -0.16, "ci": 1.92}, {"card": "Mountain", "seen": 5937, "wins": 820.8333333333339, "diff": -0.08, "ci": 1.2}, {"card": "Invert Polarity", "seen": 1221, "wins": 169.25000000000003, "diff": -0.01, "ci": 2.04}, {"card": "Counterspell", "seen": 1323, "wins": 185.75000000000006, "diff": 0.19, "ci": 1.97}, {"card": "Serum Visions", "seen": 1252, "wins": 176.33333333333337, "diff": 0.24, "ci": 2.03}, {"card": "Pact of Negation", "seen": 1271, "wins": 179.41666666666669, "diff": 0.27, "ci": 2.01}, {"card": "Xander's Lounge", "seen": 1423, "wins": 201.08333333333334, "diff": 0.29, "ci": 1.92}, {"card": "Vandalblast", "seen": 1226, "wins": 173.41666666666669, "diff": 0.3, "ci": 2.05}, {"card": "Spirebluff Canal", "seen": 1443, "wins": 204.00000000000003, "diff": 0.3, "ci": 1.91}, {"card": "Ledger Shredder", "seen": 1163, "wins": 164.75, "diff": 0.33, "ci": 2.1}, {"card": "Tyrant's Scorn", "seen": 1155, "wins": 165.33333333333334, "diff": 0.49, "ci": 2.11}, {"card": "Three Steps Ahead", "seen": 1195, "wins": 171.41666666666666, "diff": 0.52, "ci": 2.08}, {"card": "Dragon's Rage Channeler", "seen": 1142, "wins": 164.25000000000003, "diff": 0.56, "ci": 2.13}, {"card": "Sulfur Falls", "seen": 1483, "wins": 213.6666666666667, "diff": 0.61, "ci": 1.9}, {"card": "Bedevil", "seen": 1281, "wins": 185.16666666666666, "diff": 0.65, "ci": 2.03}, {"card": "Narset's Reversal", "seen": 1173, "wins": 170.25, "diff": 0.71, "ci": 2.11}, {"card": "Temple of Epiphany", "seen": 1430, "wins": 207.4166666666667, "diff": 0.71, "ci": 1.93}, {"card": "Storm-Kiln Artist", "seen": 1180, "wins": 172.58333333333331, "diff": 0.83, "ci": 2.11}, {"card": "Drowned Catacomb", "seen": 1511, "wins": 220.58333333333334, "diff": 0.83, "ci": 1.89}, {"card": "Sleight of Hand", "seen": 1203, "wins": 176.41666666666669, "diff": 0.88, "ci": 2.09}, {"card": "Blasphemous Act", "seen": 1116, "wins": 164.41666666666669, "diff": 0.95, "ci": 2.17}, {"card": "Force of Negation", "seen": 1230, "wins": 181.41666666666669, "diff": 0.97, "ci": 2.08}, {"card": "Opt", "seen": 1230, "wins": 183.00000000000003, "diff": 1.11, "ci": 2.08}, {"card": "Command Tower", "seen": 1514, "wins": 224.91666666666666, "diff": 1.12, "ci": 1.9}, {"card": "Big Score", "seen": 1322, "wins": 197.66666666666666, "diff": 1.21, "ci": 2.02}, {"card": "Bloodstained Mire", "seen": 1384, "wins": 207.08333333333334, "diff": 1.22, "ci": 1.98}, {"card": "Talrand, Sky Summoner", "seen": 1186, "wins": 179.50000000000003, "diff": 1.39, "ci": 2.13}, {"card": "Unexpected Windfall", "seen": 1255, "wins": 191.25000000000003, "diff": 1.52, "ci": 2.08}, {"card": "Toxic Deluge", "seen": 1161, "wins": 177.58333333333337, "diff": 1.57, "ci": 2.16}, {"card": "Dragonskull Summit", "seen": 1440, "wins": 220.9166666666667, "diff": 1.66, "ci": 1.96}, {"card": "Ponder", "seen": 1209, "wins": 187.91666666666669, "diff": 1.85, "ci": 2.14}, {"card": "Torment of Hailfire", "seen": 1126, "wins": 176.08333333333334, "diff": 1.94, "ci": 2.21}, {"card": "Archmage Emeritus", "seen": 1167, "wins": 186.0, "diff": 2.27, "ci": 2.19}, {"card": "This Town Ain't Big Enough", "seen": 1152, "wins": 184.00000000000006, "diff": 2.31, "ci": 2.2}, {"card": "Expressive Iteration", "seen": 1230, "wins": 196.8333333333334, "diff": 2.36, "ci": 2.14}, {"card": "Consider", "seen": 1147, "wins": 185.91666666666666, "diff": 2.57, "ci": 2.22}, {"card": "Faithless Looting", "seen": 1268, "wins": 205.4166666666667, "diff": 2.58, "ci": 2.12}, {"card": "Guttersnipe", "seen": 1148, "wins": 195.58333333333337, "diff": 3.48, "ci": 2.26}, {"card": "Coruscation Mage", "seen": 1197, "wins": 205.25000000000009, "diff": 3.61, "ci": 2.22}], "chunk": null, "partial": false, "lands": {"curve": [["0-2", 635, 90.75], [3, 2527, 339.16666666666663], [4, 4082, 560.1666666666665], [5, 3458, 513.4999999999998], [6, 1688, 225.33333333333334], ["7-8", 518, 61.33333333333333]], "value": -0.23, "ci": 0.51, "mean": 4.36, "games": 12908}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.01, 0.06, 0.59, 1.8, 3.85, 5.91, 8.02, 9.78, 11.02, 11.98], "games": 12908, "stalls": 1.5}}} -->
