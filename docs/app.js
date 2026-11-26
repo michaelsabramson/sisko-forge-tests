@@ -977,7 +977,10 @@ async function drawHistory(body, name) {
 }
 
 /* ---------- new test ---------- */
-const PRECISION = [[2.0, 'Quick'], [1.5, 'Standard'], [1.0, 'Careful']];
+const PRECISION = [[2.5, 'Quick'], [2.0, 'Fast'], [1.5, 'Standard'], [1.0, 'Careful']];
+// default precision by kind of test: a card swap is usually a small difference; packages and deck-vs-deck usually
+// differ by more, so a wider range answers them in about a third less time (the person can still pick another)
+const PREC_DEFAULT = { swap: 1.5, package: 2.5, decks: 2.5 };
 function estimate(arms, precision) {
   // worst case: nothing reused from earlier tests
   const n = Math.ceil(2 * BASE_P * (1 - BASE_P) * (196 / precision) ** 2);
@@ -1048,7 +1051,7 @@ async function viewTest(v) {
       <div class="row end"><span id="terr" class="small" style="color:var(--bad)"></span><button class="primary" id="queueBtn">Queue test</button></div>
     </div>`;
   $('details.opp')?.addEventListener('toggle', e => { S.oppOpen = e.target.open; });
-  $$('[data-mode]').forEach(b => b.onclick = () => { T.mode = b.dataset.mode; if (T.mode === 'decks' && !T.decks[0]) T.decks = [T.base, '']; viewTest(v); });
+  $$('[data-mode]').forEach(b => b.onclick = () => { T.mode = b.dataset.mode; if (!T.precTouched) T.precision = PREC_DEFAULT[T.mode] ?? 1.5; if (T.mode === 'decks' && !T.decks[0]) T.decks = [T.base, '']; viewTest(v); });
   if (T.mode === 'swap') {
     $('#tbase').onchange = e => { T.base = e.target.value; T.slots = [{ out: '', ins: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(T.base)); viewTest(v); };
     $$('[data-out]').forEach(s => s.onchange = () => { T.slots[+s.dataset.out].out = s.value; viewTest(v); });
@@ -1072,7 +1075,7 @@ async function viewTest(v) {
   $$('[data-opp]').forEach(c => c.onchange = () => { const n = c.dataset.opp; T.opps = c.checked ? [...T.opps, n] : T.opps.filter(x => x !== n); T.oppsTouched = true; viewTest(v); });
   $$('[data-pool]').forEach(b => b.onclick = () => { T.opps = [...POOLS()[b.dataset.pool].decks]; T.oppsTouched = true; viewTest(v); });
   $('#addOpp').onchange = e => { if (e.target.value) { T.opps.push(e.target.value); viewTest(v); } };
-  $('#tmin').onchange = e => { T.precision = +e.target.value; viewTest(v); };
+  $('#tmin').onchange = e => { T.precision = +e.target.value; T.precTouched = true; viewTest(v); };
   $('#tname').oninput = e => T.name = e.target.value;
   $('#queueBtn').onclick = () => queueTest(autoName);
 }
@@ -1201,7 +1204,7 @@ async function route() {
     else if (page === 'new') await viewNewDeck(v);
     else if (page === 'test') {
       if (r.arg && r.arg !== S.test.base) { S.test.base = r.arg; S.test.slots = [{ out: '', ins: [] }]; }
-      if (r.q.get('mode') === 'decks') { S.test.mode = 'decks'; if (!S.test.decks[0]) S.test.decks = [S.test.base, '']; history.replaceState(null, '', '#test/' + encodeURIComponent(S.test.base)); }
+      if (r.q.get('mode') === 'decks') { S.test.mode = 'decks'; if (!S.test.precTouched) S.test.precision = 2.5; if (!S.test.decks[0]) S.test.decks = [S.test.base, '']; history.replaceState(null, '', '#test/' + encodeURIComponent(S.test.base)); }
       if (r.q.get('pool') && POOLS()[r.q.get('pool')]) { S.test.opps = [...POOLS()[r.q.get('pool')].decks]; S.test.oppsTouched = true; }
       if (r.q.get('out')) { S.test.mode = 'swap'; S.test.slots = [{ out: r.q.get('out'), ins: [] }]; history.replaceState(null, '', '#test/' + encodeURIComponent(S.test.base)); }
       await viewTest(v);
