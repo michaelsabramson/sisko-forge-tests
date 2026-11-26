@@ -76,7 +76,10 @@ jobs:
       - run: tar xzf bench.tgz
       - run: bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
       - uses: actions/upload-artifact@v4
-        with: { name: bench-out-${{ matrix.s }}, path: out/, retention-days: 3 }
+        with:
+          name: bench-out-${{ matrix.s }}
+          path: out/
+          retention-days: 3
   compare:
     needs: play
     if: ${{ !cancelled() }}
