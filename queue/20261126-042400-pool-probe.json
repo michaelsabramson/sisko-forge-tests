@@ -1,0 +1,27 @@
+{
+  "mode": "pilot",
+  "base": "SiskoFinal",
+  "pilots": [
+    {
+      "profile": "Default",
+      "mc": "on"
+    }
+  ],
+  "name": "Pool probe: Lathril and Isshin in place of Tuvasa and Tatyova",
+  "hidden": true,
+  "minutes": 15,
+  "shards": 38,
+  "opponents": [
+    "Edgar",
+    "UrDragon",
+    "Prossh",
+    "Meren",
+    "Talrand_B3",
+    "Krenko_B3",
+    "RafiqoftheMany_B3",
+    "Lathril_B3",
+    "Isshin_B3",
+    "Kykar_B3"
+  ],
+  "submitted": "2026-11-26T07:30:00+00:00"
+}
