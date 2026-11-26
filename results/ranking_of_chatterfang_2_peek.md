@@ -4,99 +4,99 @@ Swapped card forced into opening hand (band 0). Same opponents for every list.
 
 | List | Card | Games | Wins | Win rate | Reused |
 |---|---|---|---|---|---|
-| Chatterfang | Audit of Chatterfang | 5849 | 796.9166666666674 | 13.6% | 0 |
+| Chatterfang | Audit of Chatterfang | 8794 | 1237.6666666666665 | 14.1% | 0 |
 
 Gaps (95% interval):
 
 
-Deck audit: 5,849 games, 13.6% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
+Deck audit: 8,794 games, 14.1% wins. Each card's change in win rate when it was in the kept opening hand or the next 3 draws, vs games where it wasn't (weakest first):
 
 | Card | Games seen | Win rate seen | Change | ± |
 |---|---|---|---|---|
-| Tear Asunder | 503 | 10.0% | -4.0 | 2.8 |
-| Heroic Intervention | 520 | 10.4% | -3.5 | 2.8 |
-| Vile Entomber | 502 | 10.4% | -3.5 | 2.8 |
-| Talisman of Resilience | 562 | 10.6% | -3.3 | 2.7 |
-| Lightning Greaves | 528 | 10.9% | -3.0 | 2.8 |
-| Regrowth | 527 | 11.3% | -2.6 | 2.9 |
-| Ophiomancer | 540 | 11.3% | -2.6 | 2.8 |
-| Overgrown Tomb | 670 | 11.4% | -2.6 | 2.6 |
-| Squirrel Nest | 519 | 11.4% | -2.4 | 2.9 |
-| Idol of Oblivion | 535 | 11.4% | -2.4 | 2.9 |
-| Nested Shambler | 556 | 11.6% | -2.3 | 2.8 |
-| Abundant Harvest | 552 | 11.6% | -2.3 | 2.8 |
-| Putrefy | 502 | 11.6% | -2.2 | 3.0 |
-| Gilded Goose | 583 | 11.7% | -2.2 | 2.8 |
-| Llanowar Wastes | 666 | 11.9% | -1.9 | 2.6 |
-| Phyrexian Tower | 687 | 12.0% | -1.9 | 2.6 |
-| Yavimaya Elder | 540 | 12.0% | -1.8 | 2.9 |
-| Unearth | 537 | 12.3% | -1.4 | 2.9 |
-| Carrion Feeder | 564 | 12.3% | -1.4 | 2.9 |
-| Temple of Malady | 676 | 12.4% | -1.4 | 2.7 |
-| Victimize | 504 | 12.4% | -1.3 | 3.0 |
-| Golgari Signet | 555 | 12.5% | -1.2 | 2.9 |
-| Woe Strider | 524 | 12.5% | -1.2 | 3.0 |
-| Hazel's Brewmaster | 539 | 12.5% | -1.2 | 2.9 |
-| Phyrexian Arena | 546 | 12.5% | -1.2 | 2.9 |
-| Profane Tutor | 511 | 12.5% | -1.2 | 3.0 |
-| Nadier's Nightblade | 523 | 12.5% | -1.2 | 3.0 |
-| Path of Ancestry | 641 | 12.6% | -1.2 | 2.7 |
-| Windswept Heath | 725 | 12.7% | -1.0 | 2.6 |
-| Zulaport Cutthroat | 548 | 12.7% | -1.0 | 2.9 |
-| Chatterstorm | 564 | 12.9% | -0.8 | 2.9 |
-| Golgari Rot Farm | 702 | 12.9% | -0.8 | 2.6 |
-| Ashnod's Altar | 534 | 13.0% | -0.7 | 3.0 |
-| Chitterspitter | 578 | 13.0% | -0.7 | 2.9 |
-| Binding the Old Gods | 488 | 13.0% | -0.6 | 3.1 |
-| Hazel of the Rootbloom | 524 | 13.2% | -0.5 | 3.0 |
-| Ravenous Squirrel | 499 | 13.2% | -0.5 | 3.1 |
-| Tireless Provisioner | 490 | 13.3% | -0.3 | 3.1 |
-| Viscera Seer | 524 | 13.3% | -0.3 | 3.0 |
-| Maelstrom Pulse | 507 | 13.5% | -0.1 | 3.1 |
-| Twilight Mire | 684 | 13.5% | -0.1 | 2.7 |
-| Toski, Bearer of Secrets | 515 | 13.6% | -0.1 | 3.1 |
-| Plumb the Forbidden | 530 | 13.6% | -0.0 | 3.1 |
-| Skullclamp | 520 | 13.8% | +0.1 | 3.1 |
-| Maskwood Nexus | 551 | 13.8% | +0.2 | 3.0 |
-| Woodland Cemetery | 735 | 13.8% | +0.2 | 2.7 |
-| Exotic Orchard | 665 | 13.9% | +0.3 | 2.8 |
-| Morbid Opportunist | 533 | 14.0% | +0.4 | 3.1 |
-| Timeless Witness | 563 | 14.0% | +0.4 | 3.0 |
-| Swarmyard | 711 | 14.0% | +0.5 | 2.7 |
-| Village Rites | 523 | 14.1% | +0.5 | 3.1 |
-| Swamp | 3819 | 13.8% | +0.5 | 1.8 |
-| Forest | 3846 | 13.8% | +0.5 | 1.8 |
-| Marsh Flats | 721 | 14.1% | +0.5 | 2.7 |
-| Prosperous Innkeeper | 508 | 14.2% | +0.6 | 3.2 |
-| Deep Forest Hermit | 529 | 14.2% | +0.6 | 3.1 |
-| Beledros Witherbloom | 505 | 14.4% | +0.8 | 3.2 |
-| Second Harvest | 577 | 14.3% | +0.8 | 3.0 |
-| Sol Ring | 604 | 14.3% | +0.8 | 3.0 |
-| Dictate of Erebos | 534 | 14.4% | +0.9 | 3.1 |
-| Windgrace's Judgment | 527 | 14.4% | +0.9 | 3.1 |
-| Deadly Dispute | 543 | 14.5% | +1.0 | 3.1 |
-| Swarmyard Massacre | 556 | 14.6% | +1.1 | 3.1 |
-| Yavimaya, Cradle of Growth | 539 | 14.7% | +1.1 | 3.1 |
-| Scurry of Squirrels | 570 | 14.7% | +1.1 | 3.0 |
-| Arcane Signet | 570 | 14.7% | +1.2 | 3.0 |
-| Saw in Half | 513 | 14.7% | +1.2 | 3.2 |
-| Squirrel Sovereign | 502 | 14.8% | +1.3 | 3.2 |
-| Haywire Mite | 537 | 14.8% | +1.3 | 3.1 |
-| Command Tower | 684 | 14.8% | +1.4 | 2.8 |
-| Necroblossom Snarl | 706 | 14.8% | +1.4 | 2.8 |
-| Tainted Wood | 690 | 14.9% | +1.4 | 2.8 |
-| Verdant Command | 491 | 15.1% | +1.6 | 3.3 |
-| Oran-Rief, the Vastwood | 685 | 15.0% | +1.6 | 2.8 |
-| Academy Manufactor | 530 | 15.3% | +1.8 | 3.2 |
-| Ogre Slumlord | 512 | 16.0% | +2.5 | 3.3 |
-| Deathcap Glade | 696 | 15.9% | +2.6 | 2.9 |
-| Pitiless Plunderer | 509 | 16.1% | +2.7 | 3.3 |
-| Scurry Oak | 513 | 16.1% | +2.8 | 3.3 |
-| Poison-Tip Archer | 530 | 16.2% | +2.8 | 3.3 |
-| The Unbeatable Squirrel Girl | 533 | 16.7% | +3.4 | 3.3 |
-| Bastion of Remembrance | 535 | 17.0% | +3.7 | 3.3 |
-| Warren Soultrader | 515 | 17.6% | +4.3 | 3.4 |
-| Shamanic Revelation | 517 | 19.1% | +6.0 | 3.5 |
-| Beastmaster Ascension | 513 | 21.7% | +8.9 | 3.7 |
+| Putrefy | 794 | 10.9% | -3.5 | 2.3 |
+| Vile Entomber | 778 | 11.2% | -3.1 | 2.4 |
+| Talisman of Resilience | 838 | 11.3% | -3.0 | 2.3 |
+| Tear Asunder | 745 | 11.4% | -3.0 | 2.4 |
+| Abundant Harvest | 830 | 11.5% | -2.9 | 2.3 |
+| Carrion Feeder | 865 | 11.8% | -2.5 | 2.3 |
+| Idol of Oblivion | 808 | 12.1% | -2.2 | 2.4 |
+| Lightning Greaves | 799 | 12.1% | -2.1 | 2.4 |
+| Regrowth | 790 | 12.1% | -2.1 | 2.4 |
+| Phyrexian Tower | 1037 | 12.2% | -2.1 | 2.1 |
+| Unearth | 809 | 12.4% | -1.9 | 2.4 |
+| Windswept Heath | 1072 | 12.5% | -1.8 | 2.1 |
+| Overgrown Tomb | 1018 | 12.5% | -1.8 | 2.2 |
+| Heroic Intervention | 778 | 12.5% | -1.8 | 2.4 |
+| Chitterspitter | 862 | 12.5% | -1.8 | 2.3 |
+| Ashnod's Altar | 778 | 12.5% | -1.7 | 2.5 |
+| Golgari Signet | 868 | 12.6% | -1.6 | 2.3 |
+| Ophiomancer | 789 | 12.6% | -1.6 | 2.4 |
+| Gilded Goose | 910 | 12.9% | -1.3 | 2.3 |
+| Nested Shambler | 808 | 12.9% | -1.3 | 2.4 |
+| Nadier's Nightblade | 792 | 12.9% | -1.3 | 2.5 |
+| Llanowar Wastes | 1044 | 13.0% | -1.3 | 2.2 |
+| Maskwood Nexus | 822 | 13.0% | -1.2 | 2.4 |
+| Second Harvest | 859 | 13.1% | -1.1 | 2.4 |
+| Hazel's Brewmaster | 800 | 13.2% | -1.0 | 2.5 |
+| Viscera Seer | 777 | 13.2% | -1.0 | 2.5 |
+| Squirrel Nest | 776 | 13.3% | -0.9 | 2.5 |
+| Skullclamp | 805 | 13.3% | -0.9 | 2.5 |
+| Woe Strider | 772 | 13.3% | -0.8 | 2.5 |
+| Haywire Mite | 802 | 13.4% | -0.8 | 2.5 |
+| Yavimaya Elder | 832 | 13.4% | -0.7 | 2.4 |
+| Phyrexian Arena | 796 | 13.4% | -0.7 | 2.5 |
+| Golgari Rot Farm | 1027 | 13.5% | -0.7 | 2.2 |
+| Chatterstorm | 805 | 13.5% | -0.6 | 2.5 |
+| Timeless Witness | 833 | 13.5% | -0.6 | 2.4 |
+| Squirrel Sovereign | 773 | 13.8% | -0.3 | 2.5 |
+| Temple of Malady | 1039 | 13.8% | -0.3 | 2.2 |
+| Profane Tutor | 761 | 13.9% | -0.2 | 2.6 |
+| Arcane Signet | 848 | 14.0% | -0.1 | 2.5 |
+| Tireless Provisioner | 732 | 14.0% | -0.1 | 2.6 |
+| Scurry of Squirrels | 833 | 14.0% | -0.0 | 2.5 |
+| Binding the Old Gods | 739 | 14.0% | -0.0 | 2.6 |
+| Village Rites | 809 | 14.1% | -0.0 | 2.5 |
+| Twilight Mire | 1004 | 14.1% | -0.0 | 2.3 |
+| Ogre Slumlord | 754 | 14.1% | +0.0 | 2.6 |
+| Woodland Cemetery | 1094 | 14.1% | +0.0 | 2.2 |
+| Sol Ring | 885 | 14.2% | +0.1 | 2.4 |
+| Path of Ancestry | 976 | 14.3% | +0.2 | 2.3 |
+| Zulaport Cutthroat | 791 | 14.3% | +0.2 | 2.5 |
+| Ravenous Squirrel | 725 | 14.3% | +0.2 | 2.7 |
+| Plumb the Forbidden | 798 | 14.3% | +0.3 | 2.5 |
+| Hazel of the Rootbloom | 786 | 14.4% | +0.3 | 2.6 |
+| Forest | 5784 | 14.2% | +0.3 | 1.5 |
+| Morbid Opportunist | 792 | 14.4% | +0.3 | 2.6 |
+| Marsh Flats | 1059 | 14.4% | +0.3 | 2.2 |
+| Saw in Half | 807 | 14.6% | +0.6 | 2.5 |
+| Toski, Bearer of Secrets | 781 | 14.6% | +0.6 | 2.6 |
+| Exotic Orchard | 1007 | 14.6% | +0.6 | 2.3 |
+| Deadly Dispute | 808 | 14.7% | +0.7 | 2.6 |
+| Prosperous Innkeeper | 770 | 14.7% | +0.7 | 2.6 |
+| Maelstrom Pulse | 774 | 14.8% | +0.7 | 2.6 |
+| Necroblossom Snarl | 1039 | 14.7% | +0.8 | 2.3 |
+| Victimize | 776 | 14.8% | +0.8 | 2.6 |
+| Swarmyard | 1080 | 14.8% | +0.8 | 2.3 |
+| Scurry Oak | 803 | 14.8% | +0.8 | 2.6 |
+| Verdant Command | 747 | 15.0% | +1.0 | 2.7 |
+| Windgrace's Judgment | 791 | 15.0% | +1.0 | 2.6 |
+| Command Tower | 1043 | 15.0% | +1.1 | 2.3 |
+| Dictate of Erebos | 807 | 15.1% | +1.1 | 2.6 |
+| Swarmyard Massacre | 818 | 15.1% | +1.1 | 2.6 |
+| Academy Manufactor | 799 | 15.1% | +1.1 | 2.6 |
+| Oran-Rief, the Vastwood | 1026 | 15.1% | +1.1 | 2.3 |
+| Deep Forest Hermit | 821 | 15.2% | +1.3 | 2.6 |
+| Yavimaya, Cradle of Growth | 813 | 15.3% | +1.3 | 2.6 |
+| Swamp | 5712 | 14.5% | +1.3 | 1.5 |
+| Pitiless Plunderer | 795 | 15.5% | +1.6 | 2.6 |
+| Beledros Witherbloom | 761 | 15.5% | +1.6 | 2.7 |
+| Tainted Wood | 999 | 15.5% | +1.6 | 2.4 |
+| Warren Soultrader | 779 | 16.7% | +2.9 | 2.7 |
+| Shamanic Revelation | 776 | 16.9% | +3.1 | 2.7 |
+| Deathcap Glade | 1056 | 16.9% | +3.2 | 2.4 |
+| The Unbeatable Squirrel Girl | 813 | 17.2% | +3.4 | 2.7 |
+| Poison-Tip Archer | 819 | 18.0% | +4.3 | 2.7 |
+| Bastion of Remembrance | 794 | 18.2% | +4.5 | 2.8 |
+| Beastmaster Ascension | 781 | 22.8% | +9.6 | 3.0 |
 
-<!-- data {"name": "ranking_of_chatterfang_2", "title": "Ranking of Chatterfang", "mode": "audit", "run_id": "45833223151", "finished": "2026-11-26T13:51:46Z", "arms": [{"deck": "Chatterfang", "card": "@audit", "games": 5849, "wins": 796.9166666666674, "run_games": 5849, "run_stalls": 171, "run_clean_wins": 745, "reused": 0, "mc": "on", "label": "Audit of Chatterfang"}], "batching": {"runners": 1, "claimed": 1, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"], "cutoffs": {"n": 171, "alive": {"3": 68, "4": 83, "2": 19, "1": 1}, "me_alive": 168, "median_life": 35, "opp": {"UrDragon": [1817, 35], "Edgar": [1741, 32], "TuvasatheSunlit_B3": [1734, 48], "Tatyova_B3": [1679, 115], "Talrand_B3": [1693, 56], "RafiqoftheMany_B3": [1758, 26], "Prossh": [1768, 47], "Krenko_B3": [1806, 73], "Kykar_B3": [1801, 46], "Meren": [1750, 35]}, "why": {"time": 139, "other": 32}, "opp_why": {"Tatyova_B3": {"time": 88, "other": 27}, "TuvasatheSunlit_B3": {"time": 45, "other": 3}, "Kykar_B3": {"time": 38, "other": 8}, "UrDragon": {"other": 12, "time": 23}, "Krenko_B3": {"time": 63, "other": 10}, "Prossh": {"time": 37, "other": 10}, "Talrand_B3": {"other": 8, "time": 48}, "RafiqoftheMany_B3": {"other": 5, "time": 21}, "Meren": {"time": 26, "other": 9}, "Edgar": {"time": 28, "other": 4}}, "game_seconds": {"50": 47, "75": 92, "90": 203, "95": 419, "98": 900, "99": 900}}, "par_tally": {"games": 5849, "seats": 17547, "won": [71, 223, 517, 955, 1307, 1566, 1720, 1804, 1840, 1850], "opponents": ["Edgar", "Krenko_B3", "Kykar_B3", "Meren", "Prossh", "RafiqoftheMany_B3", "Talrand_B3", "Tatyova_B3", "TuvasatheSunlit_B3", "UrDragon"], "round_cap": 0, "game_timeout": 900}, "speed": 0.59, "audit": {"deck": "Chatterfang", "cards": [{"card": "Tear Asunder", "seen": 503, "wins": 50.333333333333336, "diff": -3.96, "ci": 2.78}, {"card": "Heroic Intervention", "seen": 520, "wins": 54.25, "diff": -3.5, "ci": 2.79}, {"card": "Vile Entomber", "seen": 502, "wins": 52.41666666666668, "diff": -3.48, "ci": 2.83}, {"card": "Talisman of Resilience", "seen": 562, "wins": 59.83333333333334, "diff": -3.29, "ci": 2.72}, {"card": "Lightning Greaves", "seen": 528, "wins": 57.75, "diff": -2.95, "ci": 2.82}, {"card": "Regrowth", "seen": 527, "wins": 59.33333333333333, "diff": -2.6, "ci": 2.85}, {"card": "Ophiomancer", "seen": 540, "wins": 60.83333333333334, "diff": -2.6, "ci": 2.82}, {"card": "Overgrown Tomb", "seen": 670, "wins": 76.08333333333334, "diff": -2.56, "ci": 2.58}, {"card": "Squirrel Nest", "seen": 519, "wins": 59.16666666666667, "diff": -2.44, "ci": 2.89}, {"card": "Idol of Oblivion", "seen": 535, "wins": 61.16666666666667, "diff": -2.41, "ci": 2.85}, {"card": "Nested Shambler", "seen": 556, "wins": 64.25, "diff": -2.29, "ci": 2.82}, {"card": "Abundant Harvest", "seen": 552, "wins": 63.91666666666668, "diff": -2.26, "ci": 2.83}, {"card": "Putrefy", "seen": 502, "wins": 58.16666666666667, "diff": -2.23, "ci": 2.95}, {"card": "Gilded Goose", "seen": 583, "wins": 68.00000000000001, "diff": -2.18, "ci": 2.77}, {"card": "Llanowar Wastes", "seen": 666, "wins": 79.33333333333333, "diff": -1.93, "ci": 2.63}, {"card": "Phyrexian Tower", "seen": 687, "wins": 82.16666666666666, "diff": -1.89, "ci": 2.6}, {"card": "Yavimaya Elder", "seen": 540, "wins": 64.75, "diff": -1.8, "ci": 2.89}, {"card": "Unearth", "seen": 537, "wins": 66.16666666666667, "diff": -1.44, "ci": 2.93}, {"card": "Carrion Feeder", "seen": 564, "wins": 69.58333333333334, "diff": -1.42, "ci": 2.87}, {"card": "Temple of Malady", "seen": 676, "wins": 83.91666666666666, "diff": -1.37, "ci": 2.66}, {"card": "Victimize", "seen": 504, "wins": 62.5, "diff": -1.34, "ci": 3.02}, {"card": "Golgari Signet", "seen": 555, "wins": 69.33333333333333, "diff": -1.25, "ci": 2.9}, {"card": "Woe Strider", "seen": 524, "wins": 65.5, "diff": -1.24, "ci": 2.98}, {"card": "Hazel's Brewmaster", "seen": 539, "wins": 67.41666666666667, "diff": -1.23, "ci": 2.94}, {"card": "Phyrexian Arena", "seen": 546, "wins": 68.33333333333334, "diff": -1.22, "ci": 2.93}, {"card": "Profane Tutor", "seen": 511, "wins": 64.08333333333334, "diff": -1.19, "ci": 3.02}, {"card": "Nadier's Nightblade", "seen": 523, "wins": 65.58333333333334, "diff": -1.19, "ci": 2.99}, {"card": "Path of Ancestry", "seen": 641, "wins": 80.58333333333334, "diff": -1.18, "ci": 2.73}, {"card": "Windswept Heath", "seen": 725, "wins": 92.25, "diff": -1.03, "ci": 2.6}, {"card": "Zulaport Cutthroat", "seen": 548, "wins": 69.66666666666667, "diff": -1.01, "ci": 2.94}, {"card": "Chatterstorm", "seen": 564, "wins": 72.75, "diff": -0.8, "ci": 2.92}, {"card": "Golgari Rot Farm", "seen": 702, "wins": 90.74999999999999, "diff": -0.79, "ci": 2.65}, {"card": "Ashnod's Altar", "seen": 534, "wins": 69.25, "diff": -0.72, "ci": 3.0}, {"card": "Chitterspitter", "seen": 578, "wins": 75.25000000000001, "diff": -0.67, "ci": 2.9}, {"card": "Binding the Old Gods", "seen": 488, "wins": 63.66666666666667, "diff": -0.63, "ci": 3.13}, {"card": "Hazel of the Rootbloom", "seen": 524, "wins": 69.0, "diff": -0.5, "ci": 3.04}, {"card": "Ravenous Squirrel", "seen": 499, "wins": 65.83333333333334, "diff": -0.47, "ci": 3.11}, {"card": "Tireless Provisioner", "seen": 490, "wins": 65.33333333333334, "diff": -0.32, "ci": 3.15}, {"card": "Viscera Seer", "seen": 524, "wins": 69.91666666666667, "diff": -0.31, "ci": 3.05}, {"card": "Maelstrom Pulse", "seen": 507, "wins": 68.58333333333334, "diff": -0.11, "ci": 3.12}, {"card": "Twilight Mire", "seen": 684, "wins": 92.58333333333331, "diff": -0.1, "ci": 2.73}, {"card": "Toski, Bearer of Secrets", "seen": 515, "wins": 69.83333333333334, "diff": -0.07, "ci": 3.1}, {"card": "Plumb the Forbidden", "seen": 530, "wins": 72.16666666666667, "diff": -0.01, "ci": 3.06}, {"card": "Skullclamp", "seen": 520, "wins": 71.58333333333334, "diff": 0.15, "ci": 3.1}, {"card": "Maskwood Nexus", "seen": 551, "wins": 76.08333333333333, "diff": 0.2, "ci": 3.02}, {"card": "Woodland Cemetery", "seen": 735, "wins": 101.58333333333331, "diff": 0.22, "ci": 2.67}, {"card": "Exotic Orchard", "seen": 665, "wins": 92.66666666666666, "diff": 0.35, "ci": 2.79}, {"card": "Morbid Opportunist", "seen": 533, "wins": 74.41666666666667, "diff": 0.37, "ci": 3.08}, {"card": "Timeless Witness", "seen": 563, "wins": 78.83333333333331, "diff": 0.42, "ci": 3.01}, {"card": "Swarmyard", "seen": 711, "wins": 99.66666666666666, "diff": 0.45, "ci": 2.72}, {"card": "Village Rites", "seen": 523, "wins": 73.5, "diff": 0.47, "ci": 3.12}, {"card": "Swamp", "seen": 3819, "wins": 526.7499999999997, "diff": 0.48, "ci": 1.84}, {"card": "Forest", "seen": 3846, "wins": 530.5833333333328, "diff": 0.5, "ci": 1.84}, {"card": "Marsh Flats", "seen": 721, "wins": 101.58333333333333, "diff": 0.53, "ci": 2.71}, {"card": "Prosperous Innkeeper", "seen": 508, "wins": 72.16666666666667, "diff": 0.64, "ci": 3.17}, {"card": "Deep Forest Hermit", "seen": 529, "wins": 75.16666666666666, "diff": 0.64, "ci": 3.11}, {"card": "Beledros Witherbloom", "seen": 505, "wins": 72.5, "diff": 0.8, "ci": 3.19}, {"card": "Second Harvest", "seen": 577, "wins": 82.75000000000001, "diff": 0.8, "ci": 3.01}, {"card": "Sol Ring", "seen": 604, "wins": 86.66666666666666, "diff": 0.81, "ci": 2.95}, {"card": "Dictate of Erebos", "seen": 534, "wins": 77.0, "diff": 0.87, "ci": 3.12}, {"card": "Windgrace's Judgment", "seen": 527, "wins": 76.08333333333334, "diff": 0.89, "ci": 3.14}, {"card": "Deadly Dispute", "seen": 543, "wins": 78.83333333333333, "diff": 0.98, "ci": 3.1}, {"card": "Swarmyard Massacre", "seen": 556, "wins": 81.41666666666667, "diff": 1.13, "ci": 3.08}, {"card": "Yavimaya, Cradle of Growth", "seen": 539, "wins": 79.08333333333334, "diff": 1.15, "ci": 3.13}, {"card": "Scurry of Squirrels", "seen": 570, "wins": 83.58333333333333, "diff": 1.15, "ci": 3.05}, {"card": "Arcane Signet", "seen": 570, "wins": 83.66666666666666, "diff": 1.17, "ci": 3.05}, {"card": "Saw in Half", "seen": 513, "wins": 75.58333333333334, "diff": 1.22, "ci": 3.2}, {"card": "Squirrel Sovereign", "seen": 502, "wins": 74.16666666666667, "diff": 1.26, "ci": 3.24}, {"card": "Haywire Mite", "seen": 537, "wins": 79.66666666666666, "diff": 1.33, "ci": 3.14}, {"card": "Command Tower", "seen": 684, "wins": 101.41666666666664, "diff": 1.36, "ci": 2.82}, {"card": "Necroblossom Snarl", "seen": 706, "wins": 104.75, "diff": 1.38, "ci": 2.78}, {"card": "Tainted Wood", "seen": 690, "wins": 102.83333333333331, "diff": 1.45, "ci": 2.82}, {"card": "Verdant Command", "seen": 491, "wins": 73.91666666666669, "diff": 1.56, "ci": 3.29}, {"card": "Oran-Rief, the Vastwood", "seen": 685, "wins": 102.91666666666664, "diff": 1.59, "ci": 2.83}, {"card": "Academy Manufactor", "seen": 530, "wins": 80.91666666666667, "diff": 1.81, "ci": 3.2}, {"card": "Ogre Slumlord", "seen": 512, "wins": 81.66666666666667, "diff": 2.55, "ci": 3.3}, {"card": "Deathcap Glade", "seen": 696, "wins": 110.75, "diff": 2.6, "ci": 2.87}, {"card": "Pitiless Plunderer", "seen": 509, "wins": 82.08333333333333, "diff": 2.74, "ci": 3.32}, {"card": "Scurry Oak", "seen": 513, "wins": 82.75, "diff": 2.75, "ci": 3.31}, {"card": "Poison-Tip Archer", "seen": 530, "wins": 85.66666666666667, "diff": 2.79, "ci": 3.26}, {"card": "The Unbeatable Squirrel Girl", "seen": 533, "wins": 88.91666666666667, "diff": 3.36, "ci": 3.29}, {"card": "Bastion of Remembrance", "seen": 535, "wins": 90.74999999999999, "diff": 3.67, "ci": 3.31}, {"card": "Warren Soultrader", "seen": 515, "wins": 90.49999999999997, "diff": 4.33, "ci": 3.41}, {"card": "Shamanic Revelation", "seen": 517, "wins": 98.91666666666664, "diff": 6.04, "ci": 3.51}, {"card": "Beastmaster Ascension", "seen": 513, "wins": 111.5, "diff": 8.89, "ci": 3.68}], "chunk": null, "partial": false, "lands": {"curve": [["0-2", 545, 68.75], [3, 1598, 199.41666666666674], [4, 1919, 285.75000000000006], [5, 1237, 180.33333333333334], ["6-8", 550, 62.66666666666668]], "value": -0.13, "ci": 0.73, "mean": 3.96, "games": 5849}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.07, 0.32, 2.05, 4.38, 6.98, 9.32, 10.77, 11.69, 12.22, 12.4], "games": 5849, "stalls": 2.9}}} -->
+<!-- data {"name": "ranking_of_chatterfang_2", "title": "Ranking of Chatterfang", "mode": "audit", "run_id": "45836773625", "finished": "2026-11-26T14:13:26Z", "arms": [{"deck": "Chatterfang", "card": "@audit", "games": 8794, "wins": 1237.6666666666665, "run_games": 8794, "run_stalls": 277, "run_clean_wins": 1152, "reused": 0, "mc": "on", "label": "Audit of Chatterfang"}], "batching": {"runners": 21, "claimed": 35, "retries": 0, "unclaimed": 0}, "compare": [], "opponents": ["Edgar", "UrDragon", "Prossh", "Meren", "Talrand_B3", "Krenko_B3", "RafiqoftheMany_B3", "TuvasatheSunlit_B3", "Tatyova_B3", "Kykar_B3"], "cutoffs": {"n": 284, "alive": {"4": 143, "3": 99, "2": 41, "1": 1}, "me_alive": 279, "median_life": 35, "opp": {"UrDragon": [2688, 50], "Edgar": [2630, 58], "TuvasatheSunlit_B3": [2622, 94], "Tatyova_B3": [2522, 175], "Talrand_B3": [2585, 99], "RafiqoftheMany_B3": [2664, 53], "Prossh": [2703, 77], "Krenko_B3": [2676, 120], "Kykar_B3": [2678, 72], "Meren": [2635, 54]}, "why": {"time": 225, "other": 59}, "opp_why": {"Talrand_B3": {"time": 82, "other": 17}, "Tatyova_B3": {"time": 131, "other": 44}, "Krenko_B3": {"time": 102, "other": 18}, "TuvasatheSunlit_B3": {"time": 84, "other": 10}, "Kykar_B3": {"time": 55, "other": 17}, "UrDragon": {"other": 18, "time": 32}, "Meren": {"time": 41, "other": 13}, "Prossh": {"time": 59, "other": 18}, "RafiqoftheMany_B3": {"time": 43, "other": 10}, "Edgar": {"time": 46, "other": 12}}, "game_seconds": {"50": 46, "75": 90, "90": 208, "95": 435, "98": 900, "99": 900}}, "par_tally": {"games": 8801, "seats": 26403, "won": [98, 344, 795, 1451, 1961, 2344, 2584, 2717, 2777, 2795], "opponents": ["Edgar", "Krenko_B3", "Kykar_B3", "Meren", "Prossh", "RafiqoftheMany_B3", "Talrand_B3", "Tatyova_B3", "TuvasatheSunlit_B3", "UrDragon"], "round_cap": 0, "game_timeout": 900}, "speed": 0.584, "audit": {"deck": "Chatterfang", "cards": [{"card": "Putrefy", "seen": 794, "wins": 86.16666666666666, "diff": -3.54, "ci": 2.3}, {"card": "Vile Entomber", "seen": 778, "wins": 87.16666666666664, "diff": -3.15, "ci": 2.35}, {"card": "Talisman of Resilience", "seen": 838, "wins": 94.91666666666666, "diff": -3.04, "ci": 2.28}, {"card": "Tear Asunder", "seen": 745, "wins": 84.75, "diff": -2.95, "ci": 2.41}, {"card": "Abundant Harvest", "seen": 830, "wins": 95.24999999999999, "diff": -2.87, "ci": 2.3}, {"card": "Carrion Feeder", "seen": 865, "wins": 101.99999999999997, "diff": -2.53, "ci": 2.28}, {"card": "Idol of Oblivion", "seen": 808, "wins": 97.58333333333331, "diff": -2.2, "ci": 2.37}, {"card": "Lightning Greaves", "seen": 799, "wins": 96.99999999999999, "diff": -2.13, "ci": 2.39}, {"card": "Regrowth", "seen": 790, "wins": 95.91666666666666, "diff": -2.12, "ci": 2.4}, {"card": "Phyrexian Tower", "seen": 1037, "wins": 126.66666666666664, "diff": -2.11, "ci": 2.14}, {"card": "Unearth", "seen": 809, "wins": 100.16666666666663, "diff": -1.86, "ci": 2.4}, {"card": "Windswept Heath", "seen": 1072, "wins": 133.66666666666666, "diff": -1.83, "ci": 2.13}, {"card": "Overgrown Tomb", "seen": 1018, "wins": 127.08333333333333, "diff": -1.8, "ci": 2.17}, {"card": "Heroic Intervention", "seen": 778, "wins": 97.0, "diff": -1.76, "ci": 2.44}, {"card": "Chitterspitter", "seen": 862, "wins": 107.74999999999997, "diff": -1.75, "ci": 2.34}, {"card": "Ashnod's Altar", "seen": 778, "wins": 97.16666666666666, "diff": -1.74, "ci": 2.45}, {"card": "Golgari Signet", "seen": 868, "wins": 109.24999999999999, "diff": -1.65, "ci": 2.34}, {"card": "Ophiomancer", "seen": 789, "wins": 99.41666666666666, "diff": -1.62, "ci": 2.44}, {"card": "Gilded Goose", "seen": 910, "wins": 117.41666666666663, "diff": -1.31, "ci": 2.31}, {"card": "Nested Shambler", "seen": 808, "wins": 104.41666666666664, "diff": -1.27, "ci": 2.44}, {"card": "Nadier's Nightblade", "seen": 792, "wins": 102.41666666666666, "diff": -1.26, "ci": 2.46}, {"card": "Llanowar Wastes", "seen": 1044, "wins": 135.33333333333331, "diff": -1.26, "ci": 2.18}, {"card": "Maskwood Nexus", "seen": 822, "wins": 106.66666666666664, "diff": -1.21, "ci": 2.42}, {"card": "Second Harvest", "seen": 859, "wins": 112.66666666666666, "diff": -1.06, "ci": 2.38}, {"card": "Hazel's Brewmaster", "seen": 800, "wins": 105.41666666666667, "diff": -0.99, "ci": 2.47}, {"card": "Viscera Seer", "seen": 777, "wins": 102.58333333333331, "diff": -0.96, "ci": 2.5}, {"card": "Squirrel Nest", "seen": 776, "wins": 102.99999999999997, "diff": -0.88, "ci": 2.51}, {"card": "Skullclamp", "seen": 805, "wins": 106.83333333333333, "diff": -0.88, "ci": 2.47}, {"card": "Woe Strider", "seen": 772, "wins": 102.74999999999999, "diff": -0.84, "ci": 2.51}, {"card": "Haywire Mite", "seen": 802, "wins": 107.24999999999997, "diff": -0.77, "ci": 2.48}, {"card": "Yavimaya Elder", "seen": 832, "wins": 111.66666666666666, "diff": -0.72, "ci": 2.44}, {"card": "Phyrexian Arena", "seen": 796, "wins": 106.91666666666667, "diff": -0.71, "ci": 2.49}, {"card": "Golgari Rot Farm", "seen": 1027, "wins": 138.49999999999997, "diff": -0.67, "ci": 2.23}, {"card": "Chatterstorm", "seen": 805, "wins": 108.58333333333333, "diff": -0.64, "ci": 2.48}, {"card": "Timeless Witness", "seen": 833, "wins": 112.49999999999997, "diff": -0.63, "ci": 2.44}, {"card": "Squirrel Sovereign", "seen": 773, "wins": 106.33333333333333, "diff": -0.35, "ci": 2.54}, {"card": "Temple of Malady", "seen": 1039, "wins": 143.16666666666666, "diff": -0.33, "ci": 2.23}, {"card": "Profane Tutor", "seen": 761, "wins": 105.99999999999999, "diff": -0.16, "ci": 2.58}, {"card": "Arcane Signet", "seen": 848, "wins": 118.74999999999997, "diff": -0.08, "ci": 2.46}, {"card": "Tireless Provisioner", "seen": 732, "wins": 102.58333333333331, "diff": -0.07, "ci": 2.63}, {"card": "Scurry of Squirrels", "seen": 833, "wins": 116.91666666666663, "diff": -0.04, "ci": 2.48}, {"card": "Binding the Old Gods", "seen": 739, "wins": 103.74999999999999, "diff": -0.04, "ci": 2.62}, {"card": "Village Rites", "seen": 809, "wins": 113.66666666666664, "diff": -0.03, "ci": 2.51}, {"card": "Twilight Mire", "seen": 1004, "wins": 141.08333333333331, "diff": -0.02, "ci": 2.28}, {"card": "Ogre Slumlord", "seen": 754, "wins": 106.24999999999999, "diff": 0.02, "ci": 2.6}, {"card": "Woodland Cemetery", "seen": 1094, "wins": 154.25000000000003, "diff": 0.03, "ci": 2.2}, {"card": "Sol Ring", "seen": 885, "wins": 125.66666666666663, "diff": 0.14, "ci": 2.42}, {"card": "Path of Ancestry", "seen": 976, "wins": 139.08333333333331, "diff": 0.2, "ci": 2.32}, {"card": "Zulaport Cutthroat", "seen": 791, "wins": 112.91666666666666, "diff": 0.22, "ci": 2.55}, {"card": "Ravenous Squirrel", "seen": 725, "wins": 103.66666666666666, "diff": 0.25, "ci": 2.66}, {"card": "Plumb the Forbidden", "seen": 798, "wins": 114.24999999999997, "diff": 0.27, "ci": 2.55}, {"card": "Hazel of the Rootbloom", "seen": 786, "wins": 112.83333333333333, "diff": 0.31, "ci": 2.57}, {"card": "Forest", "seen": 5784, "wins": 820.4166666666673, "diff": 0.32, "ci": 1.53}, {"card": "Morbid Opportunist", "seen": 792, "wins": 113.83333333333333, "diff": 0.33, "ci": 2.56}, {"card": "Marsh Flats", "seen": 1059, "wins": 152.16666666666666, "diff": 0.34, "ci": 2.25}, {"card": "Saw in Half", "seen": 807, "wins": 117.91666666666664, "diff": 0.59, "ci": 2.55}, {"card": "Toski, Bearer of Secrets", "seen": 781, "wins": 114.16666666666667, "diff": 0.6, "ci": 2.59}, {"card": "Exotic Orchard", "seen": 1007, "wins": 147.41666666666666, "diff": 0.64, "ci": 2.32}, {"card": "Deadly Dispute", "seen": 808, "wins": 118.74999999999997, "diff": 0.69, "ci": 2.56}, {"card": "Prosperous Innkeeper", "seen": 770, "wins": 113.33333333333331, "diff": 0.71, "ci": 2.62}, {"card": "Maelstrom Pulse", "seen": 774, "wins": 114.16666666666663, "diff": 0.74, "ci": 2.61}, {"card": "Necroblossom Snarl", "seen": 1039, "wins": 153.25, "diff": 0.77, "ci": 2.29}, {"card": "Victimize", "seen": 776, "wins": 115.08333333333333, "diff": 0.83, "ci": 2.61}, {"card": "Swarmyard", "seen": 1080, "wins": 160.00000000000003, "diff": 0.84, "ci": 2.26}, {"card": "Scurry Oak", "seen": 803, "wins": 119.16666666666664, "diff": 0.84, "ci": 2.57}, {"card": "Verdant Command", "seen": 747, "wins": 111.74999999999997, "diff": 0.97, "ci": 2.67}, {"card": "Windgrace's Judgment", "seen": 791, "wins": 118.74999999999997, "diff": 1.03, "ci": 2.6}, {"card": "Command Tower", "seen": 1043, "wins": 156.58333333333331, "diff": 1.07, "ci": 2.3}, {"card": "Dictate of Erebos", "seen": 807, "wins": 121.66666666666663, "diff": 1.1, "ci": 2.58}, {"card": "Swarmyard Massacre", "seen": 818, "wins": 123.33333333333333, "diff": 1.11, "ci": 2.57}, {"card": "Academy Manufactor", "seen": 799, "wins": 120.74999999999997, "diff": 1.14, "ci": 2.6}, {"card": "Oran-Rief, the Vastwood", "seen": 1026, "wins": 154.83333333333334, "diff": 1.15, "ci": 2.32}, {"card": "Deep Forest Hermit", "seen": 821, "wins": 124.99999999999999, "diff": 1.27, "ci": 2.57}, {"card": "Yavimaya, Cradle of Growth", "seen": 813, "wins": 124.0833333333333, "diff": 1.31, "ci": 2.59}, {"card": "Swamp", "seen": 5712, "wins": 830.6666666666674, "diff": 1.34, "ci": 1.5}, {"card": "Pitiless Plunderer", "seen": 795, "wins": 123.08333333333331, "diff": 1.55, "ci": 2.63}, {"card": "Beledros Witherbloom", "seen": 761, "wins": 117.99999999999999, "diff": 1.57, "ci": 2.68}, {"card": "Tainted Wood", "seen": 999, "wins": 154.66666666666666, "diff": 1.59, "ci": 2.37}, {"card": "Warren Soultrader", "seen": 779, "wins": 130.16666666666663, "diff": 2.89, "ci": 2.73}, {"card": "Shamanic Revelation", "seen": 776, "wins": 130.99999999999994, "diff": 3.08, "ci": 2.74}, {"card": "Deathcap Glade", "seen": 1056, "wins": 178.41666666666669, "diff": 3.21, "ci": 2.39}, {"card": "The Unbeatable Squirrel Girl", "seen": 813, "wins": 139.49999999999994, "diff": 3.4, "ci": 2.7}, {"card": "Poison-Tip Archer", "seen": 819, "wins": 147.5, "diff": 4.34, "ci": 2.74}, {"card": "Bastion of Remembrance", "seen": 794, "wins": 144.41666666666666, "diff": 4.52, "ci": 2.79}, {"card": "Beastmaster Ascension", "seen": 781, "wins": 178.41666666666666, "diff": 9.63, "ci": 3.04}], "chunk": null, "partial": false, "lands": {"curve": [["0-2", 862, 99.33333333333333], [3, 2349, 301.66666666666674], [4, 2913, 460.3333333333331], [5, 1840, 264.5833333333334], ["6-9", 830, 111.75]], "value": 0.26, "ci": 0.61, "mean": 3.95, "games": 8794}, "pace": {"rounds": [5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "won": [0.07, 0.39, 1.98, 4.48, 7.31, 9.69, 11.14, 11.97, 12.52, 12.75], "games": 8794, "stalls": 3.1}}} -->
