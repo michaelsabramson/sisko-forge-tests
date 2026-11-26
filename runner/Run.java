@@ -31,6 +31,12 @@ public class Run {
       for(int i=0;i<c.size();i++) if(r<w.get(i)[0]) return c.get(i).equals("@natural")?null:c.get(i);
     }catch(Exception e){ }
     return null; }
+  static String slowLine(forge.game.Game game, long t){
+    StringBuilder b=new StringBuilder("SLOW t="+t+" turn="+game.getPhaseHandler().getTurn()+" phase="+game.getPhaseHandler().getPhase()+" active="+game.getPhaseHandler().getPlayerTurn().getName()+" stack="+game.getStack().size()+" |");
+    try{ for(Player p:game.getRegisteredPlayers()){ int cr=0,tok=0,pow=0,perm=0; for(forge.game.card.Card c:p.getCardsIn(forge.game.zone.ZoneType.Battlefield)){ perm++; if(c.isCreature()){ cr++; pow+=Math.max(0,c.getNetPower()); if(c.isToken()) tok++; } }
+      b.append(" ").append(p.getName()).append(p.hasLost()?"(out)":"").append(": life ").append(p.getLife()).append(", ").append(cr).append(" creatures (").append(tok).append(" tokens), power ").append(pow).append(", ").append(perm).append(" permanents;"); } }catch(Throwable x){ b.append(" ?"); }
+    return b.toString();
+  }
   public static void main(String[] a) throws Exception {
     String res=a[0]; int n=Integer.parseInt(a[1]); long seed=Long.parseLong(a[2]); int timeout=Integer.parseInt(a[3]); boolean log=a[4].equals("log");
     List<String> decks=Arrays.asList(a).subList(5,a.length);
@@ -218,7 +224,11 @@ public class Run {
       if(System.getProperty("dbg")!=null) game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void on(forge.game.event.GameEventTurnBegan e){ for(Player p:game.getPlayers()) if(p.getName().equals(System.getProperty("dbg")) && e.turnOwner().toString().contains(p.getName())) System.out.println("  DBG T"+e.turnNumber()+" life="+p.getLife()+" hand="+p.getCardsIn(forge.game.zone.ZoneType.Hand)+" bf="+p.getCardsIn(forge.game.zone.ZoneType.Battlefield)); } });
       long s=System.currentTimeMillis(); String res2;
       ExecutorService ex=Executors.newSingleThreadExecutor(); Future<?> f=ex.submit(()->mc.startGame(game));
-      try { f.get(timeout,TimeUnit.SECONDS); } catch(TimeoutException te){ cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} f.cancel(true); try{ f.get(20,TimeUnit.SECONDS);}catch(Throwable x){} } catch(Exception e){ e.printStackTrace(); }
+      // slow games: a board summary at 3 and 7.5 minutes and at the cut ("SLOW" lines, diagnostics only)
+      final long t0=System.currentTimeMillis();
+      for(long chk: new long[]{180,450}){ if(chk>=timeout) break; long left=chk*1000-(System.currentTimeMillis()-t0); if(left<=0) continue;
+        try{ f.get(left,TimeUnit.MILLISECONDS); break; }catch(TimeoutException te0){ System.out.println(slowLine(game,chk)); }catch(Exception e0){ break; } }
+      try { if(!f.isDone()) f.get(Math.max(1,timeout*1000-(System.currentTimeMillis()-t0)),TimeUnit.MILLISECONDS); } catch(TimeoutException te){ System.out.println(slowLine(game,timeout)); cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} f.cancel(true); try{ f.get(20,TimeUnit.SECONDS);}catch(Throwable x){} } catch(Exception e){ e.printStackTrace(); }
       ex.shutdownNow();
       int turn=game.getPhaseHandler().getTurn();
       if(game.getOutcome()==null || game.getOutcome().isDraw()) res2="Draw"; else res2=game.getOutcome().getWinningLobbyPlayer().getName();
