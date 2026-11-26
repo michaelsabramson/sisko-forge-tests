@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04   # pinned: the 2026-11-22 ubuntu-latest image (Ubuntu 26.04) fails to resolve a Forge build extension
     outputs:
       shards: ${{ steps.m.outputs.shards }}
     steps:
@@ -49,6 +49,7 @@ jobs:
       - name: Build engine (core, game, ai)
         run: |
           cd forge
+          mvn -v >> ../build.log 2>&1 || true
           mvn -B -Dmaven.wagon.http.retryHandler.count=3 -pl forge-ai -am package dependency:copy-dependencies -DoutputDirectory=$GITHUB_WORKSPACE/lib -DincludeScope=runtime -DskipTests -Dcheckstyle.skip=true -Dmaven.javadoc.skip=true > ../build.log 2>&1
           rm -f ../lib/forge-core-*.jar ../lib/forge-game-*.jar ../lib/forge-ai-*.jar
           cp forge-core/target/forge-core-*.jar forge-game/target/forge-game-*.jar forge-ai/target/forge-ai-*.jar ../lib/
