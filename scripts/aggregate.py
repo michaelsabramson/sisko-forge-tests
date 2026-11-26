@@ -45,6 +45,8 @@ for f in glob.glob('out/**/arm*_*.log', recursive=True):
                 # cut-off diagnostics: which opponents were at the table, how many players were left, their life
                 for o in pod[1:]: cutoffs["opp"].setdefault(o, [0, 0])[1] += 1
                 cutoffs["alive"][len(alive)] = cutoffs["alive"].get(len(alive), 0) + 1
+                if len(alive) == 0 and cutoffs["alive"][0] <= 6: print("DRAW0", pod, l.strip(), file=sys.stderr)
+                if len(alive) >= 3 and cutoffs["alive"][len(alive)] <= 3: print("DRAWN", pod, l.strip(), file=sys.stderr)
                 cutoffs["me_alive"] += me in alive; cutoffs["n"] += 1
                 for p_ in l.split('ms', 1)[-1].split():
                     if '=' in p_ and not p_.endswith('x') and p_.split('=')[1].lstrip('-').isdigit():
