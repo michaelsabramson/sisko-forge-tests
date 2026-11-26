@@ -269,8 +269,9 @@ def main():
     # a background run (power ladder calibration, .github/workflows/background.yml) holds some runners: leave them free
     if os.environ.get("BG_RUNNERS"):
         req["shards"] = max(10, req["shards"] - int(os.environ["BG_RUNNERS"]))
-    if r.get("mode") == "ladder":
-        req["full"] = True; req["hidden"] = True   # full-length games (every winner known); result hidden from the app
+    if r.get("mode") == "ladder" or r.get("full"):
+        # full-length games (every winner known: power ladder, par line); result hidden from the app
+        req["full"] = True; req["hidden"] = True
     if r.get("mode") == "tail":
         req["tail"] = {k: r[k] for k in ("margin", "tau", "p_outlier", "rank") if k in r}
     req["game_timeout"] = int(r.get("game_timeout", DEFAULT_TIMEOUT))   # seconds before a game is cut off
