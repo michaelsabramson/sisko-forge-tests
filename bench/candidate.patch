@@ -1,13 +1,204 @@
-diff --git a/forge-game/src/main/java/forge/game/zone/MagicStack.java b/forge-game/src/main/java/forge/game/zone/MagicStack.java
-index 7a7f4017..01de8248 100644
---- a/forge-game/src/main/java/forge/game/zone/MagicStack.java
-+++ b/forge-game/src/main/java/forge/game/zone/MagicStack.java
-@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
-  * @version $Id$
+diff --git a/forge-core/src/main/java/forge/card/CardType.java b/forge-core/src/main/java/forge/card/CardType.java
+index 139e066c..3c666d84 100644
+--- a/forge-core/src/main/java/forge/card/CardType.java
++++ b/forge-core/src/main/java/forge/card/CardType.java
+@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
+  *
+  * @author Forge
   */
- public class MagicStack /* extends MyObservable */ implements Iterable<SpellAbilityStackInstance> {
--    private static final int MAX_TRIGGER_REPEATS = 50;
-+    private static final int MAX_TRIGGER_REPEATS = Integer.getInteger("sisko.loopLimit", 50);
-     /**
-      * How often the same card may fail to be put on the stack (illegal targets after the costs were paid) in one turn
-      * before the AI stops trying it again, see {@link #hasRepeatedlyFailedToAdd(Card)}.
+-public final class CardType implements Comparable<CardType>, CardTypeView {
++public final class CardType implements Comparable<CardType>, CardTypeView, forge.util.collect.FSnapshotTable.ValueEquivalent {
+     private static final long serialVersionUID = 4629853583167022151L;
+ 
+     public static final CardTypeView EMPTY = new CardType(false);
+@@ -154,6 +154,22 @@ public final class CardType implements Comparable<CardType>, CardTypeView {
+     private boolean incomplete = false;
+     private transient String calculatedType = null;
+ 
++    /** Same types in the same order and the same flags (used to keep cache versions of re-applied type changes). */
++    @Override
++    public boolean sameValueAs(final Object other) {
++        if (other == this) {
++            return true;
++        }
++        if (!(other instanceof CardType)) {
++            return false;
++        }
++        final CardType o = (CardType) other;
++        return allCreatureTypes == o.allCreatureTypes && incomplete == o.incomplete
++                && coreTypes.equals(o.coreTypes) && supertypes.equals(o.supertypes)
++                && new java.util.ArrayList<>(subtypes).equals(new java.util.ArrayList<>(o.subtypes))
++                && new java.util.ArrayList<>(excludedCreatureSubtypes).equals(new java.util.ArrayList<>(o.excludedCreatureSubtypes));
++    }
++
+     public CardType(boolean incomplete) {
+         this.incomplete = incomplete;
+     }
+diff --git a/forge-core/src/main/java/forge/util/collect/FSnapshotTable.java b/forge-core/src/main/java/forge/util/collect/FSnapshotTable.java
+index 75ba1135..ac76ad06 100644
+--- a/forge-core/src/main/java/forge/util/collect/FSnapshotTable.java
++++ b/forge-core/src/main/java/forge/util/collect/FSnapshotTable.java
+@@ -715,7 +715,123 @@ public final class FSnapshotTable<R, C, V> implements Table<R, C, V>, Serializab
+      * with a plain reference comparison (no allocation, no locking).
+      */
+     public Object version() {
+-        return snap;
++        final Snap<R, C, V> s = snap;
++        final Version v = lastVersion;
++        if (v != null && v.snap == s) {
++            return v.token;
++        }
++        // Continuous effects are removed and applied again on every static ability check, which publishes new
++        // snapshots with the same contents and used to throw away every cache keyed on this version. A snapshot
++        // with the same entries as the last one handed out keeps its token (and its values list), so those caches
++        // stay valid; any real difference gets a new token.
++        if (v != null && sameEntries(v.snap, s)) {
++            if (s instanceof SortedSnap && v.snap instanceof SortedSnap && ((SortedSnap<R, C, V>) v.snap).values != null
++                    && ((SortedSnap<R, C, V>) s).values == null && identicalValues((SortedSnap<R, C, V>) v.snap, (SortedSnap<R, C, V>) s)) {
++                ((SortedSnap<R, C, V>) s).values = ((SortedSnap<R, C, V>) v.snap).values;
++            }
++            lastVersion = new Version(s, v.token);
++            return v.token;
++        }
++        final Version fresh = new Version(s, new Object());
++        lastVersion = fresh;
++        return fresh.token;
++    }
++
++    /** The token handed out for a snapshot: an immutable pair, published in one write. */
++    private static final class Version {
++        final Snap<?, ?, ?> snap;
++        final Object token;
++        Version(Snap<?, ?, ?> snap, Object token) { this.snap = snap; this.token = token; }
++    }
++    private transient volatile Version lastVersion;
++
++    /**
++     * Same keys, and values that are interchangeable: the same objects, or records/collections of interchangeable
++     * parts, or plain values (strings, numbers, enums), or {@link ValueEquivalent} objects that say so. Anything else
++     * (abilities, lambdas, ...) must be the very same object.
++     */
++    private static boolean sameEntries(final Snap<?, ?, ?> a, final Snap<?, ?, ?> b) {
++        if (!(a instanceof SortedSnap) || !(b instanceof SortedSnap)) {
++            return false;
++        }
++        final SortedSnap<?, ?, ?> x = (SortedSnap<?, ?, ?>) a, y = (SortedSnap<?, ?, ?>) b;
++        if (x.n != y.n) {
++            return false;
++        }
++        for (int k = 0; k < 3 * x.n; k += 3) {
++            if (!Objects.equals(x.d[k], y.d[k]) || !Objects.equals(x.d[k + 1], y.d[k + 1])) {
++                return false;
++            }
++            if (!sameValue(x.d[k + 2], y.d[k + 2])) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    /** Implemented by mutable value holders (CardType) whose equal contents make them interchangeable here. */
++    public interface ValueEquivalent {
++        boolean sameValueAs(Object other);
++    }
++
++    private static final ClassValue<java.lang.reflect.RecordComponent[]> RECORD_PARTS = new ClassValue<>() {
++        @Override protected java.lang.reflect.RecordComponent[] computeValue(Class<?> type) {
++            final java.lang.reflect.RecordComponent[] parts = type.getRecordComponents();
++            for (final java.lang.reflect.RecordComponent part : parts) {
++                part.getAccessor().setAccessible(true);
++            }
++            return parts;
++        }
++    };
++
++    static boolean sameValue(final Object a, final Object b) {
++        if (a == b) {
++            return true;
++        }
++        if (a == null || b == null || a.getClass() != b.getClass()) {
++            return false;
++        }
++        if (a instanceof String || a instanceof Number || a instanceof Boolean || a instanceof Character || a instanceof Enum) {
++            return a.equals(b);
++        }
++        if (a instanceof ValueEquivalent) {
++            return ((ValueEquivalent) a).sameValueAs(b);
++        }
++        if (a instanceof Collection) {
++            final Collection<?> ca = (Collection<?>) a, cb = (Collection<?>) b;
++            if (ca.size() != cb.size()) {
++                return false;
++            }
++            final Iterator<?> ia = ca.iterator(), ib = cb.iterator();
++            while (ia.hasNext()) {
++                if (!ib.hasNext() || !sameValue(ia.next(), ib.next())) {
++                    return false;
++                }
++            }
++            return !ib.hasNext();
++        }
++        if (a.getClass().isRecord()) {
++            try {
++                for (final java.lang.reflect.RecordComponent part : RECORD_PARTS.get(a.getClass())) {
++                    if (!sameValue(part.getAccessor().invoke(a), part.getAccessor().invoke(b))) {
++                        return false;
++                    }
++                }
++                return true;
++            } catch (ReflectiveOperationException | RuntimeException e) {
++                return false;
++            }
++        }
++        return false;
++    }
++
++    private static boolean identicalValues(final SortedSnap<?, ?, ?> x, final SortedSnap<?, ?, ?> y) {
++        for (int k = 2; k < 3 * x.n; k += 3) {
++            if (x.d[k] != y.d[k]) {
++                return false;
++            }
++        }
++        return true;
+     }
+ 
+     /** version() of the table, or null if it is not an FSnapshotTable (callers must then not cache). */
+diff --git a/forge-game/src/main/java/forge/game/card/Card.java b/forge-game/src/main/java/forge/game/card/Card.java
+index a3fa5d80..f937b888 100644
+--- a/forge-game/src/main/java/forge/game/card/Card.java
++++ b/forge-game/src/main/java/forge/game/card/Card.java
+@@ -3418,17 +3418,32 @@ public class Card extends GameEntity implements Comparable<Card>, IHasSVars, ITr
+         return currentState.hasSpellAbility(id);
+     }
+ 
++    /** hasRemoveIntrinsic() for one version of changedCardTypes (an immutable pair, published in one write). */
++    private record RemoveIntrinsicMemo(Object version, boolean value) {}
++    private transient RemoveIntrinsicMemo removeIntrinsicMemo;
++
+     public boolean hasRemoveIntrinsic() {
+         if (changedCardTypes.isEmpty()) {
+             return false;
+         }
++        // asked on every read of the replacement and static ability caches: answered once per table version
++        final Object version = FSnapshotTable.versionOf(changedCardTypes);
++        final RemoveIntrinsicMemo memo = removeIntrinsicMemo;
++        if (version != null && memo != null && memo.version == version) {
++            return memo.value;
++        }
++        boolean result = false;
+         // CR 305.7 only Layer 4 are affected, and it's never intrinsic
+         for (ICardChangedType t : changedCardTypes.values()) {
+             if (t.isRemoveLandTypes()) {
+-                return true;
++                result = true;
++                break;
+             }
+         }
+-        return false;
++        if (version != null) {
++            removeIntrinsicMemo = new RemoveIntrinsicMemo(version, result);
++        }
++        return result;
+     }
+ 
+     public boolean hasNoAbilities() {
