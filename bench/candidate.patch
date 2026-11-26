@@ -1,40 +1,18 @@
-diff --git a/forge-game/src/main/java/forge/game/card/Card.java b/forge-game/src/main/java/forge/game/card/Card.java
-index a3fa5d80..7d3fb954 100644
---- a/forge-game/src/main/java/forge/game/card/Card.java
-+++ b/forge-game/src/main/java/forge/game/card/Card.java
-@@ -3418,17 +3418,33 @@ public class Card extends GameEntity implements Comparable<Card>, IHasSVars, ITr
-         return currentState.hasSpellAbility(id);
-     }
- 
-+    /** hasRemoveIntrinsic() for one snapshot of changedCardTypes (an immutable pair, published in one write). */
-+    private record RemoveIntrinsicMemo(Object version, boolean value) {}
-+    private transient RemoveIntrinsicMemo removeIntrinsicMemo;
-+
-     public boolean hasRemoveIntrinsic() {
-         if (changedCardTypes.isEmpty()) {
-             return false;
-         }
-+        // every write to the table publishes a new snapshot, so the answer for the current snapshot can be reused
-+        // (the replacement and static ability caches ask this on every read)
-+        final Object version = FSnapshotTable.versionOf(changedCardTypes);
-+        final RemoveIntrinsicMemo memo = removeIntrinsicMemo;
-+        if (version != null && memo != null && memo.version == version) {
-+            return memo.value;
-+        }
-+        boolean result = false;
-         // CR 305.7 only Layer 4 are affected, and it's never intrinsic
-         for (ICardChangedType t : changedCardTypes.values()) {
-             if (t.isRemoveLandTypes()) {
--                return true;
-+                result = true;
-+                break;
+diff --git a/forge-game/src/main/java/forge/game/zone/MagicStack.java b/forge-game/src/main/java/forge/game/zone/MagicStack.java
+index 6b20029a..7a7f4017 100644
+--- a/forge-game/src/main/java/forge/game/zone/MagicStack.java
++++ b/forge-game/src/main/java/forge/game/zone/MagicStack.java
+@@ -207,6 +207,13 @@ public class MagicStack /* extends MyObservable */ implements Iterable<SpellAbil
+         // Stop infinite loop. E.g. Scalelord Reckoner mirrormatch with only triggering targets is a draw.
+         // CR 104.4b the same goes for a mandatory trigger that keeps coming back before the stack clears
+         if (game.getStack().size() > 999 || (si == null && isRepeatingTrigger(sp))) {
++            if (Boolean.getBoolean("sisko.breakLoops")) {
++                // headless testing: a runaway chain (usually an AI that keeps feeding a "loop" a real player would
++                // stop or shortcut) is broken by dropping the repeating ability instead of drawing the whole game
++                System.out.println("LOOP " + source.getName() + " | " + sp.getDescription().replace('\n', ' ')
++                        + " | stack=" + game.getStack().size());
++                return;
++            }
+             for (Player p : game.getPlayers()) {
+                 p.intentionalDraw();
              }
-         }
--        return false;
-+        if (version != null) {
-+            removeIntrinsicMemo = new RemoveIntrinsicMemo(version, result);
-+        }
-+        return result;
-     }
- 
-     public boolean hasNoAbilities() {

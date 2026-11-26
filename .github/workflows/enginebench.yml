@@ -7,7 +7,8 @@ on:
     inputs:
       runners: { description: 'runners', default: '16' }
       minutes: { description: 'minutes of games per runner', default: '25' }
-      flag3: { description: 'JVM flag tried on process 3', default: '-XX:-DontCompileHugeMethods' }
+      flag3: { description: 'JVM flag tried on process 3', default: '' }
+      cand_flags: { description: 'JVM options for the candidate engine (process 2)', default: '-Dsisko.breakLoops=true' }
 permissions:
   contents: read
 concurrency:
@@ -74,7 +75,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { name: bench-build }
       - run: tar xzf bench.tgz
-      - run: bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
+      - run: CAND_FLAGS="${{ inputs.cand_flags }}" bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
       - uses: actions/upload-artifact@v4
         with:
           name: bench-out-${{ matrix.s }}

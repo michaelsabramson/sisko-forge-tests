@@ -1,7 +1,7 @@
 #!/bin/bash
 # Engine A/B bench on one runner: four game processes play the SAME games (same seeds, same decks) side by side.
 #   b0 = current engine            b1 = current engine again (control: shows how deterministic replays are)
-#   b2 = candidate engine (bench/candidate.patch)   b3 = current engine with the JVM flag in $FLAG3
+#   b2 = candidate engine (bench/candidate.patch, JVM options $CAND_FLAGS)   b3 = current engine with the JVM flag in $FLAG3
 # scripts in bench/compare.py line the games up by number and compare outcomes and time per game.
 set -u
 S=$1; MIN=$2; FLAG3=${3:-}
@@ -14,9 +14,9 @@ JAVA=java; JX=""; [ -n "${JAVA_HOME_25_X64:-}" ] && { JAVA="$JAVA_HOME_25_X64/bi
 mkdir -p out
 for b in 0 1 2 3; do
   CP="runner-classes:lib-base/*"; X=""
-  [ $b -eq 2 ] && CP="runner-classes:lib-cand/*"
+  [ $b -eq 2 ] && { CP="runner-classes:lib-cand/*"; X="${CAND_FLAGS:-}"; }
   [ $b -eq 3 ] && X="$FLAG3"
-  timeout ${MIN}m $JAVA -Xmx3g -Xms3g -XX:+UseParallelGC $JX $X -Dsisko.mc=off -Dsisko.oppMc=off -DroundCap=15 -Daudit=$D \
+  timeout ${MIN}m $JAVA -Xmx3g -Xms3g -XX:+UseParallelGC -XX:-DontCompileHugeMethods $JX $X -Dsisko.mc=off -Dsisko.oppMc=off -DroundCap=15 -Daudit=$D \
     -Dstart=0 -cp "$CP" Run $RES 1000 $SEED 900 nolog $(dk $D) $OPP > out/b${b}_$S.log 2> out/b${b}_$S.err &
 done
 wait
