@@ -8,6 +8,7 @@ on:
       runners: { description: 'runners', default: '16' }
       minutes: { description: 'minutes of games per runner', default: '25' }
       flag3: { description: 'JVM flag tried on process 3', default: '' }
+      decks: { description: 'tested decks (space-separated)', default: 'SiskoFinal Ironman NorinB3 Kess' }
       mode: { description: 'bench (A/B) or profile (slow token-deck games)', default: 'bench' }
       cand_flags: { description: 'JVM options for the candidate engine (process 2)', default: '-Dsisko.breakLoops=true' }
 permissions:
@@ -77,7 +78,7 @@ jobs:
         with: { name: bench-build }
       - run: tar xzf bench.tgz
       - if: ${{ inputs.mode != 'profile' }}
-        run: CAND_FLAGS="${{ inputs.cand_flags }}" bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
+        run: BENCH_DECKS="${{ inputs.decks }}" CAND_FLAGS="${{ inputs.cand_flags }}" bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
       - if: ${{ inputs.mode == 'profile' }}
         run: bench/profile.sh ${{ matrix.s }} ${{ inputs.minutes }}
       - uses: actions/upload-artifact@v4

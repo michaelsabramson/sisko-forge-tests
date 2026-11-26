@@ -1,0 +1,32 @@
+diff --git a/forge-ai/src/main/java/forge/ai/ComputerUtil.java b/forge-ai/src/main/java/forge/ai/ComputerUtil.java
+index 17803180..56e980d0 100644
+--- a/forge-ai/src/main/java/forge/ai/ComputerUtil.java
++++ b/forge-ai/src/main/java/forge/ai/ComputerUtil.java
+@@ -3074,8 +3074,11 @@ public class ComputerUtil {
+             }
+         }
+ 
+-        if (ai == null) {
++        if (ai == null || bigBoard(ai, opponent)) {
+             // non combat check takes life into account here
++            // (also on very big boards: predicting the next combat there means the AI planning blocks for dozens of
++            // creatures, and this rating is asked for again at every priority; on token boards that made games run
++            // for many minutes)
+             rating += opponent.getLife() * 3;
+         } else {
+             // TODO: Consider whether the opponent is likely to attack a bigger threat instead.
+@@ -3090,6 +3093,14 @@ public class ComputerUtil {
+         return rating;
+     }
+ 
++    /** Creatures on the opponent's side plus the AI's past which a blocking prediction is too slow to repeat (local testing patch). */
++    private static final int BIG_BOARD_CREATURES = Integer.getInteger("sisko.bigBoard", 0);
++
++    private static boolean bigBoard(final Player ai, final Player opponent) {
++        return BIG_BOARD_CREATURES > 0
++                && opponent.getCreaturesInPlay().size() + ai.getCreaturesInPlay().size() > BIG_BOARD_CREATURES;
++    }
++
+     public static boolean hasReasonToPlayCardThisTurn(final Player ai, final Card c) {
+         if (!(ai.getController() instanceof PlayerControllerAi)) {
+             System.err.println("Unexpected behavior: ComputerUtil::getReasonToPlayCard called with the non-AI player as a parameter.");
