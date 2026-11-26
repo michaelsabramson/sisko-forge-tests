@@ -84,6 +84,21 @@ public class Run {
       { final int cap=Integer.getInteger("roundCap",0), np=game.getRegisteredPlayers().size();
         if(cap>0) game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void rcap(forge.game.event.GameEventTurnBegan e){
           if(!cut[0] && game.getPhaseHandler().getTurn() > cap*np){ cut[0]=true; try{ game.setGameOver(forge.game.GameEndReason.Draw);}catch(Throwable x){} } } }); }
+      // concession: a player whose board has run away with the game (dozens of creatures, total power several times
+      // what the opponents have left in life, and far more creatures than all of them together) wins, the way a real
+      // table concedes. Token engines otherwise grow boards of hundreds or thousands of creatures that the AI takes
+      // minutes per turn to handle, and the game hits the time limit undecided. -Dsisko.concede=false turns it off.
+      final boolean[] conceded={false};
+      if(!"false".equals(System.getProperty("sisko.concede"))) game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void runaway(forge.game.event.GameEventTurnPhase e){
+        if(game.isGameOver() || conceded[0]) return;
+        for(Player p:game.getPlayers()){ if(p.hasLost()) continue; int cr=0; long pow=0;
+          for(forge.game.card.Card c:p.getCreaturesInPlay()){ cr++; pow+=Math.max(0,c.getNetPower()); }
+          if(cr<40) continue;
+          long life=0; int ocr=0; boolean any=false;
+          for(Player o:game.getPlayers()){ if(o==p || o.hasLost()) continue; any=true; life+=Math.max(1,o.getLife()); ocr+=o.getCreaturesInPlay().size(); }
+          if(any && pow>=3*life && cr>=4*ocr+10){ conceded[0]=true; System.out.println("CONCEDE "+p.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+cr+" power="+pow+" oppLife="+life+" oppCreatures="+ocr);
+            for(Player o:game.getPlayers()) if(o!=p && !o.hasLost()) o.concede();
+            try{ game.getAction().checkGameOverCondition(); }catch(Throwable x){} return; } } } });
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
       if(!Boolean.getBoolean("full")) { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());   /* -Dfull=true: play every game to the end (power ladder needs every winner) */
