@@ -60,6 +60,7 @@ STARTUP_MIN = 1.5   # loading Forge's card database before the first game
 DEFAULT_PROFILE = "Default"   # Hard without the lookahead is Default plus defending at 5 life; with it, no gain was measured
 DEFAULT_MC = "on"             # lookahead on for the tested lists, normal budget (2026-11-26): same strength as desktop max (-0.1 ± 2.2), a third of the thinking budget
 DEFAULT_TIMEOUT = 900         # seconds before a game is cut off: only a safety net now that games end at a round cap
+BATCH_MIN = 10                # minutes of one runner's games per claimed batch (see the batch sizing below)
 DEFAULT_ROUND_CAP = 15        # rounds before an unfinished game is ended as a draw shared by the players still in it
 
 
@@ -318,6 +319,7 @@ def main():
             req["procs"] = allocate(need, todo, procs_total)
             if r.get("whole_runners"):   # speed experiments: each runner plays one arm only, so arms don't share a machine
                 req["procs"] = [todo[(k // 4) % len(todo)] for k in range(procs_total)]
+                req["refill"] = False   # and a runner that finishes its arm doesn't take on another arm's games
             per = [req["procs"].count(i) for i in range(len(arms))]
             gpm = [measured_gpm(a["deck"], opps, speed_profile(a, req)) for a in arms]
             req["gpm"] = [round(g, 3) for g in gpm]
@@ -339,7 +341,11 @@ def main():
             frac = 0.3 if req["earlystop"] else 0.6
             first = [int(frac * need[i] / per[i]) if per[i] else 0 for i in range(len(arms))]
             rest = [max(0, need[i] - first[i] * per[i]) for i in range(len(arms))]
-            size = [max(6, math.ceil(rest[i] / ((3 if req["earlystop"] else 2) * sh))) if rest[i] else 0 for i in range(len(arms))]
+            # batch size: at most ~BATCH_MIN minutes of one runner's games (4 processes), so the last batch a runner takes
+            # doesn't leave it playing long after the others are done (2026-11-26: 7-30% of runner time sat idle at the end
+            # of runs with ~20-minute batches). A few hundred claims per run stays well inside GitHub's write limits.
+            size = [max(6, min(math.ceil(rest[i] / ((3 if req["earlystop"] else 2) * sh)), math.ceil(BATCH_MIN * 4 * gpm[i])))
+                    if rest[i] else 0 for i in range(len(arms))]
             req["first"] = first
             req["batch"] = size
             req["batches"] = [math.ceil(rest[i] / size[i]) if size[i] else 0 for i in range(len(arms))]
