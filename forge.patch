@@ -584,9 +584,18 @@ index 7f5a1939..eb5893da 100644
                  return false;
          }
 diff --git a/forge-game/src/main/java/forge/game/zone/MagicStack.java b/forge-game/src/main/java/forge/game/zone/MagicStack.java
-index 6b20029a..7a7f4017 100644
+index 6b20029a..01de8248 100644
 --- a/forge-game/src/main/java/forge/game/zone/MagicStack.java
 +++ b/forge-game/src/main/java/forge/game/zone/MagicStack.java
+@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
+  * @version $Id$
+  */
+ public class MagicStack /* extends MyObservable */ implements Iterable<SpellAbilityStackInstance> {
+-    private static final int MAX_TRIGGER_REPEATS = 50;
++    private static final int MAX_TRIGGER_REPEATS = Integer.getInteger("sisko.loopLimit", 50);
+     /**
+      * How often the same card may fail to be put on the stack (illegal targets after the costs were paid) in one turn
+      * before the AI stops trying it again, see {@link #hasRepeatedlyFailedToAdd(Card)}.
 @@ -207,6 +207,13 @@ public class MagicStack /* extends MyObservable */ implements Iterable<SpellAbil
          // Stop infinite loop. E.g. Scalelord Reckoner mirrormatch with only triggering targets is a draw.
          // CR 104.4b the same goes for a mandatory trigger that keeps coming back before the stack clears

@@ -61,6 +61,8 @@ start_proc() {   # slot, arm, generation (0 = the run's first assignment; 1+ = a
   # far past the size Java otherwise leaves interpreted); engine bench 2026-11-26: 14% more games, outcomes unchanged
   # -Dsisko.breakLoops (always, forge.patch): a runaway trigger chain (Scute Swarm, Charismatic Conqueror, Dragon's Hoard,
   # Archon of Sun's Grace) drops the repeating trigger instead of drawing the whole game; bench: 3.7% of games -> 0
+  # -Dsisko.loopLimit=200: a trigger counts as looping after 200 repeats in one chain, not Forge's 50, so real long chains
+  # (Moldervine Reclamation as 60 tokens die) finish
   JV=",$(jq -r ".arms[$i].jvm // .jvm // \"j25,xms\"" $REQ),"; JX=""; JAVA=java
   case $JV in *,gc1,*) JX="$JX -XX:ParallelGCThreads=1";; esac
   case $JV in *,xms,*) JX="$JX -Xms3g";; esac
@@ -88,7 +90,7 @@ start_proc() {   # slot, arm, generation (0 = the run's first assignment; 1+ = a
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout $TO $JAVA -Xmx3g -XX:+UseParallelGC -XX:-DontCompileHugeMethods -Dsisko.breakLoops=true $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $SEED $GT nolog $(dk $D) $AO > out/$LOGN.log 2>out/$LOGN.err &
+  timeout $TO $JAVA -Xmx3g -XX:+UseParallelGC -XX:-DontCompileHugeMethods -Dsisko.breakLoops=true -Dsisko.loopLimit=200 $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $SEED $GT nolog $(dk $D) $AO > out/$LOGN.log 2>out/$LOGN.err &
   PID[$p]=$!
 }
 declare -a PID; END=$(( $(date +%s) + MIN*60 ))
