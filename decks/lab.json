@@ -2,17 +2,12 @@
   "decks": [
     {
       "name": "SiskoFinal",
-      "title": "Sisko \u00b7 Bracket 3",
+      "title": "Sisko · Bracket 3",
       "bracket": 3
     },
     {
-      "name": "SiskoB2",
-      "title": "Sisko \u00b7 Bracket 2",
-      "bracket": 2
-    },
-    {
       "name": "NorinB3",
-      "title": "Norin \u00b7 Bracket 3",
+      "title": "Norin · Bracket 3",
       "bracket": 3
     },
     {
@@ -43,7 +38,7 @@
   ],
   "pools": {
     "2": {
-      "label": "Bracket 2 \u00b7 recent official precons",
+      "label": "Bracket 2 · recent official precons",
       "decks": [
         "B2Ghalta",
         "B2Gisa",
@@ -53,7 +48,7 @@
       ]
     },
     "3": {
-      "label": "Bracket 3 \u00b7 10 decks: Edgar, Ur-Dragon, Prossh, Meren + EDHREC bracket 3 averages (from Nov 25, 2026)",
+      "label": "Bracket 3 · 10 decks: Edgar, Ur-Dragon, Prossh, Meren + EDHREC bracket 3 averages (from Nov 25, 2026)",
       "decks": [
         "Edgar",
         "UrDragon",
@@ -68,7 +63,7 @@
       ]
     },
     "3a": {
-      "label": "Bracket 3 \u00b7 previous 5-deck pool (every test until Nov 25, 2026)",
+      "label": "Bracket 3 · previous 5-deck pool (every test until Nov 25, 2026)",
       "decks": [
         "Atraxa",
         "Prossh",
@@ -78,7 +73,7 @@
       ]
     },
     "4": {
-      "label": "Bracket 4 \u00b7 EDHREC average decks of popular high-power commanders (5\u201310 Game Changers each)",
+      "label": "Bracket 4 · EDHREC average decks of popular high-power commanders (5–10 Game Changers each)",
       "decks": [
         "B4Korvold",
         "B4Yuriko",
