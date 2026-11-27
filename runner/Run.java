@@ -31,6 +31,11 @@ public class Run {
       for(int i=0;i<c.size();i++) if(r<w.get(i)[0]) return c.get(i).equals("@natural")?null:c.get(i);
     }catch(Exception e){ }
     return null; }
+  // concession thresholds (runaway boards): creatures at least CONCEDE_MIN, total power at least CONCEDE_POWER x the
+  // opponents' combined life, creatures at least CONCEDE_RATIO x theirs + 10
+  static final int CONCEDE_MIN=Integer.getInteger("sisko.concedeMin",40);
+  static final double CONCEDE_POWER=Double.parseDouble(System.getProperty("sisko.concedePower","3"));
+  static final double CONCEDE_RATIO=Double.parseDouble(System.getProperty("sisko.concedeRatio","4"));
   static String slowLine(forge.game.Game game, long t){
     StringBuilder b=new StringBuilder("SLOW t="+t+" turn="+game.getPhaseHandler().getTurn()+" phase="+game.getPhaseHandler().getPhase()+" active="+game.getPhaseHandler().getPlayerTurn().getName()+" stack="+game.getStack().size()+" |");
     try{ for(Player p:game.getRegisteredPlayers()){ int cr=0,tok=0,pow=0,perm=0; for(forge.game.card.Card c:p.getCardsIn(forge.game.zone.ZoneType.Battlefield)){ perm++; if(c.isCreature()){ cr++; pow+=Math.max(0,c.getNetPower()); if(c.isToken()) tok++; } }
@@ -96,10 +101,10 @@ public class Run {
         if(game.isGameOver() || conceded[0]) return;
         for(Player rp:game.getPlayers()){ if(rp.hasLost()) continue; int rcr=0; long rpow=0;
           for(forge.game.card.Card rc:rp.getCreaturesInPlay()){ rcr++; rpow+=Math.max(0,rc.getNetPower()); }
-          if(rcr<40) continue;
+          if(rcr<CONCEDE_MIN) continue;
           long rlife=0; int rocr=0; boolean rany=false;
           for(Player ro:game.getPlayers()){ if(ro==rp || ro.hasLost()) continue; rany=true; rlife+=Math.max(1,ro.getLife()); rocr+=ro.getCreaturesInPlay().size(); }
-          if(rany && rpow>=3*rlife && rcr>=4*rocr+10){ conceded[0]=true; System.out.println("CONCEDE "+rp.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+rcr+" power="+rpow+" oppLife="+rlife+" oppCreatures="+rocr);
+          if(rany && rpow>=CONCEDE_POWER*rlife && rcr>=CONCEDE_RATIO*rocr+10){ conceded[0]=true; System.out.println("CONCEDE "+rp.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+rcr+" power="+rpow+" oppLife="+rlife+" oppCreatures="+rocr);
             for(Player ro:game.getPlayers()) if(ro!=rp && !ro.hasLost()) ro.concede();
             try{ game.getAction().checkGameOverCondition(); }catch(Throwable rx){} return; } } };
       if(!"false".equals(System.getProperty("sisko.concede"))) game.subscribeToEvents(new Object(){
