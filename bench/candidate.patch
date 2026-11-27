@@ -17,10 +17,10 @@ index 748922e4..9d2cadf3 100644
          }
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 new file mode 100644
-index 00000000..6c3f0285
+index 00000000..61fed108
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
-@@ -0,0 +1,259 @@
+@@ -0,0 +1,403 @@
 +package forge.ai;
 +
 +import java.io.BufferedReader;
@@ -63,8 +63,10 @@ index 00000000..6c3f0285
 +
 +    private static final class Combo {
 +        final String id, result, mana, description; final List<Piece> pieces; final Set<String> hate;
-+        Combo(String id, String result, String mana, List<Piece> pieces, Set<String> hate, String description) {
++        final Map<String, String> reqs;
++        Combo(String id, String result, String mana, List<Piece> pieces, Set<String> hate, String description, Map<String, String> reqs) {
 +            this.id = id; this.result = result; this.mana = mana; this.pieces = pieces; this.hate = hate; this.description = description;
++            this.reqs = reqs;
 +        }
 +    }
 +
@@ -112,7 +114,23 @@ index 00000000..6c3f0285
 +                                hate.add(h);
 +                            }
 +                        }
-+                        list.add(new Combo(f[0], f[1], f[2], pieces, hate, f.length > 5 ? f[5] : f[1]));
++                        final Map<String, String> reqs = new HashMap<>();
++                        if (f.length > 6) {
++                            for (String r : f[6].split(";")) {
++                                if (r.isEmpty()) {
++                                    continue;
++                                }
++                                final int colon = r.indexOf(':');
++                                reqs.put(colon < 0 ? r : r.substring(0, colon), colon < 0 ? "" : r.substring(colon + 1));
++                            }
++                        }
++                        // pieces that must not be summoning sick (the prerequisite names them)
++                        final String sick = reqs.get("sick");
++                        final List<Piece> checked = new ArrayList<>();
++                        for (Piece piece : pieces) {
++                            checked.add(sick != null && sick.contains(piece.name) ? new Piece(piece.name, piece.zones, true) : piece);
++                        }
++                        list.add(new Combo(f[0], f[1], f[2], checked, hate, f.length > 5 ? f[5] : f[1], reqs));
 +                    }
 +                } catch (Exception e) {
 +                    System.err.println("ComboShortcut: can't read " + path + ": " + e);
@@ -163,6 +181,132 @@ index 00000000..6c3f0285
 +    private static boolean assembled(final Player p, final Combo combo) {
 +        for (Piece piece : combo.pieces) {
 +            if (find(p, piece) == null) {
++                return false;
++            }
++        }
++        return prerequisitesMet(p, combo);
++    }
++
++    private static int num(final String s, final int dflt) {
++        try {
++            return Integer.parseInt(s.trim());
++        } catch (Exception e) {
++            return dflt;
++        }
++    }
++
++    /** The combo's stated prerequisites (scripts/combolist.py turns Commander Spellbook's text into these checks). */
++    private static boolean prerequisitesMet(final Player p, final Combo combo) {
++        final Map<String, String> r = combo.reqs;
++        if (r.isEmpty()) {
++            return true;
++        }
++        if (r.containsKey("life") && p.getLife() < num(r.get("life"), 2)) {
++            return false;
++        }
++        if (r.containsKey("opp")) {
++            int alive = 0;
++            for (Player o : p.getOpponents()) {
++                if (!o.hasLost()) {
++                    alive++;
++                }
++            }
++            if (alive < num(r.get("opp"), 3)) {
++                return false;
++            }
++        }
++        final List<Card> creatures = new ArrayList<>(p.getCreaturesInPlay());
++        if (r.containsKey("extra")) {
++            int pieceCreatures = 0;
++            for (Piece piece : combo.pieces) {
++                final Card c = find(p, piece);
++                if (c != null && c.isInPlay() && c.isCreature()) {
++                    pieceCreatures++;
++                }
++            }
++            if (creatures.size() - pieceCreatures < num(r.get("extra"), 1)) {
++                return false;
++            }
++        }
++        if (r.containsKey("combat") || r.containsKey("power")) {
++            int ready = 0, power = 0;
++            for (Card c : creatures) {
++                if (c.isUntapped() && !c.isSick()) {
++                    ready++;
++                    power += Math.max(0, c.getNetPower());
++                }
++            }
++            if (r.containsKey("power") && power < num(r.get("power"), 10)) {
++                return false;
++            }
++            // the combo needs creatures to connect: more ready attackers than any one opponent has untapped blockers
++            int blockers = 0;
++            for (Player o : p.getOpponents()) {
++                if (o.hasLost()) {
++                    continue;
++                }
++                int b = 0;
++                for (Card c : o.getCreaturesInPlay()) {
++                    if (c.isUntapped()) {
++                        b++;
++                    }
++                }
++                blockers = Math.max(blockers, b);
++            }
++            if (ready <= blockers) {
++                return false;
++            }
++        }
++        if (r.containsKey("attach")) {
++            final String[] ab = r.get("attach").split(">");
++            boolean ok = false;
++            if (ab.length == 2) {
++                for (Card c : p.getCardsIn(ZoneType.Battlefield)) {
++                    if (nameMatches(c, ab[0]) && c.getAttachedTo() != null && nameMatches(c.getAttachedTo(), ab[1])) {
++                        ok = true;
++                    }
++                }
++            }
++            if (!ok) {
++                return false;
++            }
++        }
++        if (r.containsKey("colors")) {
++            for (char col : r.get("colors").toCharArray()) {
++                boolean has = false;
++                for (Card c : p.getCardsIn(ZoneType.Battlefield)) {
++                    if (c.getColor().hasAnyColor(forge.card.MagicColor.fromName(col))) {
++                        has = true;
++                        break;
++                    }
++                }
++                if (!has) {
++                    return false;
++                }
++            }
++        }
++        if (r.containsKey("islands") || r.containsKey("islandsany")) {
++            final boolean any = r.containsKey("islandsany");
++            int n = 0;
++            for (Card c : any ? p.getCardsIn(java.util.Arrays.asList(ZoneType.Battlefield, ZoneType.Hand, ZoneType.Graveyard))
++                    : p.getCardsIn(ZoneType.Battlefield)) {
++                if (c.getType().hasSubtype("Island")) {
++                    n++;
++                }
++            }
++            if (n < num(r.get(any ? "islandsany" : "islands"), 4)) {
++                return false;
++            }
++        }
++        if (r.containsKey("count10")) {
++            final boolean creaturesCount = r.get("count10").contains("creature");
++            int n = 0;
++            for (Card c : p.getCardsIn(ZoneType.Battlefield)) {
++                if (c.getType().hasSubtype("Treasure") || (creaturesCount ? c.isCreature() : c.isLand())) {
++                    n++;
++                }
++            }
++            if (n < 10) {
 +                return false;
 +            }
 +        }
