@@ -17,10 +17,10 @@ index 748922e4..9d2cadf3 100644
          }
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 new file mode 100644
-index 00000000..61fed108
+index 00000000..a4d92548
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
-@@ -0,0 +1,403 @@
+@@ -0,0 +1,434 @@
 +package forge.ai;
 +
 +import java.io.BufferedReader;
@@ -343,6 +343,37 @@ index 00000000..61fed108
 +        return b.length() == 0 ? "0" : b.toString();
 +    }
 +
++    /**
++     * For a tutor: a card among the choices that is the one piece still missing from a known winning combo (every other
++     * piece already in hand, on the battlefield or in the command zone), or null.
++     */
++    public static Card missingPiece(final Player ai, final Iterable<Card> choices) {
++        if (!Boolean.getBoolean("sisko.comboShortcut")) {
++            return null;
++        }
++        for (final Combo combo : combos()) {
++            Piece missing = null;
++            int absent = 0;
++            for (Piece piece : combo.pieces) {
++                // pieces count as available from hand too: they can be cast
++                final Piece reach = new Piece(piece.name, piece.zones.contains("H") ? piece.zones : piece.zones + "H", false);
++                if (find(ai, reach) == null) {
++                    missing = piece;
++                    absent++;
++                }
++            }
++            if (absent != 1) {
++                continue;
++            }
++            for (Card c : choices) {
++                if (nameMatches(c, missing.name)) {
++                    return c;
++                }
++            }
++        }
++        return null;
++    }
++
 +    /** A combo the AI can start now, as an ability to put on the stack, or null. */
 +    public static SpellAbility live(final Player ai) {
 +        if (!Boolean.getBoolean("sisko.comboShortcut")) {
@@ -424,3 +455,21 @@ index 00000000..61fed108
 +        return sa;
 +    }
 +}
+diff --git a/forge-ai/src/main/java/forge/ai/ability/ChangeZoneAi.java b/forge-ai/src/main/java/forge/ai/ability/ChangeZoneAi.java
+index a8615e74..c1dc7c88 100644
+--- a/forge-ai/src/main/java/forge/ai/ability/ChangeZoneAi.java
++++ b/forge-ai/src/main/java/forge/ai/ability/ChangeZoneAi.java
+@@ -1573,6 +1573,13 @@ public class ChangeZoneAi extends SpellAbilityAi {
+         if (player.isOpponentOf(decider) && ZoneType.Hand.equals(destination) && origin.contains(ZoneType.Sideboard)) {
+             return ComputerUtilCard.getWorstAI(fetchList);
+         }
++        // local testing patch: a tutor fetches the missing piece of a known winning combo (ComboShortcut)
++        if (player == decider && (ZoneType.Hand.equals(destination) || ZoneType.Battlefield.equals(destination))) {
++            final Card piece = forge.ai.ComboShortcut.missingPiece(player, fetchList);
++            if (piece != null) {
++                return piece;
++            }
++        }
+         List<String> keyCards = player.getRegisteredPlayer().getDeck().getKeyCards();
+         String position = sa.getParamOrDefault("LibraryPosition", null);
+         // Focus on the keycards I don't already have access to
