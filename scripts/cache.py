@@ -35,10 +35,11 @@ RUNNER_VERSION = "runner-4"   # runner-4: the concession check also runs as spel
 
 def engine_sig():
     parts = [open(p, "rb").read() for p in ("FORGE_COMMIT", "forge.patch")]
-    try:
-        parts.append(open("decks/combos.txt", "rb").read())   # the combos the engine plays out (ComboShortcut)
-    except FileNotFoundError:
-        pass
+    for extra in ("decks/combos.txt.gz", "decks/payoffs.txt"):   # the combos the engine plays out (ComboShortcut)
+        try:
+            parts.append(open(extra, "rb").read())
+        except FileNotFoundError:
+            pass
     return _h(b"\0".join(parts) + RUNNER_VERSION.encode() + SETTINGS.encode())[:16]
 
 

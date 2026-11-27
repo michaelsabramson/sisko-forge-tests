@@ -1,0 +1,366 @@
+A-Omnath, Locus of Creation	land	B
+A-Queza, Augur of Agonies	draw	B
+A-The Meathook Massacre	death	B
+A-Vivi Ornitier	spell	B
+Aetherflux Reservoir	life,spell	B
+Agate Instigator	etb	B
+Ajani's Anguish	mana	B
+Akoum Hellkite	land	B
+Alchemist's Talent	spell	B
+Ancient Cellarspawn	spell	B
+Angry Rabble	spell	B
+Archfiend of the Dross	death	B
+Aria of Flame	spell	B
+Ashling, Flame Dancer	spell	B
+Asmoranomardicadaistinaculdacar's Kitchen	life	B
+Assault Intercessor	death	B
+Aurelia's Fury	mana	H
+Banefire	mana	H
+Basilica Guards	spell	B
+Basilica Screecher	spell	B
+Bastion of Remembrance	death	B
+Black Mage's Rod	spell	B
+Black Waltz No. 3	spell	B
+Blaze	mana	H
+Blind Obedience	spell	B
+Blood Artist	death	B
+Blood Hustler	mana	B
+Bloodrite Invoker	mana	B
+Bond of Agony	mana	H
+Bonfire of the Damned	mana	H
+Borrowing the East Wind	mana	H
+Brightflame	mana	H
+Brothers of Fire	mana	B
+Burn from Within	mana	H
+Burning Vengeance	spell	B
+Caldera Pyremaw	spell	B
+Captain Michael Burnham	land	B
+Cataclysmic Prospecting	mana	H
+Cauldron of Essence	death	B
+Chamber Sentry	mana	B
+Chandra, Spark Hunter	artifact	B
+Chandra, Torch of Defiance	spell	B
+Choco-Comet	mana	H
+Circle of Power	spell	H
+Clan Defiance	mana	H
+Cliffhaven Vampire	life	B
+Comet Storm	mana	H
+Conflagrate	mana	H
+Consume Spirit	mana	H
+Cornered by Black Mages	spell	H
+Corpse Knight	etb	B
+Corrosive Gale	mana	H
+Coruscation Mage	spell	B
+Cosi's Ravager	land	B
+Crater's Claws	mana	H
+Cruel Celebrant	death	B
+Crypt Ghast	spell	B
+Crystal, Inhuman Princess	spell	B
+Damnable Pact	mana	H
+Death Cloud	mana	H
+Death Grasp	mana	H
+Defiant Bloodlord	life	B
+Delete	mana	H
+Demonfire	mana	H
+Desiccated Naga	mana	B
+Detonate	mana	H
+Devil's Play	mana	H
+Dina, Soul Steeper	life	B
+Disintegrate	mana	H
+Doctor Doom, Unrivaled	library	B
+Draconic Debut	mana	H
+Drain Life	mana	H
+Dreadhound	death	B
+Dreamstalker Manticore	spell	B
+Duskmantle Guildmage	mana	B
+Dwarven Catapult	mana	H
+Earthquake	mana	H
+Elas il-Kor, Sadistic Pilgrim	death	B
+Electrodominance	mana	H
+Electropotence	etb	B
+Electrostatic Field	spell	B
+Elemental Time Flamingo	death	B
+Embalmed Ascendant	death	B
+End-Blaze Epiphany	mana	H
+Enduring Tenacity	life	B
+Energy Bolt	mana	H
+Engine Rat	mana	B
+Enraged Flamecaster	spell	B
+Epicure of Blood	life	B
+Erebor Flamesmith	spell	B
+Essence Depleter	mana	B
+Exalted Flamer of Tzeentch	spell	B
+Exocrine	mana	B
+Exsanguinate	mana	H
+Falkenrath Noble	death	B
+Fall of the Titans	mana	H
+Fallen Angel Avatar	death	B
+Fanning the Flames	mana	H
+Fault Line	mana	H
+Fblthp, Impossibly Lost	library	B
+Fear, Fire, Foes!	mana	H
+Fiery Inscription	spell	B
+Fire Nation Archers	mana	B
+Fireball	mana	H
+Firebrand Archer	spell	B
+Fires of Mount Doom	mana	B
+Flame Discharge	mana	H
+Flamekin Spitfire	mana	B
+Flamewave Invoker	mana	B
+Flaming Gambit	mana	H
+Flaming Tyrannosaurus	spell	B
+Funeral Room	death	B
+Furnace Celebration	death	B
+Gandalf, Goblins' Bane	spell	B
+Garna, Bloodfist of Keld	death	B
+Geek Lotus Warrior	etb	B
+General Kreat, the Boltbringer	etb	B
+Ghired's Belligerence	mana	H
+Ghitu Fire	mana	H
+Gixian Puppeteer	draw	B
+Goblin Bombardment	etb	B
+Goblin Cannon	mana	B
+Goblin Festival	mana	B
+Goblin Negotiation	mana	H
+Grave Venerations	death	B
+Guttersnipe	spell	B
+Hail of Arrows	mana	H
+Hallar, the Firefletcher	spell	B
+Havoc Jester	death	B
+Heat Ray	mana	H
+Heaven	mana	H
+Hedron Detonator	artifact	B
+Hell to Pay	mana	H
+Hissing Iguanar	death	B
+Human Torch, Johnny Storm	draw	B
+Hurricane	mana	H
+Illuminate	mana	H
+Immersturm	etb	B
+Imminent Doom	spell	B
+Impact Tremors	etb	B
+Inferno of the Star Mounts	mana	B
+Ingenious Artillerist	artifact	B
+Invoke the Firemind	mana	H
+Irencrag Pyromancer	draw	B
+Iridescent Vinelasher	land	B
+Ishkanah, Grafwidow	mana	B
+Jace, Wielder of Mysteries	library	B
+Jaws of Defeat	etb	B
+Jaya's Immolating Inferno	mana	H
+Joyful Stormsculptor	spell	B
+Judith, the Scourge Diva	death	B
+Kaervek's Torch	mana	H
+Kang, Temporal Tyrant	draw	B
+Keeper of Secrets	spell	B
+Kessig Flamebreather	spell	B
+Kingpin's Pet	spell	B
+Klauth's Will	mana	H
+Knight of Obligation	spell	B
+Koth, the Geomancer	land	B
+Kuja, Genome Sorcerer	spell	B
+Kumano, Master Yamabushi	mana	B
+Laboratory Maniac	library	B
+Labyrinth Champion	spell	B
+Lambholt Raconteur	spell	B
+Lava Burst	mana	H
+Lavalanche	mana	H
+Leafkin Avenger	mana	B
+Leyline of Lightning	spell	B
+Lich Lord of Unx	mana	B
+Life Insurance	spell	B
+Light Up the Night	mana	H
+Longshot, Rebel Bowman	spell	B
+Lorehold Apprentice	spell	B
+Magmaquake	mana	H
+Marauding Blight-Priest	life	B
+March of Wretched Sorrow	mana	H
+Marionette Apprentice	artifact	B
+Marionette Master	artifact	B
+Massacre Girl, Most Wanted	death	B
+Massacre Wurm	death	B
+Melancholic Poet	spell	B
+Memory Worm	spell	B
+Merciless Enforcers	mana	B
+Mindswipe	mana	H
+Mirkwood Bats	token	B
+Mischievous Chimera	spell	B
+Mishra's Command	mana	H
+Molten Disaster	mana	H
+Molten Gatekeeper	etb	B
+Morlun, Devourer of Spiders	mana	B
+Murderous Redcap Avatar	etb	B
+Mysidian Elder	spell	B
+Nadier's Nightblade	token	B
+Narset of the Ancient Way	spell	B
+Nico Minoru, Runaway	spell	B
+Nightfire Giant	mana	B
+Nightshade Harvester	land	B
+Niv-Mizzet, Dracogenius	mana	B
+Niv-Mizzet, Parun	draw	B
+Niv-Mizzet, the Firemind	draw	B
+Olivia's Attendants	mana	B
+Oloro, Ageless Ascetic	life	B
+Omnath, Locus of Creation	land	B
+Orzhov Guildmage	mana	B
+Pandemonium	etb	B
+Papalymo Totolymo	spell	B
+Passionate Archaeologist	spell	B
+Pink Horror	spell	B
+Planequake	mana	H
+Poison-Tip Archer	death	B
+Poisonbelly Ogre	etb	B
+Polluted Bonds	land	B
+Pontiff of Blight	spell	B
+Popular Egotist	death	B
+Profane Command	mana	H
+Professor Dellian Fel	life	B
+Professor Onyx	spell	B
+Psychosis Crawler	draw	B
+Purphoros, God of the Forge	etb	B
+Pyroclastic Elemental	mana	B
+Queen Brahne	spell	B
+Queza, Augur of Agonies	draw	B
+Quintorius Kand	spell	B
+Rage Extractor	spell	B
+Rage Thrower	death	B
+Rakdos's Return	mana	H
+Ral, Izzet Viceroy	spell	B
+Raphael, Tough Turtle	etb	B
+Ravaging Blaze	mana	H
+Raven Eagle	draw	B
+Realm-Scorcher Hellkite	mana	B
+Reckless Embermage	mana	B
+Reckless Fireweaver	artifact	B
+Red Sun's Zenith	mana	H
+Relic Vial	death	B
+Rix Maadi Guildmage	mana	B
+Ro Laren, Double Agent	draw	B
+Rock Slide	mana	H
+Rocket Launcher	mana	B
+Roku's Mastery	mana	H
+Rolling Earthquake	mana	H
+Rolling Thunder	mana	H
+Rona, Sheoldred's Faithful	spell	B
+Rose Room Treasurer	etb	B
+Rusko, Clockmaker	spell	B
+Sabotender	land	B
+Sanguinary Priest	death	B
+Sanguine Bond	life	B
+Sauron, the Lidless Eye	mana	B
+Savage Twister	mana	H
+Scalding Devil	mana	B
+Scholar of Athreos	mana	B
+Searing Blaze	land	H
+Searing Meditation	life	B
+Sephiroth, Fabled SOLDIER	death	B
+Shadows of the Past	mana	B
+Shatterskull Smashing	mana	H
+Shellshock	mana	H
+Shivan Hellkite	mana	B
+Shocking Sharpshooter	etb	B
+Shriek, Treblemaker	death	B
+Sifa Grent	death	B
+Skarrgan Hellkite	mana	B
+Slash, Reptile Rampager	etb	B
+Sling-Gang Lieutenant	etb	B
+Sliv-Mizzet, Hivemind	draw	B
+Sludge Strider	artifact	B
+Sorin of House Markov	spell	B
+Soul Burn	mana	H
+Soul of Shandalar	mana	B
+South Wind Avatar	life	B
+Specter of the Fens	mana	B
+Sphinx-Bone Wand	spell	B
+Spikeshot Elder	mana	B
+Spiteflame Witch	mana	B
+Spiteful Banditry	mana	B
+Spiteful Prankster	death	B
+Spitfire Lagac	land	B
+Squall Line	mana	H
+Stalking Vengeance	death	B
+Starscape Cleric	life	B
+Starscream, Power Hungry	draw	B
+Starstorm	mana	H
+Starving Revenant	draw	B
+Stonesplitter Bolt	mana	H
+Street Spasm	mana	H
+Subterranean Tremors	mana	H
+Sudden Demise	mana	H
+Swallowing Plague	mana	H
+Syndic of Tithes	spell	B
+Syndicate Enforcer	spell	B
+Syndicate Heavy	spell	B
+Syr Konrad, the Grim	death	B
+Takara	etb	B
+Tannuk, Memorial Ensign	land	B
+Tellah, Great Sage	spell	B
+Terror of the Peaks	etb	B
+Terrors of the Track	death	B
+Thassa's Oracle	library	H
+The Destined Black Mage	spell	B
+The Kingpin of Crime	spell	B
+The Marvelous Scientist	spell	B
+The Meathook Massacre	death	B
+The Rollercrusher Ride	mana	B
+The Sackville-Bagginses	token	B
+Theater of Horrors	mana	B
+Thor, God of Thunder	spell	B
+Thornbite Staff	death	B
+Thrull Parasite	spell	B
+Thunder of Unity	etb	B
+Thunderdrum Soloist	spell	B
+Tinybones, Trinket Thief	mana	B
+Titan's Revenge	mana	H
+Tithe Drinker	spell	B
+Toggo, Goblin Weaponsmith	land	B
+Tor Wauki the Younger	spell	B
+Torch Breath	mana	H
+Torment of Hailfire	mana	H
+Tormented Hero	spell	B
+Torrent of Lava	mana	H
+Transpose	spell	H
+Traumatic Critique	mana	H
+Treasury Thrull	spell	B
+Trespasser's Curse	etb	B
+Triumphant Getaway	spell	B
+Tropical Storm	mana	H
+Tunnel Ignus	land	B
+Tunneling Geopede	land	B
+Underhanded Designs	artifact	B
+Unstable Amulet	spell	B
+Urabrask	spell	B
+Urza	mana	B
+Valakut Invoker	mana	B
+Vampire Opportunist	mana	B
+Vein Ripper	death	B
+Venerated Stormsinger	death	B
+Vengeance Mission	death	B
+Vengeful Archon	mana	B
+Vengeful Bloodwitch	death	B
+Vindictive Vampire	death	B
+Vindictive Warden	mana	B
+Vito, Fanatic of Aclazotz	death	B
+Vito, Thorn of the Dusk Rose	life	B
+Vivi Ornitier	spell	B
+Vivi's Persistence	spell	H
+Vizkopa Confessor	spell	B
+Vizkopa Guildmage	life,mana	B
+Volcanic Geyser	mana	H
+Volcanic Rambler	mana	B
+Vraan, Executioner Thane	death	B
+Walking Ballista	mana	B
+Warleader's Call	etb	B
+Warstorm Surge	etb	B
+Welder Automaton	mana	B
+Wicked Akuba	mana	B
+Windstorm	mana	H
+Witherbloom Apprentice	spell	B
+Witty Roastmaster	etb	B
+Words of War	mana	B
+Worldsoul's Rage	mana	H
+Xantcha, Sleeper Agent	mana	B
+Y'shtola, Night's Blessed	spell	B
+Zealot of the God-Pharaoh	mana	B
+Zimone and Dina	draw	B
+Zoanthrope	mana	B
+Zulaport Cutthroat	death	B
