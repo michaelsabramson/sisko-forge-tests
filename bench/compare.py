@@ -7,7 +7,7 @@ def load(f):
         m = pat.match(l.rstrip('\n'))
         if m: out[int(m.group(1))] = (m.group(2), m.group(3), m.group(5).strip(), int(m.group(4)))
     return out
-combo = collections.Counter(); combofail = collections.Counter(); combocards = collections.Counter(); conc = collections.Counter(); cut = collections.Counter(); won = collections.Counter()
+answers = collections.Counter(); combo = collections.Counter(); combofail = collections.Counter(); combocards = collections.Counter(); conc = collections.Counter(); cut = collections.Counter(); won = collections.Counter()
 def deckname(f):
     for l in open(f, errors='ignore'):
         if l.startswith('POD '): return l[4:].strip().strip('[]').split(',')[0].strip()
@@ -43,6 +43,8 @@ for f in glob.glob('out/**/b*_*.log', recursive=True):
             if m.group(2) == 'Draw' and lives and all(x.endswith('x') for x in lives): draws0[b] += 1
         elif l.startswith('COMBO '):
             combo[b] += 1; combocards[l.split(' | ')[1]] += 1
+        elif l.startswith('COMBOANSWER '):
+            answers[b] += 1
         elif l.startswith('COMBOFAIL '):
             combofail[b] += 1
         elif l.startswith('CONCEDE '):
@@ -50,6 +52,6 @@ for f in glob.glob('out/**/b*_*.log', recursive=True):
         elif l.startswith('LOOP '):
             loops[b] += 1; loopcards[l[5:].split(' | ')[0]] += 1
 for b in range(4):
-    print(f"- process {b}: {games[b]} games, {cut[b]} hit the time limit, {conc[b]} won by concession, {combo[b]} combo wins ({combofail[b]} broken in response), tested deck won {won[b]}, {draws0[b]} loop draws ({100*draws0[b]/max(1,games[b]):.1f}%), {loops[b]} loops broken")
+    print(f"- process {b}: {games[b]} games, {cut[b]} hit the time limit, {conc[b]} won by concession, {combo[b]} combo wins ({combofail[b]} broken in response, {answers[b]} answers tried), tested deck won {won[b]}, {draws0[b]} loop draws ({100*draws0[b]/max(1,games[b]):.1f}%), {loops[b]} loops broken")
 print("abilities dropped:", loopcards.most_common(12))
 print("combos that won:", combocards.most_common(15))
