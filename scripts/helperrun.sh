@@ -12,6 +12,12 @@ while :; do
   [ "$st" = completed ] && break
   [ -z "$id" ] && [ $SECONDS -gt 300 ] && { echo "helper run never started" >&2; break; }
   [ $SECONDS -gt 2400 ] && { echo "gave up waiting for the helper run" >&2; break; }
+  # stragglers: once the main shards are done and only one or two helper shards are still playing (a last long game),
+  # give them 8 minutes, then cancel the helper run: their games up to the last checkpoint are already saved
+  if [ -n "$id" ] && [ $SECONDS -gt 480 ] && [ -z "${CUT:-}" ]; then
+    left=$(gh api "repos/$H/actions/runs/$id/jobs?per_page=100" -q '[.jobs[] | select((.name | test("shard")) and .status != "completed")] | length' 2>/dev/null || echo 99)
+    if [ "${left:-99}" -le 2 ]; then echo "cancelling $left straggling helper shard(s)" >&2; gh api -X POST "repos/$H/actions/runs/$id/cancel" >/dev/null 2>&1; CUT=1; fi
+  fi
   echo "helper run: ${id:-not found yet} ${st}" >&2; sleep 30
 done
 [ -n "$id" ] && { echo "repo=$H"; echo "id=$id"; }
