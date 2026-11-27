@@ -1,6 +1,11 @@
 name: combos
-# Look up each deck's combos on Commander Spellbook and commit decks/combos.json (scripts/fetchcombos.py)
-on: workflow_dispatch
+# Combo data from Commander Spellbook:
+#   mode deck: find-my-combos for each deck (scripts/fetchcombos.py -> decks/combos.json)
+#   mode all:  the whole database (json.commanderspellbook.com/variants.json) -> decks/combos_all.json.gz (scripts/combodb.py)
+on:
+  workflow_dispatch:
+    inputs:
+      mode: { description: 'deck or all', default: 'all' }
 permissions:
   contents: write
 jobs:
@@ -8,7 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/fetchcombos.py
+      - if: ${{ inputs.mode == 'deck' }}
+        run: python3 scripts/fetchcombos.py
+      - if: ${{ inputs.mode == 'all' }}
+        run: |
+          curl -sSL --retry 3 -o /tmp/variants.json https://json.commanderspellbook.com/variants.json
+          ls -la /tmp/variants.json; head -c 600 /tmp/variants.json; echo
+          python3 scripts/combodb.py /tmp/variants.json
       - run: |
           git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add decks/combos.json && git commit -m "Combos from Commander Spellbook" && git pull --rebase -q && git push || true
+          git add decks/combos.json decks/combos_all.json.gz 2>/dev/null; git commit -m "Combos from Commander Spellbook (${{ inputs.mode }})" && git pull --rebase -q && git push || true
