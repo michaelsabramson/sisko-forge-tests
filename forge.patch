@@ -15,7 +15,7 @@ index 4dfcdd59..a98cff4d 100644
          List<Card> possibleBlockers = ai.getCreaturesInPlay();
          if (excludedBlockers != null && !excludedBlockers.isEmpty()) {
 diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
-index 2d74bcf6..9d2cadf3 100644
+index 2d74bcf6..214f5f29 100644
 --- a/forge-ai/src/main/java/forge/ai/AiController.java
 +++ b/forge-ai/src/main/java/forge/ai/AiController.java
 @@ -990,7 +990,10 @@ public class AiController {
@@ -53,7 +53,17 @@ index 2d74bcf6..9d2cadf3 100644
          // if invalid: just try an attack declaration that we know to be legal
          if (!CombatUtil.validateAttackers(combat)) {
              // only this player's attackers are replaced, so a teammate's part of a team attack stays (CR 805.10b)
-@@ -1860,6 +1879,12 @@ public class AiController {
+@@ -1856,10 +1875,22 @@ public class AiController {
+         // Reset priority mana reservation that's meant to work for one spell only
+         memory.clearMemorySet(AiCardMemory.MemorySet.HELD_MANA_SOURCES_FOR_NEXT_SPELL);
+ 
++        // local testing patch: answer an opponent's combo on the stack, or the spell that completes it (ComboShortcut)
++        final SpellAbility comboAnswer = ComboShortcut.respond(player);
++        if (comboAnswer != null) {
++            return singleSpellAbilityList(comboAnswer);
++        }
++
+         if (waitsForMainPhase()) {
              return null; // nothing to do before the first main phase
          }
  
@@ -68,10 +78,10 @@ index 2d74bcf6..9d2cadf3 100644
          }
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 new file mode 100644
-index 00000000..a4d92548
+index 00000000..f96b1b48
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
-@@ -0,0 +1,434 @@
+@@ -0,0 +1,628 @@
 +package forge.ai;
 +
 +import java.io.BufferedReader;
@@ -422,7 +432,47 @@ index 00000000..a4d92548
 +                }
 +            }
 +        }
-+        return null;
++        // an opponent is one piece from a combo: fetch an answer (a counterspell, or removal for their pieces)
++        if (!threatenedPieces(ai).isEmpty()) {
++            for (Card c : choices) {
++                for (SpellAbility sa : c.getSpellAbilities()) {
++                    final forge.game.ability.ApiType api = sa.getApi();
++                    if (api == forge.game.ability.ApiType.Counter || api == forge.game.ability.ApiType.Destroy
++                            || (api == forge.game.ability.ApiType.ChangeZone && "Battlefield".equals(sa.getParam("Origin")))) {
++                        if (c.isInstant() || c.hasKeyword(forge.game.keyword.Keyword.FLASH)) {
++                            return c;
++                        }
++                    }
++                }
++            }
++        }
++        // two pieces missing: one of them (the one that appears in more of the player's combos)
++        Card best = null;
++        int bestCount = 0;
++        for (Card c : choices) {
++            int count = 0;
++            for (final Combo combo : combos()) {
++                int absent = 0;
++                boolean has = false;
++                for (Piece piece : combo.pieces) {
++                    final Piece reach = new Piece(piece.name, piece.zones.contains("H") ? piece.zones : piece.zones + "H", false);
++                    if (find(ai, reach) == null) {
++                        absent++;
++                        if (nameMatches(c, piece.name)) {
++                            has = true;
++                        }
++                    }
++                }
++                if (has && absent == 2) {
++                    count++;
++                }
++            }
++            if (count > bestCount) {
++                best = c;
++                bestCount = count;
++            }
++        }
++        return best;
 +    }
 +
 +    /** A combo the AI can start now, as an ability to put on the stack, or null. */
@@ -467,15 +517,169 @@ index 00000000..a4d92548
 +        return null;
 +    }
 +
-+    private static SpellAbility ability(final Card host, final Player ai, final Combo combo) {
-+        final Cost cost = new Cost(costString(combo.mana), true);
-+        final SpellAbility sa = new AbilityActivated(host, cost, null) {
-+            private static final long serialVersionUID = 1L;
++    /** The combo on the stack (opponents answer it: see respond). */
++    private abstract static class ComboAbility extends AbilityActivated {
++        private static final long serialVersionUID = 1L;
++        final Combo combo;
++        ComboAbility(final Card host, final Cost cost, final Combo combo) {
++            super(host, cost, null);
++            this.combo = combo;
++        }
++        @Override
++        public boolean canPlay() {
++            return true;
++        }
++    }
 +
-+            @Override
-+            public boolean canPlay() {
++    private static boolean enabled() {
++        return Boolean.getBoolean("sisko.comboShortcut") && !combos().isEmpty();
++    }
++
++    /** Pieces of the combo still missing for p (hand pieces count as missing unless the combo uses them from hand). */
++    private static List<Piece> missing(final Player p, final Combo combo) {
++        final List<Piece> out = new ArrayList<>();
++        for (Piece piece : combo.pieces) {
++            if (find(p, piece) == null) {
++                out.add(piece);
++            }
++        }
++        return out;
++    }
++
++    /** Is this card the last missing piece of one of p's combos? */
++    private static boolean isLastPiece(final Player p, final Card card) {
++        for (Combo combo : combos()) {
++            final List<Piece> m = missing(p, combo);
++            if (m.size() == 1 && nameMatches(card, m.get(0).name)) {
 +                return true;
 +            }
++        }
++        return false;
++    }
++
++    /** Pieces in play of opponents' combos that are one piece (or none) away from being assembled. */
++    private static List<Card> threatenedPieces(final Player ai) {
++        final List<Card> out = new ArrayList<>();
++        for (Player o : ai.getOpponents()) {
++            if (o.hasLost()) {
++                continue;
++            }
++            for (Combo combo : combos()) {
++                if (missing(o, combo).size() > 1) {
++                    continue;
++                }
++                for (Piece piece : combo.pieces) {
++                    final Card c = find(o, piece);
++                    if (c != null && c.isInPlay() && !out.contains(c)) {
++                        out.add(c);
++                    }
++                }
++            }
++        }
++        return out;
++    }
++
++    /**
++     * Removal choice: a piece of an opponent's combo that is one piece away (or assembled) comes first, the way real
++     * players spend removal on a known combo. Null when no candidate is such a piece.
++     */
++    public static Card urgentRemovalTarget(final Player ai, final Iterable<Card> candidates) {
++        if (!enabled()) {
++            return null;
++        }
++        final List<Card> pieces = threatenedPieces(ai);
++        if (pieces.isEmpty()) {
++            return null;
++        }
++        for (Card c : candidates) {
++            if (pieces.contains(c)) {
++                return c;
++            }
++        }
++        return null;
++    }
++
++    private static final Map<String, Boolean> answered = Collections.synchronizedMap(new HashMap<>());
++
++    /**
++     * An answer to an opponent's combo: when the combo ability is on the stack, or the spell on top of the stack is the
++     * last piece of an opponent's combo, the AI uses an instant-speed answer it has: counter the spell or ability, or
++     * destroy / exile / bounce a piece. Null when it has none (or already tried for this stack item).
++     */
++    public static SpellAbility respond(final Player ai) {
++        if (!enabled()) {
++            return null;
++        }
++        final Game game = ai.getGame();
++        if (game.getStack().isEmpty()) {
++            return null;
++        }
++        final SpellAbility top = game.getStack().peekAbility();
++        final Player owner = top == null ? null : top.getActivatingPlayer();
++        if (owner == null || !owner.isOpponentOf(ai)) {
++            return null;
++        }
++        final List<Card> pieces = new ArrayList<>();
++        if (top instanceof ComboAbility) {
++            for (Piece piece : ((ComboAbility) top).combo.pieces) {
++                final Card c = find(owner, piece);
++                if (c != null && c.isInPlay()) {
++                    pieces.add(c);
++                }
++            }
++        } else if (!(top.isSpell() && top.getHostCard() != null && isLastPiece(owner, top.getHostCard()))) {
++            return null;
++        }
++        final String key = game.getId() + ":" + ai.getId() + ":" + System.identityHashCode(top);
++        if (answered.putIfAbsent(key, Boolean.TRUE) != null) {
++            return null;
++        }
++        final forge.game.card.CardCollection cards = ComputerUtilAbility.getAvailableCards(game, ai);
++        for (final SpellAbility sa : ComputerUtilAbility.getOriginalAndAltCostAbilities(ComputerUtilAbility.getSpellAbilities(cards, ai), ai)) {
++            final forge.game.ability.ApiType api = sa.getApi();
++            if (api == null || !sa.usesTargeting() || sa.isManaAbility()) {
++                continue;
++            }
++            sa.setActivatingPlayer(ai);
++            try {
++                if (!sa.canPlay() || !ComputerUtilCost.canPayCost(sa, ai, false) || !ComputerUtilMana.canPayManaCost(sa, ai, 0, false)) {
++                    continue;
++                }
++            } catch (RuntimeException e) {
++                continue;
++            }
++            sa.resetTargets();
++            if (api == forge.game.ability.ApiType.Counter) {
++                if (sa.canTargetSpellAbility(top)) {
++                    sa.getTargets().add(top);
++                    if (sa.isTargetNumberValid()) {
++                        System.out.println("COMBOANSWER " + ai.getName() + " | " + sa.getHostCard().getName() + " counters " + top.getHostCard().getName());
++                        return sa;
++                    }
++                }
++            } else if (api == forge.game.ability.ApiType.Destroy || (api == forge.game.ability.ApiType.ChangeZone
++                    && "Battlefield".equals(sa.getParam("Origin")) && !"Battlefield".equals(sa.getParam("Destination")))) {
++                for (Card c : pieces) {
++                    if (sa.canTarget(c)) {
++                        sa.getTargets().add(c);
++                        if (sa.isTargetNumberValid()) {
++                            System.out.println("COMBOANSWER " + ai.getName() + " | " + sa.getHostCard().getName() + " on " + c.getName());
++                            return sa;
++                        }
++                        sa.resetTargets();
++                    }
++                }
++            }
++            sa.resetTargets();
++        }
++        System.out.println("COMBONOANSWER " + ai.getName() + " | " + (top instanceof ComboAbility ? "combo on the stack" : "last piece " + top.getHostCard().getName()));
++        return null;
++    }
++
++    private static SpellAbility ability(final Card host, final Player ai, final Combo combo) {
++        final Cost cost = new Cost(costString(combo.mana), true);
++        final SpellAbility sa = new ComboAbility(host, cost, combo) {
++            private static final long serialVersionUID = 1L;
 +
 +            @Override
 +            public void resolve() {
@@ -526,6 +730,22 @@ index 7802d28a..17803180 100644
  
          final Cost cost = sa.getPayCosts();
          final CostPayment pay = new CostPayment(cost, sa);
+diff --git a/forge-ai/src/main/java/forge/ai/ComputerUtilCard.java b/forge-ai/src/main/java/forge/ai/ComputerUtilCard.java
+index 2c1a1b0d..5b95f002 100644
+--- a/forge-ai/src/main/java/forge/ai/ComputerUtilCard.java
++++ b/forge-ai/src/main/java/forge/ai/ComputerUtilCard.java
+@@ -617,6 +617,11 @@ public class ComputerUtilCard {
+     }
+ 
+     public static Card getBestRemovalTargetAI(final Player ai, final Iterable<Card> list) {
++        // local testing patch: pieces of an opponent's nearly assembled combo come first (ComboShortcut)
++        final Card comboPiece = ComboShortcut.urgentRemovalTarget(ai, list);
++        if (comboPiece != null) {
++            return comboPiece;
++        }
+         if (Iterables.isEmpty(list)) {
+             return null;
+         }
 diff --git a/forge-ai/src/main/java/forge/ai/ComputerUtilCost.java b/forge-ai/src/main/java/forge/ai/ComputerUtilCost.java
 index 288f00aa..81a96dcb 100644
 --- a/forge-ai/src/main/java/forge/ai/ComputerUtilCost.java
