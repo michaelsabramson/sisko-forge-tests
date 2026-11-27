@@ -1,5 +1,5 @@
 {
-  "name": "ranking_of_siskofinal_4",
+  "name": "ranking_of_siskofinal_5",
   "title": "Ranking of SiskoFinal",
   "arms": [
     {
@@ -7,7 +7,7 @@
       "card": "@audit",
       "label": "Audit of SiskoFinal",
       "mc": "on",
-      "key": "ec2d4bf8e4f47823727a",
+      "key": "4be4d349286f483141af",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 45620,
@@ -20,7 +20,7 @@
   "shards": 96,
   "mode": "audit",
   "queued_from": "20261127-064501-audit-siskofinal.json",
-  "started": "2026-11-27T16:05:43Z",
+  "started": "2026-11-27T17:21:22Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -425,7 +425,7 @@
     0
   ],
   "gpm": [
-    0.834
+    0.85
   ],
   "quota": [
     119
@@ -442,5 +442,5 @@
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 185995000
+  "seedbase": 186010200
 }
