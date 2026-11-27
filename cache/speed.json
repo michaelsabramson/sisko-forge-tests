@@ -27,28 +27,28 @@
  ],
  "*": [
   [
-   147,
-   9879937
+   1937,
+   131079274
   ],
   [
-   160,
-   9850073
+   1986,
+   130633160
   ],
   [
-   1894,
-   92849901
+   2859,
+   131964849
   ],
   [
-   2960,
-   175101493
+   2161,
+   131194447
   ],
   [
-   2964,
-   174100616
+   1430,
+   130708219
   ],
   [
-   2966,
-   156779872
+   2273,
+   133678826
   ]
  ],
  "SiskoFinal__ShatteringSpree__for__PactOfNegation|Atraxa,Prossh,UrDragon,Edgar,Meren": [
@@ -531,6 +531,66 @@
   [
    4704,
    433227465
+  ]
+ ],
+ "Edgar|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2396,
+   136022030
+  ]
+ ],
+ "UrDragon|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2772,
+   137122435
+  ]
+ ],
+ "Prossh|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2322,
+   134894132
+  ]
+ ],
+ "Meren|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2581,
+   132653683
+  ]
+ ],
+ "Talrand_B3|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   1937,
+   131079274
+  ]
+ ],
+ "Krenko_B3|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   1986,
+   130633160
+  ]
+ ],
+ "RafiqoftheMany_B3|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2859,
+   131964849
+  ]
+ ],
+ "TuvasatheSunlit_B3|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2161,
+   131194447
+  ]
+ ],
+ "Tatyova_B3|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   1430,
+   130708219
+  ]
+ ],
+ "Kykar_B3|Edgar,UrDragon,Prossh,Meren,Talrand_B3,Krenko_B3,RafiqoftheMany_B3,TuvasatheSunlit_B3,Tatyova_B3,Kykar_B3": [
+  [
+   2273,
+   133678826
   ]
  ]
 }

@@ -1804,6 +1804,15 @@
   ],
   "wins": 17
  },
+ "1a466e898b35adecc348": {
+  "card": "",
+  "deck": "Tatyova_B3",
+  "games": 1430,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 310.75000000000006
+ },
  "1b046df436ad86e3bcb6": {
   "card": "",
   "deck": "EdgarMarkov_B3",
@@ -1812,6 +1821,15 @@
    "power_ladder_calibration:45290614068"
   ],
   "wins": 68
+ },
+ "1c69d26c0d72c691f263": {
+  "card": "",
+  "deck": "Meren",
+  "games": 2581,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 572.5
  },
  "1e41d6b32c057908eea4": {
   "card": "",
@@ -2264,6 +2282,15 @@
    "pool_check_current_10_deck_pool_with_the_loop_fix_and_no_round_cap:45790688180:side"
   ],
   "wins": 1007.416666666667
+ },
+ "21e281e5de1eb92e86e9": {
+  "card": "",
+  "deck": "Krenko_B3",
+  "games": 1986,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 451.58333333333326
  },
  "22b1ae75d285e0812475": {
   "card": "",
@@ -2762,6 +2789,15 @@
    "delighted_halfling_for_counterspell:45070976368"
   ],
   "wins": 1060
+ },
+ "33d0c90bf421298a56a1": {
+  "card": "",
+  "deck": "RafiqoftheMany_B3",
+  "games": 2859,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 815.7500000000001
  },
  "361e47f6e3c1d7859d42": {
   "card": "Pact of Negation",
@@ -6237,6 +6273,15 @@
   ],
   "wins": 850
  },
+ "609e52ca5fd40d73bf05": {
+  "card": "",
+  "deck": "Prossh",
+  "games": 2322,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 516.3333333333333
+ },
  "64c63a0a17778856c22c": {
   "card": "",
   "deck": "EdgarMarkov_B2",
@@ -7560,6 +7605,15 @@
    "power_ladder_calibration:45290614068"
   ],
   "wins": 43
+ },
+ "752df063216ce2bc436f": {
+  "card": "",
+  "deck": "Edgar",
+  "games": 2396,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 789.6666666666667
  },
  "760db97dcf41da40fa3c": {
   "card": "@audit",
@@ -11450,6 +11504,33 @@
    "seven_of_nine_for_sylvan_library_2:45655997411:side"
   ],
   "wins": 183
+ },
+ "c2ee42144dddcd5c58d3": {
+  "card": "",
+  "deck": "UrDragon",
+  "games": 2772,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 1145.4999999999998
+ },
+ "c4eeea76d038558b91a8": {
+  "card": "",
+  "deck": "Talrand_B3",
+  "games": 1937,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 206.5
+ },
+ "c61810f84e6f0f9ed656": {
+  "card": "",
+  "deck": "Kykar_B3",
+  "games": 2273,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 259.58333333333337
  },
  "cbaee386ea21bc6ebd01": {
   "card": "Fiery Islet",
@@ -16157,6 +16238,15 @@
    "rank_of_siskofinal_on_hard_ai:45135650601"
   ],
   "wins": 3609
+ },
+ "f646320115018a848c1b": {
+  "card": "",
+  "deck": "TuvasatheSunlit_B3",
+  "games": 2161,
+  "runs": [
+   "par_games_the_bracket_3_pool_against_itself_played_to_the_end:46077260987"
+  ],
+  "wins": 652.6666666666667
  },
  "f6b936f037bd37854897": {
   "card": "@usage",
