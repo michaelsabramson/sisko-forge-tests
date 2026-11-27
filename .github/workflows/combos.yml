@@ -1,0 +1,14 @@
+name: combos
+# Look up each deck's combos on Commander Spellbook and commit decks/combos.json (scripts/fetchcombos.py)
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  lookup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/fetchcombos.py
+      - run: |
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add decks/combos.json && git commit -m "Combos from Commander Spellbook" && git pull --rebase -q && git push || true
