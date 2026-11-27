@@ -1161,14 +1161,15 @@ function drawRuns() {
     const running = r.status === 'in_progress', waiting = r.status !== 'completed' && !running;
     const pct = r.status === 'completed' ? 100 : running ? Math.min(98, el / mins * 100) : 0;
     const eta = new Date(new Date(r.started).getTime() + mins * 60000);
-    const resName = q.name; const hasRes = S.tree.includes(`results/${resName}.md`), hasPeek = S.tree.includes(`results/${resName}_peek.md`);
+    const resName = q.name; const backend = q.hidden || q.mode === 'ladder' || q.mode === 'pilot';   // par and pilot runs feed the engine, not the Results page
+    const hasRes = !backend && S.tree.includes(`results/${resName}.md`), hasPeek = !backend && S.tree.includes(`results/${resName}_peek.md`);
     const st = running ? `<span class="pill gold">Running · ${Math.round(el)} min</span>` : waiting ? '<span class="pill">Waiting for runners</span>'
       : (r.conclusion === 'success' || hasRes) ? '<span class="pill good">Done</span>' : r.conclusion === 'cancelled' ? '<span class="pill">Cancelled</span>' : `<span class="pill bad">${esc(r.conclusion || 'failed')}</span>`;
     return `<div class="card"><div class="res-head"><div><div class="res-title">${esc(prettyName(resName || 'unknown test', q.title))}</div><div class="small muted">${esc(reqSummary(q))}</div></div>${st}</div>
       ${r.status !== 'completed' ? `<div class="prog"><div style="width:${pct}%"></div></div><div class="small muted">${running ? `Results around ${fmtTime(eta)}` : 'Starts when the current run finishes'}${hasPeek ? ' · early read available' : ''}</div>` : `<div class="small muted" style="margin-top:6px">Finished ${esc(ago(r.updated))}</div>`}
       <div class="row" style="margin-top:10px">
         ${(hasRes || hasPeek) ? `<button class="sm" data-goto="${esc(resName)}" data-base="${esc(q.arms?.[0]?.deck || '')}" data-mode="${esc(q.mode || '')}">View ${hasRes ? 'results' : 'early read'}</button>` : ''}
-        ${running && el > 25 ? `<button class="sm" data-peek="${r.id}">Get early read</button>` : ''}
+        ${running && el > 25 && !backend ? `<button class="sm" data-peek="${r.id}">Get early read</button>` : ''}
         ${r.status !== 'completed' ? `<button class="sm ghost danger" data-cancel="${r.id}">Cancel</button>` : ''}
         <a class="small" href="${esc(r.url)}" target="_blank" rel="noopener" style="margin-left:auto">GitHub run ↗</a></div></div>`;
   };
