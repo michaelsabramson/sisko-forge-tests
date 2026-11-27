@@ -1,26 +1,26 @@
 {
-  "name": "ranking_of_necrobloom_5",
-  "title": "Ranking of Necrobloom",
+  "name": "ranking_of_kess_7",
+  "title": "Ranking of Kess",
   "arms": [
     {
-      "deck": "Necrobloom",
+      "deck": "Kess",
       "card": "@audit",
-      "label": "Audit of Necrobloom",
+      "label": "Audit of Kess",
       "mc": "on",
-      "key": "9ab0c169ee50078a9581",
+      "key": "5517405f3c0ee3366424",
       "prior_games": 0,
       "prior_wins": 0,
-      "target_new": 16423,
+      "target_new": 45620,
       "cached": false
     }
   ],
   "compare": [],
   "band": 0,
-  "minutes": 151,
+  "minutes": 170,
   "shards": 96,
   "mode": "audit",
-  "queued_from": "20261127-041000-audit-necrobloom.json",
-  "started": "2026-11-27T04:08:27Z",
+  "queued_from": "20261127-064500-audit-kess.json",
+  "started": "2026-11-27T06:40:41Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -37,7 +37,7 @@
   "round_cap": 0,
   "main_shards": 38,
   "helper": "magic-the-science/sisko-forge-helper",
-  "precision": 2.0,
+  "precision": 1.2,
   "procs": [
     0,
     0,
@@ -425,22 +425,22 @@
     0
   ],
   "gpm": [
-    0.404
+    0.694
   ],
   "quota": [
-    43
+    119
   ],
   "earlystop": false,
   "first": [
-    12
+    35
   ],
   "batch": [
-    17
+    28
   ],
   "batches": [
-    695
+    1150
   ],
-  "capped": false,
+  "capped": true,
   "allcached": false,
-  "seedbase": 185851600
+  "seedbase": 185882000
 }
