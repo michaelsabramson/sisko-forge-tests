@@ -1,0 +1,20 @@
+{
+  "mode": "audit",
+  "base": "KW-Najeela-1123",
+  "name": "Ranking of KW-Najeela-1123",
+  "precision": 2.0,
+  "shards": 38,
+  "opponents": [
+    "Edgar",
+    "UrDragon",
+    "Prossh",
+    "Meren",
+    "Talrand_B3",
+    "Krenko_B3",
+    "RafiqoftheMany_B3",
+    "TuvasatheSunlit_B3",
+    "Tatyova_B3",
+    "Kykar_B3"
+  ],
+  "submitted": "2026-11-27T21:15:00+00:00"
+}
