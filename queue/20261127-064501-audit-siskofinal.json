@@ -1,0 +1,20 @@
+{
+  "mode": "audit",
+  "base": "SiskoFinal",
+  "name": "Ranking of SiskoFinal",
+  "precision": 1.2,
+  "shards": 38,
+  "opponents": [
+    "Edgar",
+    "UrDragon",
+    "Prossh",
+    "Meren",
+    "Talrand_B3",
+    "Krenko_B3",
+    "RafiqoftheMany_B3",
+    "TuvasatheSunlit_B3",
+    "Tatyova_B3",
+    "Kykar_B3"
+  ],
+  "submitted": "2026-11-27T06:45:00+00:00"
+}
