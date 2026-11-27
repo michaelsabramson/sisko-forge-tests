@@ -1,0 +1,282 @@
+diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
+index 748922e4..9d2cadf3 100644
+--- a/forge-ai/src/main/java/forge/ai/AiController.java
++++ b/forge-ai/src/main/java/forge/ai/AiController.java
+@@ -1879,6 +1879,12 @@ public class AiController {
+             return null; // nothing to do before the first main phase
+         }
+ 
++        // local testing patch: a known game-winning combo that is assembled goes on the stack (ComboShortcut)
++        final SpellAbility combo = ComboShortcut.live(player);
++        if (combo != null) {
++            return singleSpellAbilityList(combo);
++        }
++
+         if (usesFullSimulation()) {
+             return singleSpellAbilityList(simPicker.chooseSpellAbilityToPlay(null));
+         }
+diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
+new file mode 100644
+index 00000000..6c3f0285
+--- /dev/null
++++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
+@@ -0,0 +1,259 @@
++package forge.ai;
++
++import java.io.BufferedReader;
++import java.io.FileReader;
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.HashMap;
++import java.util.HashSet;
++import java.util.List;
++import java.util.Map;
++import java.util.Set;
++
++import forge.game.Game;
++import forge.game.card.Card;
++import forge.game.cost.Cost;
++import forge.game.phase.PhaseHandler;
++import forge.game.player.GameLossReason;
++import forge.game.player.Player;
++import forge.game.spellability.AbilityActivated;
++import forge.game.spellability.SpellAbility;
++import forge.game.zone.ZoneType;
++
++/**
++ * Local testing patch: known game-winning combos (Commander Spellbook, via -Dsisko.combos=decks/combos.txt) are played
++ * the way a real table plays them. Interaction stays in: the pieces get onto the battlefield (or into hand) through the
++ * normal game, so they can be countered, discarded or removed; once every piece is in place, the player has the mana
++ * the combo needs and it is their main phase with an empty stack, the AI puts a "combo" ability on the stack, sourced
++ * from one of the pieces. Every opponent gets priority and can respond (remove a piece, counter or Stifle it). If it
++ * resolves with all pieces still in place, the opponents lose: the loop is shortcut instead of played out. Known hate
++ * cards on an opponent's side (Torpor Orb, Rest in Peace, Platinum Angel, ...) keep the combo from starting.
++ * One attempt per combo per turn, so a broken combo isn't retried at every priority.
++ */
++public final class ComboShortcut {
++    private ComboShortcut() { }
++
++    private static final class Piece {
++        final String name; final String zones; final boolean noSickness;
++        Piece(String name, String zones, boolean noSickness) { this.name = name; this.zones = zones; this.noSickness = noSickness; }
++    }
++
++    private static final class Combo {
++        final String id, result, mana, description; final List<Piece> pieces; final Set<String> hate;
++        Combo(String id, String result, String mana, List<Piece> pieces, Set<String> hate, String description) {
++            this.id = id; this.result = result; this.mana = mana; this.pieces = pieces; this.hate = hate; this.description = description;
++        }
++    }
++
++    private static volatile List<Combo> combos;
++    /** game id + player id + turn -> combos already tried this turn */
++    private static final Map<String, Set<String>> tried = Collections.synchronizedMap(new HashMap<>());
++
++    private static List<Combo> combos() {
++        List<Combo> list = combos;
++        if (list != null) {
++            return list;
++        }
++        synchronized (ComboShortcut.class) {
++            if (combos != null) {
++                return combos;
++            }
++            list = new ArrayList<>();
++            final String path = System.getProperty("sisko.combos");
++            if (path != null && !path.isEmpty()) {
++                try (BufferedReader in = new BufferedReader(new FileReader(path))) {
++                    String line;
++                    while ((line = in.readLine()) != null) {
++                        final String[] f = line.split("\t", -1);
++                        if (f.length < 5 || f[3].isEmpty()) {
++                            continue;
++                        }
++                        final List<Piece> pieces = new ArrayList<>();
++                        for (String p : f[3].split(";")) {
++                            final int at = p.lastIndexOf('@');
++                            if (at < 0) {
++                                continue;
++                            }
++                            String zones = p.substring(at + 1);
++                            boolean noSick = false;
++                            final int bang = zones.indexOf('!');
++                            if (bang >= 0) {
++                                noSick = zones.substring(bang + 1).contains("s");
++                                zones = zones.substring(0, bang);
++                            }
++                            pieces.add(new Piece(p.substring(0, at), zones, noSick));
++                        }
++                        final Set<String> hate = new HashSet<>();
++                        for (String h : f[4].split(";")) {
++                            if (!h.isEmpty()) {
++                                hate.add(h);
++                            }
++                        }
++                        list.add(new Combo(f[0], f[1], f[2], pieces, hate, f.length > 5 ? f[5] : f[1]));
++                    }
++                } catch (Exception e) {
++                    System.err.println("ComboShortcut: can't read " + path + ": " + e);
++                }
++            }
++            combos = list;
++            return list;
++        }
++    }
++
++    private static boolean nameMatches(final Card c, final String name) {
++        final String n = c.getName();
++        return n.equals(name) || n.startsWith(name + " // ") || (c.isFaceDown() ? false : c.getState(forge.card.CardStateName.Original).getName().equals(name));
++    }
++
++    /** The card that fills this piece for the player, or null. */
++    private static Card find(final Player p, final Piece piece) {
++        for (char z : piece.zones.toCharArray()) {
++            final ZoneType zone;
++            switch (z) {
++                case 'B': zone = ZoneType.Battlefield; break;
++                case 'H': zone = ZoneType.Hand; break;
++                case 'G': zone = ZoneType.Graveyard; break;
++                case 'C': zone = ZoneType.Command; break;
++                default: continue;
++            }
++            for (Card c : p.getCardsIn(zone)) {
++                if (!nameMatches(c, piece.name)) {
++                    continue;
++                }
++                if (zone == ZoneType.Battlefield && piece.noSickness && c.isSick()) {
++                    continue;
++                }
++                return c;
++            }
++            // a commander piece may also be on the battlefield
++            if (z == 'C') {
++                for (Card c : p.getCardsIn(ZoneType.Battlefield)) {
++                    if (nameMatches(c, piece.name)) {
++                        return c;
++                    }
++                }
++            }
++        }
++        return null;
++    }
++
++    private static boolean assembled(final Player p, final Combo combo) {
++        for (Piece piece : combo.pieces) {
++            if (find(p, piece) == null) {
++                return false;
++            }
++        }
++        return true;
++    }
++
++    private static boolean hated(final Player p, final Combo combo) {
++        if (combo.hate.isEmpty()) {
++            return false;
++        }
++        for (Player o : p.getOpponents()) {
++            for (Card c : o.getCardsIn(ZoneType.Battlefield)) {
++                if (combo.hate.contains(c.getName())) {
++                    return true;
++                }
++            }
++        }
++        return false;
++    }
++
++    private static String costString(final String mana) {
++        final StringBuilder b = new StringBuilder();
++        final java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\{([^}]+)\\}").matcher(mana);
++        while (m.find()) {
++            final String sym = m.group(1).replace("/", "");
++            if (!sym.matches("[0-9]+|[WUBRGC]|[WUBRG]{2}")) {
++                continue;   // X, phyrexian, snow, ...: left out
++            }
++            if (b.length() > 0) {
++                b.append(' ');
++            }
++            b.append(sym);
++        }
++        return b.length() == 0 ? "0" : b.toString();
++    }
++
++    /** A combo the AI can start now, as an ability to put on the stack, or null. */
++    public static SpellAbility live(final Player ai) {
++        if (!Boolean.getBoolean("sisko.comboShortcut")) {
++            return null;
++        }
++        final List<Combo> list = combos();
++        if (list.isEmpty()) {
++            return null;
++        }
++        final Game game = ai.getGame();
++        final PhaseHandler ph = game.getPhaseHandler();
++        if (!ph.isPlayerTurn(ai) || ph.getPhase() == null || !ph.getPhase().isMain() || !game.getStack().isEmpty()) {
++            return null;
++        }
++        final String key = game.getId() + ":" + ai.getId() + ":" + ph.getTurn();
++        final Set<String> done = tried.computeIfAbsent(key, k -> new HashSet<>());
++        for (final Combo combo : list) {
++            if (done.contains(combo.id) || !assembled(ai, combo) || hated(ai, combo)) {
++                continue;
++            }
++            // source: a piece on the battlefield (the ability needs a permanent to come from)
++            Card host = null;
++            for (Piece piece : combo.pieces) {
++                final Card c = find(ai, piece);
++                if (c != null && c.isInPlay()) {
++                    host = c;
++                    break;
++                }
++            }
++            if (host == null) {
++                continue;
++            }
++            final SpellAbility sa = ability(host, ai, combo);
++            if (!ComputerUtilMana.canPayManaCost(sa, ai, 0, false)) {
++                continue;
++            }
++            done.add(combo.id);
++            return sa;
++        }
++        return null;
++    }
++
++    private static SpellAbility ability(final Card host, final Player ai, final Combo combo) {
++        final Cost cost = new Cost(costString(combo.mana), true);
++        final SpellAbility sa = new AbilityActivated(host, cost, null) {
++            private static final long serialVersionUID = 1L;
++
++            @Override
++            public boolean canPlay() {
++                return true;
++            }
++
++            @Override
++            public void resolve() {
++                final Player me = getActivatingPlayer();
++                if (me == null || me.hasLost()) {
++                    return;
++                }
++                final StringBuilder pieces = new StringBuilder();
++                for (Piece piece : combo.pieces) {
++                    pieces.append(pieces.length() > 0 ? " + " : "").append(piece.name);
++                }
++                if (!assembled(me, combo) || hated(me, combo)) {
++                    System.out.println("COMBOFAIL " + me.getName() + " | " + pieces + " | broken in response");
++                    return;
++                }
++                System.out.println("COMBO " + me.getName() + " | " + pieces + " | " + combo.result + " | turn "
++                        + me.getGame().getPhaseHandler().getTurn());
++                for (Player o : new ArrayList<>(me.getOpponents())) {
++                    if (!o.hasLost()) {
++                        o.loseConditionMet(GameLossReason.SpellEffect, "Combo: " + combo.result);
++                    }
++                }
++            }
++        };
++        sa.setActivatingPlayer(ai);
++        sa.setDescription("Combo: " + combo.description);
++        sa.setStackDescription("Combo (" + combo.result + ")");
++        return sa;
++    }
++}
