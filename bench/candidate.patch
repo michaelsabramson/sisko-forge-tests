@@ -1,5 +1,5 @@
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
-index f96b1b48..4b15a645 100644
+index f96b1b48..ab974487 100644
 --- a/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 +++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 @@ -41,9 +41,12 @@ public final class ComboShortcut {
@@ -37,7 +37,7 @@ index f96b1b48..4b15a645 100644
                      }
                  } catch (Exception e) {
                      System.err.println("ComboShortcut: can't read " + path + ": " + e);
-@@ -118,6 +123,190 @@ public final class ComboShortcut {
+@@ -118,6 +123,191 @@ public final class ComboShortcut {
          }
      }
  
@@ -166,6 +166,7 @@ index f96b1b48..4b15a645 100644
 +            }
 +        }
 +        byPlayer.put(key, mine);
++        System.out.println("COMBOLIST " + p.getName() + " | " + (mine.size() - composed) + " combos, " + composed + " engine + payoff");
 +        return mine;
 +    }
 +
@@ -228,7 +229,7 @@ index f96b1b48..4b15a645 100644
      private static boolean nameMatches(final Card c, final String name) {
          final String n = c.getName();
          return n.equals(name) || n.startsWith(name + " // ") || (c.isFaceDown() ? false : c.getState(forge.card.CardStateName.Original).getName().equals(name));
-@@ -135,7 +324,7 @@ public final class ComboShortcut {
+@@ -135,7 +325,7 @@ public final class ComboShortcut {
                  default: continue;
              }
              for (Card c : p.getCardsIn(zone)) {
@@ -237,7 +238,7 @@ index f96b1b48..4b15a645 100644
                      continue;
                  }
                  if (zone == ZoneType.Battlefield && piece.noSickness && c.isSick()) {
-@@ -328,7 +517,7 @@ public final class ComboShortcut {
+@@ -328,7 +518,7 @@ public final class ComboShortcut {
          if (!Boolean.getBoolean("sisko.comboShortcut")) {
              return null;
          }
@@ -246,7 +247,7 @@ index f96b1b48..4b15a645 100644
              Piece missing = null;
              int absent = 0;
              for (Piece piece : combo.pieces) {
-@@ -367,7 +556,7 @@ public final class ComboShortcut {
+@@ -367,7 +557,7 @@ public final class ComboShortcut {
          int bestCount = 0;
          for (Card c : choices) {
              int count = 0;
@@ -255,7 +256,7 @@ index f96b1b48..4b15a645 100644
                  int absent = 0;
                  boolean has = false;
                  for (Piece piece : combo.pieces) {
-@@ -396,7 +585,7 @@ public final class ComboShortcut {
+@@ -396,7 +586,7 @@ public final class ComboShortcut {
          if (!Boolean.getBoolean("sisko.comboShortcut")) {
              return null;
          }
@@ -264,7 +265,7 @@ index f96b1b48..4b15a645 100644
          if (list.isEmpty()) {
              return null;
          }
-@@ -464,7 +653,7 @@ public final class ComboShortcut {
+@@ -464,7 +654,7 @@ public final class ComboShortcut {
  
      /** Is this card the last missing piece of one of p's combos? */
      private static boolean isLastPiece(final Player p, final Card card) {
@@ -273,7 +274,7 @@ index f96b1b48..4b15a645 100644
              final List<Piece> m = missing(p, combo);
              if (m.size() == 1 && nameMatches(card, m.get(0).name)) {
                  return true;
-@@ -480,7 +669,7 @@ public final class ComboShortcut {
+@@ -480,7 +670,7 @@ public final class ComboShortcut {
              if (o.hasLost()) {
                  continue;
              }
@@ -282,7 +283,7 @@ index f96b1b48..4b15a645 100644
                  if (missing(o, combo).size() > 1) {
                      continue;
                  }
-@@ -613,8 +802,15 @@ public final class ComboShortcut {
+@@ -613,8 +803,15 @@ public final class ComboShortcut {
                  }
                  System.out.println("COMBO " + me.getName() + " | " + pieces + " | " + combo.result + " | turn "
                          + me.getGame().getPhaseHandler().getTurn());
