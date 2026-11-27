@@ -16,7 +16,7 @@ index 9d2cadf3..214f5f29 100644
              return null; // nothing to do before the first main phase
          }
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
-index a4d92548..e5976bf5 100644
+index a4d92548..f96b1b48 100644
 --- a/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 +++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 @@ -348,7 +348,47 @@ public final class ComboShortcut {
@@ -68,7 +68,7 @@ index a4d92548..e5976bf5 100644
      }
  
      /** A combo the AI can start now, as an ability to put on the stack, or null. */
-@@ -393,15 +433,168 @@ public final class ComboShortcut {
+@@ -393,15 +433,169 @@ public final class ComboShortcut {
          return null;
      }
  
@@ -233,6 +233,7 @@ index a4d92548..e5976bf5 100644
 +            }
 +            sa.resetTargets();
 +        }
++        System.out.println("COMBONOANSWER " + ai.getName() + " | " + (top instanceof ComboAbility ? "combo on the stack" : "last piece " + top.getHostCard().getName()));
 +        return null;
 +    }
 +
