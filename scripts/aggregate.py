@@ -263,6 +263,7 @@ data = {"name": req['name'], "title": req.get('title'), "mode": req.get('mode', 
                         "game_seconds": {q: round(sorted(cutoffs["ms"])[min(len(cutoffs["ms"]) - 1, int(q / 100 * len(cutoffs["ms"])))] / 1000)
                                          for q in (50, 75, 90, 95, 98, 99)} if cutoffs["ms"] else None}} if cutoffs["n"] else {}),
         **({"par_tally": {**partally, "opponents": sorted(req.get('opponents') or []), "round_cap": req.get('round_cap', 0),
+                          "decks": sorted({a.get('deck') for a in req.get('arms', [])}), "mode": req.get('mode'),
                           "game_timeout": req.get('game_timeout')}} if partally["games"] else {}),
         "speed": round(sum(x[0] for x in speed) / max(1e-9, sum(x[1] for x in speed) / 60000), 3) if sum(x[0] for x in speed) else None,
         **({"tail": {"deck": arms[0]['deck'], "ref": arms[0]['card'], "rows": tail_rows, **req.get('tail', {})}} if tail_rows is not None else {}),
