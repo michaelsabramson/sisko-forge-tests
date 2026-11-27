@@ -36,6 +36,24 @@ public class Run {
   static final int CONCEDE_MIN=Integer.getInteger("sisko.concedeMin",40);
   static final double CONCEDE_POWER=Double.parseDouble(System.getProperty("sisko.concedePower","3"));
   static final double CONCEDE_RATIO=Double.parseDouble(System.getProperty("sisko.concedeRatio","4"));
+  static final boolean CONCEDE_WIPE_CHECK=!"false".equals(System.getProperty("sisko.concedeWipeCheck"));
+  /** A board wipe an opponent of p holds in hand and can pay for with the mana sources they control, or null. */
+  static String wipeHeld(forge.game.Game game, Player p){
+    for(Player o:game.getPlayers()){ if(o==p || o.hasLost()) continue;
+      int mana=0; for(forge.game.card.Card c:o.getCardsIn(forge.game.zone.ZoneType.Battlefield)) if(!c.getManaAbilities().isEmpty()) mana++;
+      for(forge.game.card.Card c:o.getCardsIn(forge.game.zone.ZoneType.Hand)){
+        if(c.getCMC()>mana) continue;
+        for(forge.game.spellability.SpellAbility sa:c.getSpellAbilities()){
+          for(forge.game.spellability.SpellAbility s2=sa; s2!=null; s2=s2.getSubAbility()){
+            forge.game.ability.ApiType api=s2.getApi(); if(api==null) continue;
+            boolean wipe = api==forge.game.ability.ApiType.DestroyAll || api==forge.game.ability.ApiType.DamageAll
+              || api==forge.game.ability.ApiType.SacrificeAll
+              || (api==forge.game.ability.ApiType.ChangeZoneAll && "Battlefield".equals(s2.getParam("Origin")))
+              || (api==forge.game.ability.ApiType.PumpAll && String.valueOf(s2.getParam("NumDef")).startsWith("-"));
+            if(wipe) return o.getName()+" holds "+c.getName();
+          } } } }
+    return null;
+  }
   static String slowLine(forge.game.Game game, long t){
     StringBuilder b=new StringBuilder("SLOW t="+t+" turn="+game.getPhaseHandler().getTurn()+" phase="+game.getPhaseHandler().getPhase()+" active="+game.getPhaseHandler().getPlayerTurn().getName()+" stack="+game.getStack().size()+" |");
     try{ for(Player p:game.getRegisteredPlayers()){ int cr=0,tok=0,pow=0,perm=0; for(forge.game.card.Card c:p.getCardsIn(forge.game.zone.ZoneType.Battlefield)){ perm++; if(c.isCreature()){ cr++; pow+=Math.max(0,c.getNetPower()); if(c.isToken()) tok++; } }
@@ -96,7 +114,7 @@ public class Run {
       final boolean[] conceded={false};
       // checked between phases, after every spell or ability resolves, and every 10 tokens created: token engines
       // (Scute Swarm doubling) can grow a board by thousands within one phase
-      final int[] tokens={0};
+      final int[] tokens={0}; final boolean[] heldNoted={false};
       final Runnable runaway=()->{
         if(game.isGameOver() || conceded[0]) return;
         for(Player rp:game.getPlayers()){ if(rp.hasLost()) continue; int rcr=0; long rpow=0;
@@ -104,7 +122,11 @@ public class Run {
           if(rcr<CONCEDE_MIN) continue;
           long rlife=0; int rocr=0; boolean rany=false;
           for(Player ro:game.getPlayers()){ if(ro==rp || ro.hasLost()) continue; rany=true; rlife+=Math.max(1,ro.getLife()); rocr+=ro.getCreaturesInPlay().size(); }
-          if(rany && rpow>=CONCEDE_POWER*rlife && rcr>=CONCEDE_RATIO*rocr+10){ conceded[0]=true; System.out.println("CONCEDE "+rp.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+rcr+" power="+rpow+" oppLife="+rlife+" oppCreatures="+rocr);
+          if(rany && rpow>=CONCEDE_POWER*rlife && rcr>=CONCEDE_RATIO*rocr+10){
+            // no concession while an opponent holds a board wipe they can pay for: the game isn't decided yet
+            String wipe=CONCEDE_WIPE_CHECK? wipeHeld(game, rp) : null;
+            if(wipe!=null){ if(!heldNoted[0]){ heldNoted[0]=true; System.out.println("CONCEDEHOLD "+rp.getName()+" | "+wipe); } continue; }
+            conceded[0]=true; System.out.println("CONCEDE "+rp.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+rcr+" power="+rpow+" oppLife="+rlife+" oppCreatures="+rocr);
             for(Player ro:game.getPlayers()) if(ro!=rp && !ro.hasLost()) ro.concede();
             try{ game.getAction().checkGameOverCondition(); }catch(Throwable rx){} return; } } };
       if(!"false".equals(System.getProperty("sisko.concede"))) game.subscribeToEvents(new Object(){
