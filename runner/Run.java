@@ -89,16 +89,23 @@ public class Run {
       // table concedes. Token engines otherwise grow boards of hundreds or thousands of creatures that the AI takes
       // minutes per turn to handle, and the game hits the time limit undecided. -Dsisko.concede=false turns it off.
       final boolean[] conceded={false};
-      if(!"false".equals(System.getProperty("sisko.concede"))) game.subscribeToEvents(new Object(){ @com.google.common.eventbus.Subscribe public void runaway(forge.game.event.GameEventTurnPhase e){
+      // checked between phases, after every spell or ability resolves, and every 10 tokens created: token engines
+      // (Scute Swarm doubling) can grow a board by thousands within one phase
+      final int[] tokens={0};
+      final Runnable runaway=()->{
         if(game.isGameOver() || conceded[0]) return;
-        for(Player p:game.getPlayers()){ if(p.hasLost()) continue; int cr=0; long pow=0;
-          for(forge.game.card.Card c:p.getCreaturesInPlay()){ cr++; pow+=Math.max(0,c.getNetPower()); }
-          if(cr<40) continue;
-          long life=0; int ocr=0; boolean any=false;
-          for(Player o:game.getPlayers()){ if(o==p || o.hasLost()) continue; any=true; life+=Math.max(1,o.getLife()); ocr+=o.getCreaturesInPlay().size(); }
-          if(any && pow>=3*life && cr>=4*ocr+10){ conceded[0]=true; System.out.println("CONCEDE "+p.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+cr+" power="+pow+" oppLife="+life+" oppCreatures="+ocr);
-            for(Player o:game.getPlayers()) if(o!=p && !o.hasLost()) o.concede();
-            try{ game.getAction().checkGameOverCondition(); }catch(Throwable x){} return; } } } });
+        for(Player rp:game.getPlayers()){ if(rp.hasLost()) continue; int rcr=0; long rpow=0;
+          for(forge.game.card.Card rc:rp.getCreaturesInPlay()){ rcr++; rpow+=Math.max(0,rc.getNetPower()); }
+          if(rcr<40) continue;
+          long rlife=0; int rocr=0; boolean rany=false;
+          for(Player ro:game.getPlayers()){ if(ro==rp || ro.hasLost()) continue; rany=true; rlife+=Math.max(1,ro.getLife()); rocr+=ro.getCreaturesInPlay().size(); }
+          if(rany && rpow>=3*rlife && rcr>=4*rocr+10){ conceded[0]=true; System.out.println("CONCEDE "+rp.getName()+" turn="+game.getPhaseHandler().getTurn()+" creatures="+rcr+" power="+rpow+" oppLife="+rlife+" oppCreatures="+rocr);
+            for(Player ro:game.getPlayers()) if(ro!=rp && !ro.hasLost()) ro.concede();
+            try{ game.getAction().checkGameOverCondition(); }catch(Throwable rx){} return; } } };
+      if(!"false".equals(System.getProperty("sisko.concede"))) game.subscribeToEvents(new Object(){
+        @com.google.common.eventbus.Subscribe public void ph(forge.game.event.GameEventTurnPhase e){ runaway.run(); }
+        @com.google.common.eventbus.Subscribe public void res(forge.game.event.GameEventSpellResolved e){ runaway.run(); }
+        @com.google.common.eventbus.Subscribe public void tok(forge.game.event.GameEventTokenCreated e){ if(++tokens[0]%10==0) runaway.run(); } });
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
       if(!Boolean.getBoolean("full")) { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());   /* -Dfull=true: play every game to the end (power ladder needs every winner) */
