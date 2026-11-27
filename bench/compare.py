@@ -7,7 +7,7 @@ def load(f):
         m = pat.match(l.rstrip('\n'))
         if m: out[int(m.group(1))] = (m.group(2), m.group(3), m.group(5).strip(), int(m.group(4)))
     return out
-clist = {}; noans = collections.Counter(); answers = collections.Counter(); combo = collections.Counter(); combofail = collections.Counter(); combocards = collections.Counter(); conc = collections.Counter(); cut = collections.Counter(); won = collections.Counter()
+hold = collections.Counter(); rwipe = collections.Counter(); clist = {}; noans = collections.Counter(); answers = collections.Counter(); combo = collections.Counter(); combofail = collections.Counter(); combocards = collections.Counter(); conc = collections.Counter(); cut = collections.Counter(); won = collections.Counter()
 def deckname(f):
     for l in open(f, errors='ignore'):
         if l.startswith('POD '): return l[4:].strip().strip('[]').split(',')[0].strip()
@@ -51,12 +51,16 @@ for f in glob.glob('out/**/b*_*.log', recursive=True):
             answers[b] += 1
         elif l.startswith('COMBOFAIL '):
             combofail[b] += 1
+        elif l.startswith('CONCEDEHOLD '):
+            hold[b] += 1
+        elif l.startswith('RUNAWAYWIPE '):
+            rwipe[b] += 1
         elif l.startswith('CONCEDE '):
             conc[b] += 1
         elif l.startswith('LOOP '):
             loops[b] += 1; loopcards[l[5:].split(' | ')[0]] += 1
 for b in range(4):
-    print(f"- process {b}: {games[b]} games, {cut[b]} hit the time limit, {conc[b]} won by concession, {combo[b]} combo wins ({combofail[b]} broken in response, {answers[b]} answers tried, {noans[b]} threats with no answer in hand), tested deck won {won[b]}, {draws0[b]} loop draws ({100*draws0[b]/max(1,games[b]):.1f}%), {loops[b]} loops broken")
+    print(f"- process {b}: {games[b]} games, {cut[b]} hit the time limit, {conc[b]} won by concession ({hold[b]} games where a held wipe delayed it, {rwipe[b]} wipes cast at a runaway board), {combo[b]} combo wins ({combofail[b]} broken in response, {answers[b]} answers tried, {noans[b]} threats with no answer in hand), tested deck won {won[b]}, {draws0[b]} loop draws ({100*draws0[b]/max(1,games[b]):.1f}%), {loops[b]} loops broken")
 print("abilities dropped:", loopcards.most_common(12))
 print("combos that won:", combocards.most_common(15))
 print("combos per deck:", clist)

@@ -15,6 +15,7 @@ JAVA=java; JX=""; [ -n "${JAVA_HOME_25_X64:-}" ] && { JAVA="$JAVA_HOME_25_X64/bi
 mkdir -p out
 for b in 0 1 2 3; do
   CP="runner-classes:lib-base/*"; X=""
+  [ $b -eq 0 ] && X="${FLAG0:-}"
   [ $b -eq 1 ] && X="${FLAG1:-}"
   [ $b -eq 2 ] && { CP="runner-classes:lib-cand/*"; X="${CAND_FLAGS:-}"; }
   [ $b -eq 3 ] && { CP="runner-classes:lib-cand/*"; X="$FLAG3"; }

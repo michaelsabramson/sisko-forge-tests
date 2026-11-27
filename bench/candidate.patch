@@ -1,3 +1,20 @@
+diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
+index 214f5f29..5b16081f 100644
+--- a/forge-ai/src/main/java/forge/ai/AiController.java
++++ b/forge-ai/src/main/java/forge/ai/AiController.java
+@@ -1885,6 +1885,12 @@ public class AiController {
+             return null; // nothing to do before the first main phase
+         }
+ 
++        // local testing patch: facing a runaway board, cast the board wipe in hand (RunawayWipe)
++        final SpellAbility wipe = RunawayWipe.wipeNow(player);
++        if (wipe != null) {
++            return singleSpellAbilityList(wipe);
++        }
++
+         // local testing patch: a known game-winning combo that is assembled goes on the stack (ComboShortcut)
+         final SpellAbility combo = ComboShortcut.live(player);
+         if (combo != null) {
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 index f96b1b48..ab974487 100644
 --- a/forge-ai/src/main/java/forge/ai/ComboShortcut.java
@@ -300,3 +317,91 @@ index f96b1b48..ab974487 100644
                          o.loseConditionMet(GameLossReason.SpellEffect, "Combo: " + combo.result);
                      }
                  }
+diff --git a/forge-ai/src/main/java/forge/ai/RunawayWipe.java b/forge-ai/src/main/java/forge/ai/RunawayWipe.java
+new file mode 100644
+index 00000000..e763b845
+--- /dev/null
++++ b/forge-ai/src/main/java/forge/ai/RunawayWipe.java
+@@ -0,0 +1,82 @@
++package forge.ai;
++
++import forge.game.Game;
++import forge.game.ability.ApiType;
++import forge.game.card.Card;
++import forge.game.phase.PhaseHandler;
++import forge.game.player.Player;
++import forge.game.spellability.SpellAbility;
++import forge.game.zone.ZoneType;
++
++/**
++ * Local testing patch: facing a runaway board (an opponent with dozens of creatures and far more than this player has),
++ * the AI casts the board wipe it holds in its main phase instead of saving it. The runner won't let a runaway board win
++ * by concession while a wipe is held (Run.wipeHeld), so a held wipe would otherwise leave the game crawling through
++ * combats with hundreds of creatures. Thresholds follow the runner's concession settings (-Dsisko.concedeMin, Ratio).
++ */
++public final class RunawayWipe {
++    private RunawayWipe() { }
++
++    static boolean isWipe(final SpellAbility sa) {
++        for (SpellAbility s = sa; s != null; s = s.getSubAbility()) {
++            final ApiType api = s.getApi();
++            if (api == null) {
++                continue;
++            }
++            if (api == ApiType.DestroyAll || api == ApiType.DamageAll || api == ApiType.SacrificeAll
++                    || (api == ApiType.ChangeZoneAll && "Battlefield".equals(s.getParam("Origin")))
++                    || (api == ApiType.PumpAll && String.valueOf(s.getParam("NumDef")).startsWith("-"))) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    private static boolean facingRunaway(final Player ai) {
++        final int min = Integer.getInteger("sisko.concedeMin", 40);
++        final double ratio = Double.parseDouble(System.getProperty("sisko.concedeRatio", "4"));
++        final int mine = ai.getCreaturesInPlay().size();
++        for (Player o : ai.getOpponents()) {
++            if (o.hasLost()) {
++                continue;
++            }
++            final int theirs = o.getCreaturesInPlay().size();
++            if (theirs >= min && theirs >= ratio * mine + 10) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    /** A board wipe to cast now, or null. */
++    public static SpellAbility wipeNow(final Player ai) {
++        if (!Boolean.getBoolean("sisko.runawayWipe")) {
++            return null;
++        }
++        final Game game = ai.getGame();
++        final PhaseHandler ph = game.getPhaseHandler();
++        if (!ph.isPlayerTurn(ai) || ph.getPhase() == null || !ph.getPhase().isMain() || !game.getStack().isEmpty()) {
++            return null;
++        }
++        if (!facingRunaway(ai)) {
++            return null;
++        }
++        for (Card c : ai.getCardsIn(ZoneType.Hand)) {
++            for (SpellAbility sa : c.getSpellAbilities()) {
++                if (!isWipe(sa) || sa.usesTargeting()) {
++                    continue;
++                }
++                sa.setActivatingPlayer(ai);
++                try {
++                    if (sa.canPlay() && ComputerUtilCost.canPayCost(sa, ai, false) && ComputerUtilMana.canPayManaCost(sa, ai, 0, false)) {
++                        System.out.println("RUNAWAYWIPE " + ai.getName() + " | " + c.getName());
++                        return sa;
++                    }
++                } catch (RuntimeException e) {
++                    // can't evaluate: skip
++                }
++            }
++        }
++        return null;
++    }
++}
