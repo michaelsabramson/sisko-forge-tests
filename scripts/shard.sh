@@ -65,6 +65,9 @@ start_proc() {   # slot, arm, generation (0 = the run's first assignment; 1+ = a
   # (Moldervine Reclamation as 60 tokens die) finish
   # -Dsisko.comboShortcut (forge.patch, ComboShortcut): known winning combos (decks/combos.txt, from Commander Spellbook
   # via scripts/fetchcombos.py + combolist.py) go on the stack once assembled; opponents can answer; resolves = win
+  # combos.txt.gz: Commander Spellbook's whole database (scripts/combodb.py, combolist.py); payoffs.txt: engine payoffs
+  # (scripts/payoffs.py). -Dsisko.runawayWipe: the AI casts a held board wipe at a runaway board. Concession at 2x power /
+  # 3x creatures, held while an opponent can cast a wipe (bench 2026-11-27: fewest time-limit hits, win rates unchanged)
   JV=",$(jq -r ".arms[$i].jvm // .jvm // \"j25,xms\"" $REQ),"; JX=""; JAVA=java
   case $JV in *,gc1,*) JX="$JX -XX:ParallelGCThreads=1";; esac
   case $JV in *,xms,*) JX="$JX -Xms3g";; esac
@@ -92,7 +95,7 @@ start_proc() {   # slot, arm, generation (0 = the run's first assignment; 1+ = a
   elif [ "$Q" -gt 0 ] 2>/dev/null; then
     POOL="-Dpool=out/pool_$i -DpoolMax=$((Q*M))"
   fi
-  timeout $TO $JAVA -Xmx3g -XX:+UseParallelGC -XX:-DontCompileHugeMethods -Dsisko.breakLoops=true -Dsisko.loopLimit=200 -Dsisko.comboShortcut=true -Dsisko.combos=decks/combos.txt $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $SEED $GT nolog $(dk $D) $AO > out/$LOGN.log 2>out/$LOGN.err &
+  timeout $TO $JAVA -Xmx3g -XX:+UseParallelGC -XX:-DontCompileHugeMethods -Dsisko.breakLoops=true -Dsisko.loopLimit=200 -Dsisko.comboShortcut=true -Dsisko.combos=decks/combos.txt.gz -Dsisko.payoffs=decks/payoffs.txt -Dsisko.runawayWipe=true -Dsisko.concedePower=2 -Dsisko.concedeRatio=3 $JX -Dsisko.profile=$PROF -Dsisko.oppProfile=$OPROF -Dsisko.mc=$MC -Dsisko.oppMc=$OMC -DroundCap=$RC $PLAN $FULL $AUD $POOL -Dstart=$((k*1000)) -DforceBand=$BAND "-Dstrat=$D=$C" -cp "$CP" Run $RES 1000 $SEED $GT nolog $(dk $D) $AO > out/$LOGN.log 2>out/$LOGN.err &
   PID[$p]=$!
 }
 declare -a PID; END=$(( $(date +%s) + MIN*60 ))

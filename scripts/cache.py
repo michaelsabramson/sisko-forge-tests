@@ -30,12 +30,12 @@ def deck_sig(name):
 
 # Bump when a runner change alters how games are played (logging-only changes don't need a bump),
 # then run scripts/cache_rekey.py only if old games are still valid under the new version.
-RUNNER_VERSION = "runner-5"   # runner-5: no concession while an opponent holds a board wipe; runner-4: runner-4: the concession check also runs as spells resolve and tokens are made; runner-3: a runaway board wins by concession (sisko.concede); runner-2: package rotation; audit logging and ending games once the tracked deck is out added without a bump (results unchanged)
+RUNNER_VERSION = "runner-6"   # runner-6: concession at 2x power / 3x creatures; runner-5: runner-5: no concession while an opponent holds a board wipe; runner-4: runner-4: the concession check also runs as spells resolve and tokens are made; runner-3: a runaway board wins by concession (sisko.concede); runner-2: package rotation; audit logging and ending games once the tracked deck is out added without a bump (results unchanged)
 
 
 def engine_sig():
     parts = [open(p, "rb").read() for p in ("FORGE_COMMIT", "forge.patch")]
-    for extra in ("decks/combos.txt",):   # the combos the engine plays out (ComboShortcut; full set in testing: combos.txt.gz)
+    for extra in ("decks/combos.txt.gz", "decks/payoffs.txt"):   # the combos the engine plays out (ComboShortcut)
         try:
             parts.append(open(extra, "rb").read())
         except FileNotFoundError:

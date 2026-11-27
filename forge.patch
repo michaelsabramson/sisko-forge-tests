@@ -15,7 +15,7 @@ index 4dfcdd59..a98cff4d 100644
          List<Card> possibleBlockers = ai.getCreaturesInPlay();
          if (excludedBlockers != null && !excludedBlockers.isEmpty()) {
 diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
-index 2d74bcf6..214f5f29 100644
+index 2d74bcf6..5b16081f 100644
 --- a/forge-ai/src/main/java/forge/ai/AiController.java
 +++ b/forge-ai/src/main/java/forge/ai/AiController.java
 @@ -990,7 +990,10 @@ public class AiController {
@@ -53,7 +53,7 @@ index 2d74bcf6..214f5f29 100644
          // if invalid: just try an attack declaration that we know to be legal
          if (!CombatUtil.validateAttackers(combat)) {
              // only this player's attackers are replaced, so a teammate's part of a team attack stays (CR 805.10b)
-@@ -1856,10 +1875,22 @@ public class AiController {
+@@ -1856,10 +1875,28 @@ public class AiController {
          // Reset priority mana reservation that's meant to work for one spell only
          memory.clearMemorySet(AiCardMemory.MemorySet.HELD_MANA_SOURCES_FOR_NEXT_SPELL);
  
@@ -67,6 +67,12 @@ index 2d74bcf6..214f5f29 100644
              return null; // nothing to do before the first main phase
          }
  
++        // local testing patch: facing a runaway board, cast the board wipe in hand (RunawayWipe)
++        final SpellAbility wipe = RunawayWipe.wipeNow(player);
++        if (wipe != null) {
++            return singleSpellAbilityList(wipe);
++        }
++
 +        // local testing patch: a known game-winning combo that is assembled goes on the stack (ComboShortcut)
 +        final SpellAbility combo = ComboShortcut.live(player);
 +        if (combo != null) {
@@ -78,10 +84,10 @@ index 2d74bcf6..214f5f29 100644
          }
 diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
 new file mode 100644
-index 00000000..f96b1b48
+index 00000000..ab974487
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
-@@ -0,0 +1,628 @@
+@@ -0,0 +1,825 @@
 +package forge.ai;
 +
 +import java.io.BufferedReader;
@@ -125,9 +131,12 @@ index 00000000..f96b1b48
 +    private static final class Combo {
 +        final String id, result, mana, description; final List<Piece> pieces; final Set<String> hate;
 +        final Map<String, String> reqs;
-+        Combo(String id, String result, String mana, List<Piece> pieces, Set<String> hate, String description, Map<String, String> reqs) {
++        /** "win" (every opponent loses), "one" (one opponent loses) or "engine:<classes>" (needs a payoff: decks/payoffs.txt) */
++        final String kind;
++        Combo(String id, String result, String mana, List<Piece> pieces, Set<String> hate, String description, Map<String, String> reqs,
++              String kind) {
 +            this.id = id; this.result = result; this.mana = mana; this.pieces = pieces; this.hate = hate; this.description = description;
-+            this.reqs = reqs;
++            this.reqs = reqs; this.kind = kind;
 +        }
 +    }
 +
@@ -147,7 +156,9 @@ index 00000000..f96b1b48
 +            list = new ArrayList<>();
 +            final String path = System.getProperty("sisko.combos");
 +            if (path != null && !path.isEmpty()) {
-+                try (BufferedReader in = new BufferedReader(new FileReader(path))) {
++                try (BufferedReader in = new BufferedReader(new java.io.InputStreamReader(path.endsWith(".gz")
++                        ? new java.util.zip.GZIPInputStream(new java.io.FileInputStream(path), 1 << 16) : new java.io.FileInputStream(path),
++                        java.nio.charset.StandardCharsets.UTF_8))) {
 +                    String line;
 +                    while ((line = in.readLine()) != null) {
 +                        final String[] f = line.split("\t", -1);
@@ -191,7 +202,7 @@ index 00000000..f96b1b48
 +                        for (Piece piece : pieces) {
 +                            checked.add(sick != null && sick.contains(piece.name) ? new Piece(piece.name, piece.zones, true) : piece);
 +                        }
-+                        list.add(new Combo(f[0], f[1], f[2], checked, hate, f.length > 5 ? f[5] : f[1], reqs));
++                        list.add(new Combo(f[0], f[1], f[2], checked, hate, f.length > 5 ? f[5] : f[1], reqs, f.length > 7 && !f[7].isEmpty() ? f[7] : "win"));
 +                    }
 +                } catch (Exception e) {
 +                    System.err.println("ComboShortcut: can't read " + path + ": " + e);
@@ -200,6 +211,191 @@ index 00000000..f96b1b48
 +            combos = list;
 +            return list;
 +        }
++    }
++
++    /** payoff name -> {classes, zone} (decks/payoffs.txt via -Dsisko.payoffs) */
++    private static volatile Map<String, String[]> payoffs;
++
++    private static Map<String, String[]> payoffs() {
++        Map<String, String[]> m = payoffs;
++        if (m != null) {
++            return m;
++        }
++        synchronized (ComboShortcut.class) {
++            if (payoffs != null) {
++                return payoffs;
++            }
++            m = new HashMap<>();
++            final String path = System.getProperty("sisko.payoffs");
++            if (path != null && !path.isEmpty()) {
++                try (BufferedReader in = new BufferedReader(new FileReader(path))) {
++                    String line;
++                    while ((line = in.readLine()) != null) {
++                        final String[] f = line.split("\t", -1);
++                        if (f.length >= 3) {
++                            m.put(f[0], new String[] {f[1], f[2]});
++                        }
++                    }
++                } catch (Exception e) {
++                    System.err.println("ComboShortcut: can't read " + path + ": " + e);
++                }
++            }
++            payoffs = m;
++            return m;
++        }
++    }
++
++    /** game id + player id -> the combos that player's cards can make (filtered once per game) */
++    private static final Map<String, List<Combo>> byPlayer = Collections.synchronizedMap(new HashMap<>());
++
++    /**
++     * The combos one player's cards can make: database combos whose named pieces are all among the cards the player
++     * owns this game (and whose generic pieces some owned card fits), plus every engine combo joined with each payoff
++     * the player owns that fits what the engine makes (infinite death triggers + Blood Artist, infinite mana + Banefire).
++     */
++    private static List<Combo> combos(final Player p) {
++        final String key = p.getGame().getId() + ":" + p.getId();
++        final List<Combo> cached = byPlayer.get(key);
++        if (cached != null) {
++            return cached;
++        }
++        final Set<String> owned = new HashSet<>();
++        final List<Card> ownedCards = new ArrayList<>();
++        for (Card c : p.getGame().getCardsInGame()) {
++            if (c.getOwner() == p && !c.isToken()) {
++                ownedCards.add(c);
++                owned.add(c.getName());
++                final String n = c.getName();
++                final int split = n.indexOf(" // ");
++                if (split > 0) {
++                    owned.add(n.substring(0, split));
++                }
++                try {
++                    owned.add(c.getState(forge.card.CardStateName.Original).getName());
++                } catch (RuntimeException e) {
++                    // no original state
++                }
++            }
++        }
++        final List<Combo> mine = new ArrayList<>();
++        final List<Combo> engines = new ArrayList<>();
++        outer:
++        for (Combo combo : combos()) {
++            for (Piece piece : combo.pieces) {
++                if (piece.name.startsWith("#")) {
++                    boolean fits = false;
++                    for (Card c : ownedCards) {
++                        if (fitsTemplate(c, piece.name)) {
++                            fits = true;
++                            break;
++                        }
++                    }
++                    if (!fits) {
++                        continue outer;
++                    }
++                } else if (!owned.contains(piece.name)) {
++                    continue outer;
++                }
++            }
++            if (combo.kind.startsWith("engine:")) {
++                engines.add(combo);
++            } else {
++                mine.add(combo);
++            }
++        }
++        final Map<String, String[]> pay = payoffs();
++        int composed = 0;
++        for (Combo engine : engines) {
++            final String[] classes = engine.kind.substring(7).split(",");
++            for (Map.Entry<String, String[]> e : pay.entrySet()) {
++                if (!owned.contains(e.getKey()) || composed > 4000) {
++                    continue;
++                }
++                String matched = null;
++                for (String cls : classes) {
++                    if (("," + e.getValue()[0] + ",").contains("," + cls + ",")) {
++                        matched = cls;
++                        break;
++                    }
++                }
++                if (matched == null) {
++                    continue;
++                }
++                boolean already = false;
++                for (Piece piece : engine.pieces) {
++                    if (piece.name.equals(e.getKey())) {
++                        already = true;
++                    }
++                }
++                if (already) {
++                    continue;
++                }
++                final List<Piece> pieces = new ArrayList<>(engine.pieces);
++                pieces.add(new Piece(e.getKey(), e.getValue()[1], false));
++                mine.add(new Combo(engine.id + "+" + e.getKey(), "Infinite " + matched + " + " + e.getKey(), engine.mana, pieces,
++                        engine.hate, engine.description + " + " + e.getKey(), engine.reqs, "win"));
++                composed++;
++            }
++        }
++        byPlayer.put(key, mine);
++        System.out.println("COMBOLIST " + p.getName() + " | " + (mine.size() - composed) + " combos, " + composed + " engine + payoff");
++        return mine;
++    }
++
++    /** Generic pieces ("#kw:Persist", "#type:Zombie,mv<=3", "#artifact,mv=0", ...): does this card fit? */
++    private static boolean fitsTemplate(final Card c, final String template) {
++        for (String cond : template.substring(1).split(",")) {
++            if (cond.startsWith("kw:")) {
++                boolean any = false;
++                for (String kw : cond.substring(3).split("\\|")) {
++                    try {
++                        if (c.hasKeyword(forge.game.keyword.Keyword.valueOf(kw.toUpperCase()))) {
++                            any = true;
++                        }
++                    } catch (IllegalArgumentException e) {
++                        // unknown keyword
++                    }
++                }
++                if (!any) {
++                    return false;
++                }
++            } else if (cond.startsWith("type:")) {
++                boolean any = false;
++                for (String t : cond.substring(5).split("\\|")) {
++                    if (c.getType().hasCreatureType(t) || c.getType().hasSubtype(t)) {
++                        any = true;
++                    }
++                }
++                if (!any || !c.isCreature()) {
++                    return false;
++                }
++            } else if (cond.startsWith("mv<=")) {
++                if (c.getCMC() > num(cond.substring(4), 0)) {
++                    return false;
++                }
++            } else if (cond.startsWith("mv=")) {
++                if (c.getCMC() != num(cond.substring(3), 0)) {
++                    return false;
++                }
++            } else if ("artifact".equals(cond)) {
++                if (!c.isArtifact()) {
++                    return false;
++                }
++            } else if ("noncreatureartifact".equals(cond)) {
++                if (!c.isArtifact() || c.isCreature()) {
++                    return false;
++                }
++            } else if ("creature".equals(cond)) {
++                if (!c.isCreature()) {
++                    return false;
++                }
++            } else if ("colored".equals(cond)) {
++                if (c.getColor().isColorless()) {
++                    return false;
++                }
++            }
++        }
++        return true;
 +    }
 +
 +    private static boolean nameMatches(final Card c, final String name) {
@@ -219,7 +415,7 @@ index 00000000..f96b1b48
 +                default: continue;
 +            }
 +            for (Card c : p.getCardsIn(zone)) {
-+                if (!nameMatches(c, piece.name)) {
++                if (piece.name.startsWith("#") ? !fitsTemplate(c, piece.name) : !nameMatches(c, piece.name)) {
 +                    continue;
 +                }
 +                if (zone == ZoneType.Battlefield && piece.noSickness && c.isSick()) {
@@ -412,7 +608,7 @@ index 00000000..f96b1b48
 +        if (!Boolean.getBoolean("sisko.comboShortcut")) {
 +            return null;
 +        }
-+        for (final Combo combo : combos()) {
++        for (final Combo combo : combos(ai)) {
 +            Piece missing = null;
 +            int absent = 0;
 +            for (Piece piece : combo.pieces) {
@@ -451,7 +647,7 @@ index 00000000..f96b1b48
 +        int bestCount = 0;
 +        for (Card c : choices) {
 +            int count = 0;
-+            for (final Combo combo : combos()) {
++            for (final Combo combo : combos(ai)) {
 +                int absent = 0;
 +                boolean has = false;
 +                for (Piece piece : combo.pieces) {
@@ -480,7 +676,7 @@ index 00000000..f96b1b48
 +        if (!Boolean.getBoolean("sisko.comboShortcut")) {
 +            return null;
 +        }
-+        final List<Combo> list = combos();
++        final List<Combo> list = combos(ai);
 +        if (list.isEmpty()) {
 +            return null;
 +        }
@@ -548,7 +744,7 @@ index 00000000..f96b1b48
 +
 +    /** Is this card the last missing piece of one of p's combos? */
 +    private static boolean isLastPiece(final Player p, final Card card) {
-+        for (Combo combo : combos()) {
++        for (Combo combo : combos(p)) {
 +            final List<Piece> m = missing(p, combo);
 +            if (m.size() == 1 && nameMatches(card, m.get(0).name)) {
 +                return true;
@@ -564,7 +760,7 @@ index 00000000..f96b1b48
 +            if (o.hasLost()) {
 +                continue;
 +            }
-+            for (Combo combo : combos()) {
++            for (Combo combo : combos(o)) {
 +                if (missing(o, combo).size() > 1) {
 +                    continue;
 +                }
@@ -697,8 +893,15 @@ index 00000000..f96b1b48
 +                }
 +                System.out.println("COMBO " + me.getName() + " | " + pieces + " | " + combo.result + " | turn "
 +                        + me.getGame().getPhaseHandler().getTurn());
++                Player strongest = null;
++                for (Player o : me.getOpponents()) {
++                    if (!o.hasLost() && (strongest == null || o.getLife() > strongest.getLife())) {
++                        strongest = o;
++                    }
++                }
 +                for (Player o : new ArrayList<>(me.getOpponents())) {
-+                    if (!o.hasLost()) {
++                    // a combo that only kills one opponent takes out the one with the most life
++                    if (!o.hasLost() && (!"one".equals(combo.kind) || o == strongest)) {
 +                        o.loseConditionMet(GameLossReason.SpellEffect, "Combo: " + combo.result);
 +                    }
 +                }
@@ -759,6 +962,94 @@ index 288f00aa..81a96dcb 100644
          root.setXManaCostPaid(x);
          return x;
      }
+diff --git a/forge-ai/src/main/java/forge/ai/RunawayWipe.java b/forge-ai/src/main/java/forge/ai/RunawayWipe.java
+new file mode 100644
+index 00000000..e763b845
+--- /dev/null
++++ b/forge-ai/src/main/java/forge/ai/RunawayWipe.java
+@@ -0,0 +1,82 @@
++package forge.ai;
++
++import forge.game.Game;
++import forge.game.ability.ApiType;
++import forge.game.card.Card;
++import forge.game.phase.PhaseHandler;
++import forge.game.player.Player;
++import forge.game.spellability.SpellAbility;
++import forge.game.zone.ZoneType;
++
++/**
++ * Local testing patch: facing a runaway board (an opponent with dozens of creatures and far more than this player has),
++ * the AI casts the board wipe it holds in its main phase instead of saving it. The runner won't let a runaway board win
++ * by concession while a wipe is held (Run.wipeHeld), so a held wipe would otherwise leave the game crawling through
++ * combats with hundreds of creatures. Thresholds follow the runner's concession settings (-Dsisko.concedeMin, Ratio).
++ */
++public final class RunawayWipe {
++    private RunawayWipe() { }
++
++    static boolean isWipe(final SpellAbility sa) {
++        for (SpellAbility s = sa; s != null; s = s.getSubAbility()) {
++            final ApiType api = s.getApi();
++            if (api == null) {
++                continue;
++            }
++            if (api == ApiType.DestroyAll || api == ApiType.DamageAll || api == ApiType.SacrificeAll
++                    || (api == ApiType.ChangeZoneAll && "Battlefield".equals(s.getParam("Origin")))
++                    || (api == ApiType.PumpAll && String.valueOf(s.getParam("NumDef")).startsWith("-"))) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    private static boolean facingRunaway(final Player ai) {
++        final int min = Integer.getInteger("sisko.concedeMin", 40);
++        final double ratio = Double.parseDouble(System.getProperty("sisko.concedeRatio", "4"));
++        final int mine = ai.getCreaturesInPlay().size();
++        for (Player o : ai.getOpponents()) {
++            if (o.hasLost()) {
++                continue;
++            }
++            final int theirs = o.getCreaturesInPlay().size();
++            if (theirs >= min && theirs >= ratio * mine + 10) {
++                return true;
++            }
++        }
++        return false;
++    }
++
++    /** A board wipe to cast now, or null. */
++    public static SpellAbility wipeNow(final Player ai) {
++        if (!Boolean.getBoolean("sisko.runawayWipe")) {
++            return null;
++        }
++        final Game game = ai.getGame();
++        final PhaseHandler ph = game.getPhaseHandler();
++        if (!ph.isPlayerTurn(ai) || ph.getPhase() == null || !ph.getPhase().isMain() || !game.getStack().isEmpty()) {
++            return null;
++        }
++        if (!facingRunaway(ai)) {
++            return null;
++        }
++        for (Card c : ai.getCardsIn(ZoneType.Hand)) {
++            for (SpellAbility sa : c.getSpellAbilities()) {
++                if (!isWipe(sa) || sa.usesTargeting()) {
++                    continue;
++                }
++                sa.setActivatingPlayer(ai);
++                try {
++                    if (sa.canPlay() && ComputerUtilCost.canPayCost(sa, ai, false) && ComputerUtilMana.canPayManaCost(sa, ai, 0, false)) {
++                        System.out.println("RUNAWAYWIPE " + ai.getName() + " | " + c.getName());
++                        return sa;
++                    }
++                } catch (RuntimeException e) {
++                    // can't evaluate: skip
++                }
++            }
++        }
++        return null;
++    }
++}
 diff --git a/forge-ai/src/main/java/forge/ai/ability/AttachAi.java b/forge-ai/src/main/java/forge/ai/ability/AttachAi.java
 index 60a19966..803cd2f0 100644
 --- a/forge-ai/src/main/java/forge/ai/ability/AttachAi.java
