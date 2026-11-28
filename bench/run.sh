@@ -19,8 +19,11 @@ for b in 0 1 2 3; do
   [ $b -eq 1 ] && X="${FLAG1:-}"
   [ $b -eq 2 ] && { CP="runner-classes:lib-cand/*"; X="${CAND_FLAGS:-}"; }
   [ $b -eq 3 ] && { CP="runner-classes:lib-cand/*"; X="$FLAG3"; }
+  SD=$SEED
+  # combat diagnostics: four different-seed copies of the live engine and settings, full games, COMBAT lines on
+  [ "${BENCH_MODE:-}" = combat ] && { CP="runner-classes:lib-base/*"; SD=$((SEED + b*100003)); X="-Dsisko.combatLog=true -Dfull=true -Dsisko.loopLimit=200 -Dsisko.comboShortcut=true -Dsisko.combos=decks/combos.txt.gz -Dsisko.payoffs=decks/payoffs.txt -Dsisko.runawayWipe=true -Dsisko.concedePower=2 -Dsisko.concedeRatio=3"; }
   timeout ${MIN}m $JAVA -Xmx3g -Xms3g -XX:+UseParallelGC -XX:-DontCompileHugeMethods -Dsisko.breakLoops=true $JX -Dsisko.mc=off -Dsisko.oppMc=off $X -Daudit=$D \
-    -Dstart=0 -cp "$CP" Run $RES 1000 $SEED 900 nolog $(dk $D) $OPP > out/b${b}_$S.log 2> out/b${b}_$S.err &
+    -Dstart=0 -cp "$CP" Run $RES 1000 $SD 900 nolog $(dk $D) $OPP > out/b${b}_$S.log 2> out/b${b}_$S.err &
 done
 wait
 echo "$(grep -c '^G' out/b0_$S.log) $(grep -c '^G' out/b1_$S.log) $(grep -c '^G' out/b2_$S.log) $(grep -c '^G' out/b3_$S.log) games (b0 b1 b2 b3), deck $D"

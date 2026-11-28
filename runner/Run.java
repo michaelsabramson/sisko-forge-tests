@@ -133,6 +133,44 @@ public class Run {
         @com.google.common.eventbus.Subscribe public void ph(forge.game.event.GameEventTurnPhase e){ runaway.run(); }
         @com.google.common.eventbus.Subscribe public void res(forge.game.event.GameEventSpellResolved e){ runaway.run(); }
         @com.google.common.eventbus.Subscribe public void tok(forge.game.event.GameEventTokenCreated e){ if(++tokens[0]%10==0) runaway.run(); } });
+      /* -Dsisko.combatLog=true: diagnostics only (no effect on play). One COMBAT line per player turn: who could attack,
+         who was attacked, every opponent's state at the start of combat (life, Forge's threat score, untapped blockers
+         and their power, total board power), and what combat did. bench/combat.py summarises the lines. */
+      if(Boolean.getBoolean("sisko.combatLog")) game.subscribeToEvents(new Object(){
+        Player act; String snap; int able; long ablePow; Map<Player,Integer> life0=new HashMap<>();
+        Set<forge.game.card.Card> atk=new HashSet<>(), blk=new HashSet<>(); Map<String,Integer> tgt=new TreeMap<>(); long attPow; boolean done;
+        String nm(Player p){ return p.getName().replace(' ','_'); }
+        void flush(){
+          if(act==null || done) return; done=true;
+          if(snap==null) take();
+          int dmg=0; StringBuilder lethalKill=new StringBuilder();
+          for(Map.Entry<Player,Integer> en:life0.entrySet()){ int d=en.getValue()-en.getKey().getLife(); if(d>0) dmg+=d; }
+          int ad=0, bd=0; for(forge.game.card.Card c:atk) if(!c.isInPlay()) ad++; for(forge.game.card.Card c:blk) if(!c.isInPlay()) bd++;
+          StringBuilder tg=new StringBuilder(); for(Map.Entry<String,Integer> en:tgt.entrySet()) tg.append(tg.length()>0?",":"").append(en.getKey()).append(':').append(en.getValue());
+          StringBuilder dead=new StringBuilder(); for(Player o:life0.keySet()) if(o.hasLost()) dead.append(dead.length()>0?",":"").append(nm(o));
+          System.out.println("COMBAT t="+game.getPhaseHandler().getTurn()+" p="+nm(act)+" able="+able+" ablePow="+ablePow+" att="+atk.size()+" attPow="+attPow
+            +" tgt="+(tg.length()>0?tg:"-")+" dmg="+dmg+" attDied="+ad+" blocks="+blk.size()+" blkDied="+bd+" dead="+(dead.length()>0?dead:"-")+" opps="+snap); }
+        void take(){   // the board at the start of combat
+          able=0; ablePow=0; for(forge.game.card.Card c:act.getCreaturesInPlay()){ boolean ok; try{ ok=forge.game.combat.CombatUtil.canAttack(c); }catch(Throwable x){ ok=!c.isTapped() && !c.isSick(); }
+            if(ok){ able++; ablePow+=Math.max(0,c.getNetCombatDamage()); } }
+          StringBuilder sb=new StringBuilder(); life0.clear();
+          for(Player o:game.getPlayers()){ if(o==act || o.hasLost()) continue; life0.put(o,o.getLife());
+            int bl=0; long blPow=0, bp=0; for(forge.game.card.Card c:o.getCreaturesInPlay()){ bp+=Math.max(0,c.getNetPower()); boolean cb; try{ cb=forge.game.combat.CombatUtil.canBlock(c); }catch(Throwable x){ cb=!c.isTapped(); } if(cb){ bl++; blPow+=Math.max(0,c.getNetPower()); } }
+            int th; try{ th=forge.ai.ComputerUtil.evaluateBoardPosition(act,o); }catch(Throwable x){ th=-1; }
+            sb.append(sb.length()>0?",":"").append(nm(o)).append(':').append(o.getLife()).append(':').append(th).append(':').append(bl).append(':').append(blPow).append(':').append(bp).append(':').append(o.getCreaturesInPlay().size()); }
+          snap=sb.length()>0?sb.toString():"-"; }
+        @com.google.common.eventbus.Subscribe public void tb(forge.game.event.GameEventTurnBegan e){ flush();
+          act=game.getPhaseHandler().getPlayerTurn(); snap=null; done=false; atk.clear(); blk.clear(); tgt.clear(); attPow=0; life0.clear(); }
+        @com.google.common.eventbus.Subscribe public void ph(forge.game.event.GameEventTurnPhase e){ if(act==null || done) return;
+          forge.game.phase.PhaseType t=game.getPhaseHandler().getPhase();
+          if(snap==null && (t==forge.game.phase.PhaseType.COMBAT_BEGIN || t==forge.game.phase.PhaseType.COMBAT_DECLARE_ATTACKERS || t==forge.game.phase.PhaseType.MAIN2)) take();
+          if(t==forge.game.phase.PhaseType.END_OF_TURN) flush(); }
+        @com.google.common.eventbus.Subscribe public void ad(forge.game.event.GameEventAttackersDeclared e){
+          forge.game.combat.Combat cb=game.getCombat(); if(cb==null || act==null) return; if(snap==null) take();
+          for(forge.game.card.Card c:cb.getAttackers()){ if(!atk.add(c)) continue; attPow+=Math.max(0,c.getNetCombatDamage()); Player d=cb.getDefenderPlayerByAttacker(c); tgt.merge(d==null?"?":nm(d),1,Integer::sum); } }
+        @com.google.common.eventbus.Subscribe public void bd(forge.game.event.GameEventBlockersDeclared e){
+          forge.game.combat.Combat cb=game.getCombat(); if(cb!=null) blk.addAll(cb.getAllBlockers()); }
+        @com.google.common.eventbus.Subscribe public void go(forge.game.event.GameEventGameOutcome e){ flush(); } });
       // end the game as soon as every tracked (fixed) deck is out: its result is already a loss, so nothing measured changes
       final boolean[] trackedOut={false};
       if(!Boolean.getBoolean("full")) { final Set<String> mine=new HashSet<>(); for(Deck d:ds.subList(0,fixedN)) mine.add(d.getName());   /* -Dfull=true: play every game to the end (power ladder needs every winner) */

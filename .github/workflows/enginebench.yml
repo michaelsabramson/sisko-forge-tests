@@ -11,7 +11,7 @@ on:
       decks: { description: 'tested decks (space-separated)', default: 'SiskoFinal Ironman NorinB3 Kess' }
       flag0: { description: 'JVM options for process 0 (current engine)', default: '' }
       flag1: { description: 'JVM options for process 1 (current engine)', default: '' }
-      mode: { description: 'bench (A/B) or profile (slow token-deck games)', default: 'bench' }
+      mode: { description: 'bench (A/B), profile (slow token-deck games) or combat (combat-decision diagnostics)', default: 'bench' }
       cand_flags: { description: 'JVM options for the candidate engine (process 2)', default: '-Dsisko.breakLoops=true' }
 permissions:
   contents: read
@@ -80,7 +80,7 @@ jobs:
         with: { name: bench-build }
       - run: tar xzf bench.tgz
       - if: ${{ inputs.mode != 'profile' }}
-        run: BENCH_DECKS="${{ inputs.decks }}" FLAG0="${{ inputs.flag0 }}" FLAG1="${{ inputs.flag1 }}" CAND_FLAGS="${{ inputs.cand_flags }}" bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
+        run: BENCH_MODE="${{ inputs.mode }}" BENCH_DECKS="${{ inputs.decks }}" FLAG0="${{ inputs.flag0 }}" FLAG1="${{ inputs.flag1 }}" CAND_FLAGS="${{ inputs.cand_flags }}" bench/run.sh ${{ matrix.s }} ${{ inputs.minutes }} "${{ inputs.flag3 }}"
       - if: ${{ inputs.mode == 'profile' }}
         run: bench/profile.sh ${{ matrix.s }} ${{ inputs.minutes }}
       - uses: actions/upload-artifact@v4
@@ -96,8 +96,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { pattern: bench-out-*, path: out }
-      - if: ${{ inputs.mode != 'profile' }}
+      - if: ${{ inputs.mode == 'bench' }}
         run: python3 bench/compare.py | tee -a $GITHUB_STEP_SUMMARY
+      - if: ${{ inputs.mode == 'combat' }}
+        run: python3 bench/combat.py out | tee -a $GITHUB_STEP_SUMMARY
       - if: ${{ inputs.mode == 'profile' }}
         run: |
           python3 bench/slowstacks.py | tee -a $GITHUB_STEP_SUMMARY
