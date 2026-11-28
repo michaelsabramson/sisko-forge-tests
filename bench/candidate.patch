@@ -1,5 +1,5 @@
 diff --git a/forge-ai/src/main/java/forge/ai/AiBlockController.java b/forge-ai/src/main/java/forge/ai/AiBlockController.java
-index a98cff4d..9c29e30b 100644
+index a98cff4d..6e30e15f 100644
 --- a/forge-ai/src/main/java/forge/ai/AiBlockController.java
 +++ b/forge-ai/src/main/java/forge/ai/AiBlockController.java
 @@ -177,7 +177,7 @@ public class AiBlockController {
@@ -126,7 +126,7 @@ index a98cff4d..9c29e30b 100644
                      reinforceBlockersAgainstTrample(combat);
                  } else {
                      lifeInDanger = false;
-@@ -1345,7 +1345,21 @@ public class AiBlockController {
+@@ -1345,7 +1345,22 @@ public class AiBlockController {
          return first;
      }
  
@@ -143,6 +143,7 @@ index a98cff4d..9c29e30b 100644
 +        // unless losing the blocker leaves us dead to another opponent's swing next turn
 +        if (SmartCombat.blocks(ai)) {
 +            if (ComputerUtilCard.evaluateCreature(attacker, true, false) < ComputerUtilCard.evaluateCreature(blocker, true, false)) return false;
++            if (SmartCombat.precious(blocker) && !SmartCombat.leader(attacker.getController())) return false;
 +            return !SmartCombat.blockerNeeded(ai, blocker, attacker.getController());
 +        }
          // Determines if the AI would like to randomly trade its blocker for the attacker in given combat
@@ -178,12 +179,41 @@ index 5b16081f..6a60ac62 100644
  
              aiAtk.reinforceWithBanding(combat);
              // a creature for this attack commited
+diff --git a/forge-ai/src/main/java/forge/ai/ComboShortcut.java b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
+index ab974487..0d52766a 100644
+--- a/forge-ai/src/main/java/forge/ai/ComboShortcut.java
++++ b/forge-ai/src/main/java/forge/ai/ComboShortcut.java
+@@ -652,6 +652,24 @@ public final class ComboShortcut {
+         return out;
+     }
+ 
++    /** Is this card a piece of one of p's combos, or a payoff for its engines? (testing: blockers worth protecting) */
++    public static boolean isComboPiece(final Player p, final Card card) {
++        if (!enabled()) {
++            return false;
++        }
++        if (payoffs().containsKey(card.getName())) {
++            return true;
++        }
++        for (Combo combo : combos(p)) {
++            for (Piece piece : combo.pieces) {
++                if (piece.name.startsWith("#") ? fitsTemplate(card, piece.name) : nameMatches(card, piece.name)) {
++                    return true;
++                }
++            }
++        }
++        return false;
++    }
++
+     /** Is this card the last missing piece of one of p's combos? */
+     private static boolean isLastPiece(final Player p, final Card card) {
+         for (Combo combo : combos(p)) {
 diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
 new file mode 100644
-index 00000000..b3fd5b36
+index 00000000..ad2bd192
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
-@@ -0,0 +1,283 @@
+@@ -0,0 +1,312 @@
 +package forge.ai;
 +
 +import java.util.ArrayList;
@@ -211,7 +241,7 @@ index 00000000..b3fd5b36
 + * "Safe" = after attacking, the creatures left untapped at home (plus vigilance attackers) keep the strongest
 + * single opponent's all-out attack next turn below our life.
 + * Blocking (SmartBlock, hooked into AiBlockController): always take fair trades unless the blocker is needed against the
-+ * next player's swing; chump only when this combat would leave us dead to that swing (Forge: a fixed life threshold).
++ * next player's swing or is precious (commander, combo piece, engine) and the attacker isn't a runaway leader's; chump only when this combat would leave us dead to that swing (Forge: a fixed life threshold).
 + * Returns false (Forge's own attack logic then runs) when the declaration would be illegal, e.g. must-attack creatures.
 + */
 +public final class SmartCombat {
@@ -420,6 +450,35 @@ index 00000000..b3fd5b36
 +        List<Card> rest = new ArrayList<>(me.getCreaturesInPlay());
 +        rest.remove(blocker);
 +        return nextSwing(me, attackerCtrl, rest) >= me.getLife() && nextSwing(me, attackerCtrl, me.getCreaturesInPlay()) < me.getLife();
++    }
++
++    /** a creature worth more than its stats to its deck: the commander, a combo piece or payoff, or an engine
++     *  (a repeatable trigger, an effect on other permanents, or a non-mana activated ability). Not traded in a block. */
++    static boolean precious(Card c) {
++        if (c.isToken()) return false;
++        if (c.isCommander()) return true;
++        try { if (ComboShortcut.isComboPiece(c.getController(), c)) return true; } catch (Throwable t) { }
++        for (forge.game.trigger.Trigger t : c.getTriggers()) {
++            String vc = t.getParamOrDefault("ValidCard", "");
++            boolean selfOnly = vc.equals("Card.Self") && (t.getMode() == forge.game.trigger.TriggerType.ChangesZone
++                    || t.getMode() == forge.game.trigger.TriggerType.Attacks || t.getMode() == forge.game.trigger.TriggerType.DamageDone);
++            if (!selfOnly) return true;   // whenever another creature dies / you cast / at upkeep ...: an engine
++        }
++        for (forge.game.staticability.StaticAbility st : c.getStaticAbilities()) {
++            String aff = st.getParamOrDefault("Affected", st.getParamOrDefault("ValidCard", ""));
++            if (!aff.isEmpty() && !aff.equals("Card.Self")) return true;   // anthems, cost reducers, ...
++        }
++        for (forge.game.spellability.SpellAbility sa : c.getSpellAbilities()) {
++            if (sa.isActivatedAbility() && !sa.isManaAbility()) return true;
++        }
++        return false;
++    }
++
++    /** is the attacker's controller a runaway leader (board power 20+, double anyone else's)? Then precious blockers trade too. */
++    static boolean leader(Player q) {
++        int mine = boardPow(q), next = 0;
++        for (Player r : q.getGame().getPlayers()) if (r != q && !r.hasLost()) next = Math.max(next, boardPow(r));
++        return mine >= 20 && mine >= 2 * Math.max(1, next);
 +    }
 +
 +    static List<Card> attackersOf(Player q) {
