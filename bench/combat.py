@@ -22,6 +22,8 @@ def games(folder, proc="b"):
     for path in sorted(glob.glob(os.path.join(folder, "**", proc + "*_*.log"), recursive=True)):
         cur = []
         for line in open(path, errors="ignore"):
+            if line.startswith("SMART "):
+                SMART[line.split()[1]] += 1
             if line.startswith("COMBAT "):
                 kv = dict(x.split("=", 1) for x in line.split()[1:] if "=" in x)
                 kv["opps"] = parse_opps(kv.get("opps", "-"))
@@ -35,6 +37,8 @@ def games(folder, proc="b"):
                 m = re.search(r"winner=(\S+)", line)
                 yield cur, (m.group(1).replace(" ", "_") if m else None)
                 cur = []
+
+SMART = Counter()
 
 def pct(a, b):
     return f"{100 * a / b:.1f}%" if b else "n/a"
@@ -110,6 +114,8 @@ def main(folder, proc="b"):
     print("\n**What combat costs** (per attacking turn)")
     n = max(1, c['attTurns'])
     print(f"- {c['attackers'] / n:.1f} attackers, {sum(dmg) / n:.1f} life dealt, {c['attDied'] / n:.2f} attackers died, {c['blocks'] / n:.2f} blocks, {c['blkDied'] / n:.2f} blockers died")
+    if SMART:
+        print("\n**New attack planner decisions**: " + ", ".join(f"{k} {v}" for k, v in SMART.most_common()))
     print("\n**Picking the eventual winner** (rounds 4-10, among a player's opponents)")
     print(f"- Forge's threat score {pct(c['predThreat'], c['predN'])} · biggest board {pct(c['predBoard'], c['predN'])} · highest life {pct(c['predLife'], c['predN'])} · random {pct(c['predRand'], c['predN'])}")
 

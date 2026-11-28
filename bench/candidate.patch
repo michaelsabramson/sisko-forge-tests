@@ -28,10 +28,10 @@ index 5b16081f..630cf7ed 100644
              // a creature for this attack commited
 diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
 new file mode 100644
-index 00000000..c62b1683
+index 00000000..de0a1806
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
-@@ -0,0 +1,182 @@
+@@ -0,0 +1,223 @@
 +package forge.ai;
 +
 +import java.util.ArrayList;
@@ -48,8 +48,9 @@ index 00000000..c62b1683
 +/**
 + * Testing: a multiplayer attack planner (-Dsisko.smartCombat=all, or per player via AiController.smartCombat).
 + * Decides attacks the way a real Commander player tends to, in this order:
-+ *  1. lethal on any opponent, if what is left of the table can't kill us on the swing back
-+ *     (always when it is the last opponent, or when holding everything back wouldn't survive anyway);
++ *  1. lethal on any opponent, if what is left of the table can't kill us on the swing back (always on the last one);
++ *     when we're dead next turn whatever we hold back: kill the player who threatens us, else throw everything at
++ *     them to shrink their attack, else take any kill there is;
 + *  2. an open player (none of their blockers can block our spare attackers well): swing at them with the
 + *     creatures not needed at home;
 + *  3/4. otherwise only free attacks: a spare creature that no blocker of that player can kill in a block,
@@ -136,16 +137,45 @@ index 00000000..c62b1683
 +
 +        // 1. lethal on anyone, if the rest of the table can't kill us back
 +        opps.sort(Comparator.comparingInt(Player::getLife));
++        List<Player> killable = new ArrayList<>();
 +        for (Player o : opps) {
 +            if (!o.canLoseLife() || o.cantLoseForZeroOrLessLife()) continue;
-+            List<Card> a = new ArrayList<>();
-+            for (Card c : able) if (canAttack(c, o)) a.add(c);
++            List<Card> a = attackersFor(able, o);
 +            if (a.isEmpty() || unblocked(a, blockers(o)) < o.getLife()) continue;
++            killable.add(o);
 +            List<Player> rest = new ArrayList<>(opps); rest.remove(o);
 +            List<Card> home = new ArrayList<>();
 +            for (Card c : me.getCreaturesInPlay()) if (!a.contains(c) || c.hasKeyword(Keyword.VIGILANCE)) home.add(c);
-+            if (rest.isEmpty() || safe(me, home, rest) || !safe(me, me.getCreaturesInPlay(), rest)) {
++            if (rest.isEmpty() || safe(me, home, rest)) {
++                note("lethal");
 +                for (Card c : a) combat.addAttacker(c, o);
++                return validOrUndo(me, combat);
++            }
++        }
++        // doomed: even holding everything back, someone's swing next turn kills us. In order: kill the player who
++        // threatens us, else throw everything at them to shrink their attack, else take whatever kill there is.
++        if (!safe(me, me.getCreaturesInPlay(), opps)) {
++            Player threat = null; int worst = -1;
++            for (Player q : opps) {
++                List<Card> att = new ArrayList<>();
++                for (Card c : q.getCreaturesInPlay()) if (pow(c) > 0 && !c.hasKeyword(Keyword.DEFENDER)) att.add(c);
++                int d = unblocked(att, me.getCreaturesInPlay());
++                if (d > worst) { worst = d; threat = q; }
++            }
++            if (threat != null && killable.contains(threat)) {
++                note("doomed-kill-threat");
++                for (Card c : attackersFor(able, threat)) combat.addAttacker(c, threat);
++                return validOrUndo(me, combat);
++            }
++            if (threat != null && !attackersFor(able, threat).isEmpty()) {
++                note("doomed-attack-threat");
++                for (Card c : attackersFor(able, threat)) combat.addAttacker(c, threat);
++                return validOrUndo(me, combat);
++            }
++            if (!killable.isEmpty()) {
++                note("doomed-kill-other");
++                Player o = killable.get(0);
++                for (Card c : attackersFor(able, o)) combat.addAttacker(c, o);
 +                return validOrUndo(me, combat);
 +            }
 +        }
@@ -163,7 +193,7 @@ index 00000000..c62b1683
 +        } else {
 +            for (Card c : able) if (!home.contains(c) || c.hasKeyword(Keyword.VIGILANCE)) spare.add(c);
 +        }
-+        if (spare.isEmpty()) return validOrUndo(me, combat);
++        if (spare.isEmpty()) { note("hold"); return validOrUndo(me, combat); }
 +
 +        // 2. an open player: every spare attacker that can reach them attacks freely
 +        Player open = null; int openDmg = 0;
@@ -176,6 +206,7 @@ index 00000000..c62b1683
 +            if (d > openDmg) { open = o; openDmg = d; }
 +        }
 +        if (open != null) {
++            note("open");
 +            for (Card c : spare) if (canAttack(c, open)) combat.addAttacker(c, open);
 +            return validOrUndo(me, combat);
 +        }
@@ -187,6 +218,7 @@ index 00000000..c62b1683
 +        if (byBoard.size() > 1 && boardPow(byBoard.get(0)) >= 20 && boardPow(byBoard.get(0)) >= 2 * Math.max(1, boardPow(byBoard.get(1)))) leader = byBoard.get(0);
 +        List<Player> order = new ArrayList<>(opps);   // already lowest life first
 +        if (leader != null) { order.remove(leader); order.add(0, leader); }
++        note(leader != null ? "free-leader" : "free");
 +        for (Card c : spare) {
 +            for (Player o : order) {
 +                if (free(c, o, blockers(o))) { combat.addAttacker(c, o); break; }
@@ -194,6 +226,15 @@ index 00000000..c62b1683
 +        }
 +        return validOrUndo(me, combat);
 +    }
++
++    static List<Card> attackersFor(List<Card> able, Player o) {
++        List<Card> a = new ArrayList<>();
++        for (Card c : able) if (canAttack(c, o)) a.add(c);
++        return a;
++    }
++
++    static final boolean LOG = Boolean.getBoolean("sisko.combatLog");
++    static void note(String kind) { if (LOG) System.out.println("SMART " + kind); }
 +
 +    static List<Card> withVigilance(List<Card> home, List<Card> able) {
 +        List<Card> h = new ArrayList<>(home);
