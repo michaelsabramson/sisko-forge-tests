@@ -255,6 +255,7 @@ function parseResult(path, md) {
   const intro = (md.split('\n').find(l => l && !l.startsWith('#') && !l.startsWith('|')) || '');
   for (const g of gaps) g.pool ||= '3';
   const audit = dm ? JSON.parse(dm[1]).audit : null;
+  if (audit?.pace) { const a0 = JSON.parse(dm[1]).arms?.[0]; if (a0?.run_games) audit.pace.final = 100 * a0.run_clean_wins / a0.run_games; }   // share won once every game has ended
   let usage = dm ? JSON.parse(dm[1]).usage : null;
   if (!usage && md.includes('Card usage:')) {
     const cards = [];
@@ -330,7 +331,10 @@ function manaBalance(rows, games, curve, only) {
 function speedCurve(pace, pool, only) {
   if (!pace) return '';
   const R = pace.rounds.filter(r => r >= 6 && r <= 13), me = R.map(r => pace.won[pace.rounds.indexOf(r)]);
-  const par = S.par?.[pool], pr = par ? R.map(r => par.par[par.rounds.indexOf(r)]) : null;
+  const par = S.par?.[pool]; let pr = par ? R.map(r => par.par[par.rounds.indexOf(r)]) : null;
+  // a last "End" point: the share won once every game has ended (long games finish past the plotted rounds)
+  const fin = pace.final != null && (!pr || par.final != null);
+  if (fin) { R.push('End'); me.push(pace.final); if (pr) pr.push(par.final); }
   if (!pr || pr.some(v => v == null)) {   // no par line for this opponent pool yet: the deck's own curve
     if (only) return { cls: '', head: 'Win curve', say: 'No par line for this opponent pool yet.', win: me[me.length - 1], par: null };
     const W = 340, H = 140, pl = 30, pr2 = 8, pt = 8, pb = 22, ymax = Math.max(10, Math.ceil(Math.max(...me) / 10) * 10);
@@ -361,12 +365,13 @@ function speedCurve(pace, pool, only) {
     ${R.map((r, i) => i % 2 ? '' : `<text x="${x(i)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="var(--muted)">${i ? '' : 'Round '}${r}</text>`).join('')}
     <path d="${line(pr)}" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-dasharray="4 4"/>
     <path d="${line(me)}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
-    <text x="${x(R.length - 1) - 2}" y="${y(pr[pr.length - 1]) - 5}" text-anchor="end" font-size="10" fill="var(--muted)">Par</text>
-    <text x="${x(R.length - 1) - 2}" y="${y(me[me.length - 1]) + 13}" text-anchor="end" font-size="10" fill="var(--accent)" font-weight="600">This deck</text></svg>`;
+    ${(() => { const up = me[me.length - 1] >= pr[pr.length - 1];   // the higher line's label above it, the lower one's below, so they never overlap
+      return `<text x="${x(R.length - 1) - 2}" y="${y(pr[pr.length - 1]) + (up ? 13 : -5)}" text-anchor="end" font-size="10" fill="var(--muted)">Par</text>
+    <text x="${x(R.length - 1) - 2}" y="${y(me[me.length - 1]) + (up ? -6 : 13)}" text-anchor="end" font-size="10" fill="var(--accent)" font-weight="600">This deck</text>`; })()}</svg>`;
   return `<div class="sect" id="speed">Speed</div>
     <div class="row" style="align-items:baseline;gap:8px;margin:4px 0 6px"><span class="pill ${cls}">${head}${tail}</span><span class="small muted">${early > 0 ? '+' : ''}${early.toFixed(1)} vs par by round 8, ${end > 0 ? '+' : ''}${end.toFixed(1)} by the end</span></div>
     ${svg}
-    <p class="small muted" style="margin:4px 0 0">Share of games won by each round.</p>`;
+    <p class="small muted" style="margin:4px 0 0">Share of games won by each round${fin ? ', and once every game has ended (End)' : ''}.</p>`;
 }
 function forestSVG(gaps, link) {
   const nar = innerWidth < 640; const W = nar ? 360 : 900, rowH = nar ? 30 : 36, padL = nar ? 132 : 250, padR = nar ? 44 : 80, H = gaps.length * rowH + 26;
@@ -831,7 +836,8 @@ async function drawOverview(body, name) {
   // power: win rate against the pool's par, plus head-to-heads
   const h2h = tests.filter(g => g.mode === 'decks' && !g.peek);
   const h2hLatest = [...new Map(h2h.map(g => [g.other, g])).values()];
-  if (sp || h2hLatest.length) h += tile('Power', `#deck/${enc}/tests`, `${sp ? `<div class="row" style="align-items:baseline;gap:8px"><span class="pill ${sp.par == null ? '' : sp.win - sp.par >= -1 ? 'good' : sp.win - sp.par <= -3 ? 'warn' : ''}">Wins ${(a.arms?.[0]?.games ? 100 * a.arms[0].wins / a.arms[0].games : sp.win).toFixed(1)}%</span><span class="small muted">${sp.par == null ? 'of all games' : `par ${sp.par.toFixed(1)}% (average opponent)`}</span></div>` : ''}
+  if (sp || h2hLatest.length) h += tile('Power', `#deck/${enc}/tests`, `${sp ? `<div class="row" style="align-items:baseline;gap:8px">${(() => { const w = a.arms?.[0]?.games ? 100 * a.arms[0].wins / a.arms[0].games : sp.win, d = w - 25;   // scored with shared draws, the average pool deck wins exactly an even 25% share
+    return `<span class="pill ${sp.par == null ? '' : d >= -1 ? 'good' : d <= -3 ? 'warn' : ''}">Wins ${w.toFixed(1)}%</span><span class="small muted">${sp.par == null ? 'of all games' : `${d > 0 ? '+' : ''}${d.toFixed(1)} vs par (25%, the average pool deck)`}</span>`; })()}</div>` : ''}
     ${h2hLatest.length ? `<div class="small" style="margin-top:6px">${h2hLatest.map(g => `${esc(g.label)}: <span class="pill ${verdict(g)[0]}">${f(g.diff)}</span>`).join(' · ')}</div>` : ''}`);
   // mana and speed in full, with their charts (the same sections as on the Cards tab)
   if (a) { const m = manaBalance(rows, a.arms?.[0]?.games, a.audit.lands), s = speedCurve(a.audit.pace, a.auditPool);

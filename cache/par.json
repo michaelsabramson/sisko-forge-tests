@@ -54,7 +54,8 @@
    24.31
   ],
   "games": 22717,
+  "final": 24.9,
   "from": "pool-only full games: par_games_the_bracket_3_pool_against_itself_played_to_the_end",
-  "note": "average seat's share of games won by the end of each round at a table of pool decks; games cut off unfinished count as no winner"
+  "note": "average seat's share of games won by the end of each round at a table of pool decks; games cut off unfinished count as no winner; final = share won once every game has ended"
  }
 }
