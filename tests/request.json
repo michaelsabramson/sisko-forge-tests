@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_norinb3_2",
-  "title": "Ranking of NorinB3",
+  "name": "ranking_of_chatterfang_4",
+  "title": "Ranking of Chatterfang",
   "arms": [
     {
-      "deck": "NorinB3",
+      "deck": "Chatterfang",
       "card": "@audit",
-      "label": "Audit of NorinB3",
+      "label": "Audit of Chatterfang",
       "mc": "on",
-      "key": "450868e898670fc106ab",
+      "key": "89f455fb29359b725a29",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -16,11 +16,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 70,
+  "minutes": 108,
   "shards": 96,
   "mode": "audit",
-  "queued_from": "20261127-211501-audit-norinb3.json",
-  "started": "2026-11-28T00:46:05Z",
+  "queued_from": "20261127-220500-audit-chatterfang.json",
+  "started": "2026-11-28T01:39:12Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -425,7 +425,7 @@
     0
   ],
   "gpm": [
-    0.889
+    0.566
   ],
   "quota": [
     43
@@ -435,12 +435,12 @@
     12
   ],
   "batch": [
-    36
+    23
   ],
   "batches": [
-    329
+    514
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 186099200
+  "seedbase": 186109800
 }
