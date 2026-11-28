@@ -18,8 +18,8 @@ def parse_opps(s):
         out.append(dict(name=n, life=int(life), threat=int(th), bl=int(bl), blPow=int(blp), boardPow=int(bp), ncr=int(ncr)))
     return out
 
-def games(folder):
-    for path in sorted(glob.glob(os.path.join(folder, "**", "b*_*.log"), recursive=True)):
+def games(folder, proc="b"):
+    for path in sorted(glob.glob(os.path.join(folder, "**", proc + "*_*.log"), recursive=True)):
         cur = []
         for line in open(path, errors="ignore"):
             if line.startswith("COMBAT "):
@@ -39,9 +39,9 @@ def games(folder):
 def pct(a, b):
     return f"{100 * a / b:.1f}%" if b else "n/a"
 
-def main(folder):
+def main(folder, proc="b"):
     missed = Counter(); examples = []; c = Counter(); by_round = defaultdict(lambda: [0, 0]); dmg = []; ngames = 0
-    for turns, winner in games(folder):
+    for turns, winner in games(folder, proc):
         ngames += 1
         for t in turns:
             rnd = (t["t"] - 1) // 4 + 1
@@ -91,7 +91,7 @@ def main(folder):
                 c["predThreat"] += max(live, key=lambda o: o["threat"])["name"] == winner
                 c["predBoard"] += max(live, key=lambda o: o["boardPow"])["name"] == winner
                 c["predLife"] += max(live, key=lambda o: o["life"])["name"] == winner
-    print(f"## Combat diagnostics\n\n{ngames} games, {c['able']} turns with a creature able to attack.\n")
+    print(f"## Combat diagnostics{' (' + proc + ')' if proc != 'b' else ''}\n\n{ngames} games, {c['able']} turns with a creature able to attack.\n")
     print("**Attacking at all**")
     print(f"- attacked on {pct(c['attacked'], c['able'])} of turns it could; committed {pct(c['attPowAble'], c['ablePow'])} of the power able to attack")
     for b in ("1-4", "5-8", "9-12", "13+"):
@@ -113,4 +113,4 @@ def main(folder):
     print("\n**Picking the eventual winner** (rounds 4-10, among a player's opponents)")
     print(f"- Forge's threat score {pct(c['predThreat'], c['predN'])} · biggest board {pct(c['predBoard'], c['predN'])} · highest life {pct(c['predLife'], c['predN'])} · random {pct(c['predRand'], c['predN'])}")
 
-main(sys.argv[1] if len(sys.argv) > 1 else "out")
+main(sys.argv[1] if len(sys.argv) > 1 else "out", sys.argv[2] if len(sys.argv) > 2 else "b")

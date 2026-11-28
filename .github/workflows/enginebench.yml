@@ -97,7 +97,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { pattern: bench-out-*, path: out }
       - if: ${{ inputs.mode == 'bench' }}
-        run: python3 bench/compare.py | tee -a $GITHUB_STEP_SUMMARY
+        run: |
+          python3 bench/compare.py | tee -a $GITHUB_STEP_SUMMARY
+          # with -Dsisko.combatLog on: combat diagnostics per process
+          if grep -qs "^COMBAT" out/*/b0_*.log; then for b in b0 b1 b2 b3; do python3 bench/combat.py out $b | tee -a $GITHUB_STEP_SUMMARY; done; fi
       - if: ${{ inputs.mode == 'combat' }}
         run: python3 bench/combat.py out | tee -a $GITHUB_STEP_SUMMARY
       - if: ${{ inputs.mode == 'profile' }}

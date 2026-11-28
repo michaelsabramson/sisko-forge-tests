@@ -18,4 +18,4 @@ jobs:
           path: out
           run-id: ${{ inputs.run_id }}
           github-token: ${{ github.token }}
-      - run: python3 bench/combat.py out | tee -a $GITHUB_STEP_SUMMARY
+      - run: for b in b0 b1 b2 b3; do python3 bench/combat.py out $b | tee -a $GITHUB_STEP_SUMMARY; done

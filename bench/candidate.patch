@@ -1,0 +1,216 @@
+diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
+index 5b16081f..630cf7ed 100644
+--- a/forge-ai/src/main/java/forge/ai/AiController.java
++++ b/forge-ai/src/main/java/forge/ai/AiController.java
+@@ -1686,6 +1686,9 @@ public class AiController {
+         }
+     }
+ 
++    /** testing: plan attacks with SmartCombat. -Dsisko.smartCombat=all switches it on for every AI player; the runner can set it per player. */
++    public boolean smartCombat = "all".equals(System.getProperty("sisko.smartCombat"));
++
+     public void declareAttackers(Player attacker, Combat combat) {
+         if (attackOverride != null) {
+             declareOverriddenAttackers(combat);
+@@ -1699,7 +1702,12 @@ public class AiController {
+         Object limit = null;
+         try {
+             limit = AITimeoutTracker.arm(AITimeoutTracker.deadlineNanos(id, timeoutNanos), false);
+-            lastAttackAggression = aiAtk.declareAttackers(combat);
++            // testing: the multiplayer attack planner (SmartCombat) for players switched on; Forge's own logic otherwise
++            if (smartCombat && SmartCombat.declare(attacker, combat)) {
++                lastAttackAggression = 3;
++            } else {
++                lastAttackAggression = aiAtk.declareAttackers(combat);
++            }
+ 
+             aiAtk.reinforceWithBanding(combat);
+             // a creature for this attack commited
+diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
+new file mode 100644
+index 00000000..c62b1683
+--- /dev/null
++++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
+@@ -0,0 +1,182 @@
++package forge.ai;
++
++import java.util.ArrayList;
++import java.util.Comparator;
++import java.util.List;
++
++import forge.game.GameEntity;
++import forge.game.card.Card;
++import forge.game.combat.Combat;
++import forge.game.combat.CombatUtil;
++import forge.game.keyword.Keyword;
++import forge.game.player.Player;
++
++/**
++ * Testing: a multiplayer attack planner (-Dsisko.smartCombat=all, or per player via AiController.smartCombat).
++ * Decides attacks the way a real Commander player tends to, in this order:
++ *  1. lethal on any opponent, if what is left of the table can't kill us on the swing back
++ *     (always when it is the last opponent, or when holding everything back wouldn't survive anyway);
++ *  2. an open player (none of their blockers can block our spare attackers well): swing at them with the
++ *     creatures not needed at home;
++ *  3/4. otherwise only free attacks: a spare creature that no blocker of that player can kill in a block,
++ *     aimed at a runaway leader first; everything else stays home.
++ * "Safe" = after attacking, the creatures left untapped at home (plus vigilance attackers) keep the strongest
++ * single opponent's all-out attack next turn below our life.
++ * Returns false (Forge's own attack logic then runs) when the declaration would be illegal, e.g. must-attack creatures.
++ */
++public final class SmartCombat {
++    private SmartCombat() { }
++
++    static int pow(Card c) { return Math.max(0, c.getNetCombatDamage()); }
++    static int life(Card c) { return Math.max(1, c.getNetToughness() - c.getDamage()); }
++
++    /** src's combat damage alone kills dst */
++    static boolean kills(Card src, Card dst) {
++        if (pow(src) <= 0 || dst.hasKeyword(Keyword.INDESTRUCTIBLE)) return false;
++        return src.hasKeyword(Keyword.DEATHTOUCH) || pow(src) >= life(dst);
++    }
++
++    static List<Card> blockers(Player o) {
++        List<Card> out = new ArrayList<>();
++        for (Card b : o.getCreaturesInPlay()) if (CombatUtil.canBlock(b)) out.add(b);
++        return out;
++    }
++
++    /** damage that gets through if each blocker chumps the biggest attacker it can block (trample spills over) */
++    static int unblocked(List<Card> attackers, List<Card> blockers) {
++        List<Card> left = new ArrayList<>(attackers);
++        left.sort(Comparator.comparingInt(SmartCombat::pow).reversed());
++        int dmg = 0;
++        for (Card b : blockers) {
++            for (Card a : left) {
++                boolean can;
++                try { can = CombatUtil.canBlock(a, b); } catch (Throwable t) { can = true; }
++                if (can) {
++                    if (a.hasKeyword(Keyword.TRAMPLE)) dmg += Math.max(0, pow(a) - life(b));
++                    left.remove(a);
++                    break;
++                }
++            }
++        }
++        for (Card a : left) dmg += pow(a);
++        return dmg;
++    }
++
++    /** the strongest single opponent's all-out attack next turn, against what we keep untapped at home */
++    static boolean safe(Player me, List<Card> home, List<Player> opps) {
++        int worst = 0;
++        for (Player q : opps) {
++            List<Card> att = new ArrayList<>();
++            for (Card c : q.getCreaturesInPlay()) if (pow(c) > 0 && !c.hasKeyword(Keyword.DEFENDER)) att.add(c);
++            worst = Math.max(worst, unblocked(att, home));
++        }
++        return !me.canLoseLife() || worst < me.getLife();
++    }
++
++    static boolean canAttack(Card c, Player o) {
++        try { return CombatUtil.canAttack(c, o); } catch (Throwable t) { return false; }
++    }
++
++    /** an attack no blocker of o can punish: every blocker that could block it dies or bounces off without killing it */
++    static boolean free(Card a, Player o, List<Card> obl) {
++        if (!canAttack(a, o)) return false;
++        for (Card b : obl) {
++            boolean can;
++            try { can = CombatUtil.canBlock(a, b); } catch (Throwable t) { can = true; }
++            if (can && kills(b, a)) return false;
++        }
++        return true;
++    }
++
++    public static boolean declare(Player me, Combat combat) {
++        List<Player> opps = new ArrayList<>();
++        for (GameEntity d : combat.getDefenders()) if (d instanceof Player p && !p.hasLost() && p.isOpponentOf(me)) opps.add(p);
++        if (opps.isEmpty()) return false;
++        List<Card> able = new ArrayList<>();
++        for (Card c : me.getCreaturesInPlay()) {
++            boolean ok;
++            try { ok = CombatUtil.canAttack(c); } catch (Throwable t) { ok = false; }
++            if (ok && pow(c) > 0) able.add(c);
++        }
++        if (able.isEmpty()) return validOrUndo(me, combat);
++
++        // 1. lethal on anyone, if the rest of the table can't kill us back
++        opps.sort(Comparator.comparingInt(Player::getLife));
++        for (Player o : opps) {
++            if (!o.canLoseLife() || o.cantLoseForZeroOrLessLife()) continue;
++            List<Card> a = new ArrayList<>();
++            for (Card c : able) if (canAttack(c, o)) a.add(c);
++            if (a.isEmpty() || unblocked(a, blockers(o)) < o.getLife()) continue;
++            List<Player> rest = new ArrayList<>(opps); rest.remove(o);
++            List<Card> home = new ArrayList<>();
++            for (Card c : me.getCreaturesInPlay()) if (!a.contains(c) || c.hasKeyword(Keyword.VIGILANCE)) home.add(c);
++            if (rest.isEmpty() || safe(me, home, rest) || !safe(me, me.getCreaturesInPlay(), rest)) {
++                for (Card c : a) combat.addAttacker(c, o);
++                return validOrUndo(me, combat);
++            }
++        }
++
++        // what has to stay home: keep the best blockers back until the strongest crack-back is survivable
++        List<Card> byDefence = new ArrayList<>(able);
++        byDefence.sort(Comparator.comparingInt((Card c) -> life(c) * 2 + pow(c)).reversed());
++        List<Card> home = new ArrayList<>();
++        for (Card c : me.getCreaturesInPlay()) if (!able.contains(c)) home.add(c);
++        List<Card> spare = new ArrayList<>();
++        int k = 0;
++        while (!safe(me, withVigilance(home, able), opps) && k < byDefence.size()) home.add(byDefence.get(k++));
++        if (!safe(me, withVigilance(home, able), opps)) {
++            for (Card c : able) if (c.hasKeyword(Keyword.VIGILANCE)) spare.add(c);   // under threat: only attacks that don't leave home
++        } else {
++            for (Card c : able) if (!home.contains(c) || c.hasKeyword(Keyword.VIGILANCE)) spare.add(c);
++        }
++        if (spare.isEmpty()) return validOrUndo(me, combat);
++
++        // 2. an open player: every spare attacker that can reach them attacks freely
++        Player open = null; int openDmg = 0;
++        for (Player o : opps) {
++            List<Card> obl = blockers(o), a = new ArrayList<>();
++            boolean allFree = true;
++            for (Card c : spare) if (canAttack(c, o)) { a.add(c); if (!free(c, o, obl)) allFree = false; }
++            if (!allFree || a.isEmpty()) continue;
++            int d = unblocked(a, obl);
++            if (d > openDmg) { open = o; openDmg = d; }
++        }
++        if (open != null) {
++            for (Card c : spare) if (canAttack(c, open)) combat.addAttacker(c, open);
++            return validOrUndo(me, combat);
++        }
++
++        // 3/4. free attacks only, aimed at a runaway leader first, then the lowest life
++        Player leader = null;
++        List<Player> byBoard = new ArrayList<>(opps);
++        byBoard.sort(Comparator.comparingInt(SmartCombat::boardPow).reversed());
++        if (byBoard.size() > 1 && boardPow(byBoard.get(0)) >= 20 && boardPow(byBoard.get(0)) >= 2 * Math.max(1, boardPow(byBoard.get(1)))) leader = byBoard.get(0);
++        List<Player> order = new ArrayList<>(opps);   // already lowest life first
++        if (leader != null) { order.remove(leader); order.add(0, leader); }
++        for (Card c : spare) {
++            for (Player o : order) {
++                if (free(c, o, blockers(o))) { combat.addAttacker(c, o); break; }
++            }
++        }
++        return validOrUndo(me, combat);
++    }
++
++    static List<Card> withVigilance(List<Card> home, List<Card> able) {
++        List<Card> h = new ArrayList<>(home);
++        for (Card c : able) if (c.hasKeyword(Keyword.VIGILANCE) && !h.contains(c)) h.add(c);
++        return h;
++    }
++
++    static int boardPow(Player p) {
++        int s = 0;
++        for (Card c : p.getCreaturesInPlay()) s += pow(c);
++        return s;
++    }
++
++    static boolean validOrUndo(Player me, Combat combat) {
++        boolean ok;
++        try { ok = CombatUtil.validateAttackers(combat); } catch (Throwable t) { ok = false; }
++        if (!ok) for (Card c : new ArrayList<>(combat.getAttackers())) if (c.getController() == me) combat.removeFromCombat(c);
++        return ok;
++    }
++}
