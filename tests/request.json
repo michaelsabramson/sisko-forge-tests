@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_ironman_3",
-  "title": "Ranking of Ironman",
+  "name": "ranking_of_kess_8",
+  "title": "Ranking of Kess",
   "arms": [
     {
-      "deck": "Ironman",
+      "deck": "Kess",
       "card": "@audit",
-      "label": "Audit of Ironman",
+      "label": "Audit of Kess",
       "mc": "on",
-      "key": "df644ada8d3de60dda7a",
+      "key": "389029084871270e4eaf",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -16,11 +16,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 95,
+  "minutes": 76,
   "shards": 96,
   "mode": "audit",
-  "queued_from": "20261127-220501-audit-ironman.json",
-  "started": "2026-11-28T02:58:47Z",
+  "queued_from": "20261127-220502-audit-kess.json",
+  "started": "2026-11-28T03:57:14Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -425,7 +425,7 @@
     0
   ],
   "gpm": [
-    0.651
+    0.82
   ],
   "quota": [
     43
@@ -435,12 +435,12 @@
     12
   ],
   "batch": [
-    27
+    33
   ],
   "batches": [
-    438
+    359
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 186125600
+  "seedbase": 186137400
 }
