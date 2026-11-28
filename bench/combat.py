@@ -40,7 +40,7 @@ def pct(a, b):
     return f"{100 * a / b:.1f}%" if b else "n/a"
 
 def main(folder):
-    c = Counter(); by_round = defaultdict(lambda: [0, 0]); dmg = []; ngames = 0
+    missed = Counter(); examples = []; c = Counter(); by_round = defaultdict(lambda: [0, 0]); dmg = []; ngames = 0
     for turns, winner in games(folder):
         ngames += 1
         for t in turns:
@@ -58,9 +58,14 @@ def main(folder):
                     c["openLethal"] += 1
                     if o["name"] in t["dead"]:
                         c["openLethalTaken"] += 1
+                    else:
+                        why = "no attack" if not t["att"] else "attacked this player" if o["name"] in t["tgt"] else "attacked someone else"
+                        missed[why] += 1
+                        if len(examples) < 15:
+                            examples.append(f"t={t['t']} {t['p']} able={t['able']} ablePow={t['ablePow']} att={t['att']} tgt={t['tgt']} dmg={t['dmg']} -> {o['name']} life={o['life']}")
                     break
             if t["att"] > 0:
-                dmg.append(t["dmg"]); c["attTurns"] += 1
+                dmg.append(min(t["dmg"], sum(max(0, o["life"]) for o in opps))); c["attTurns"] += 1   # infinite-combo life loss capped at what the table had
                 c["attackers"] += t["att"]; c["attDied"] += t["attDied"]; c["blocks"] += t["blocks"]; c["blkDied"] += t["blkDied"]
                 live = [o for o in opps if o["life"] > 0]
                 if len(live) >= 2 and t["tgt"]:
@@ -99,6 +104,9 @@ def main(folder):
     print(f"- with a runaway leader at the table (board power 2x everyone else's, 20+): attacked the leader {pct(c['atLeader'], c['leaderTurns'])} of {c['leaderTurns']} turns")
     print("\n**Lethal left on the table**")
     print(f"- {c['openLethal']} turns had lethal on an open player (no untapped blockers, enough power); that player died that turn {pct(c['openLethalTaken'], c['openLethal'])}")
+    print("  - missed: " + ", ".join(f"{k} {v}" for k, v in missed.most_common()))
+    for e in examples:
+        print("    - " + e)
     print("\n**What combat costs** (per attacking turn)")
     n = max(1, c['attTurns'])
     print(f"- {c['attackers'] / n:.1f} attackers, {sum(dmg) / n:.1f} life dealt, {c['attDied'] / n:.2f} attackers died, {c['blocks'] / n:.2f} blocks, {c['blkDied'] / n:.2f} blockers died")

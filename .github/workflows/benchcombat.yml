@@ -1,0 +1,21 @@
+name: bench-combat
+# Re-run bench/combat.py (from this branch) on the saved game logs of an engine-bench combat-mode run.
+on:
+  workflow_dispatch:
+    inputs:
+      run_id: { description: 'engine-bench run id', required: true }
+permissions:
+  contents: read
+  actions: read
+jobs:
+  show:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bench-out-*
+          path: out
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+      - run: python3 bench/combat.py out | tee -a $GITHUB_STEP_SUMMARY
