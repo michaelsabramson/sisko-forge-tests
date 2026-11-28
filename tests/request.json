@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_kw_najeela_1123_2",
-  "title": "Ranking of KW-Najeela-1123",
+  "name": "ranking_of_norinb3_2",
+  "title": "Ranking of NorinB3",
   "arms": [
     {
-      "deck": "KW-Najeela-1123",
+      "deck": "NorinB3",
       "card": "@audit",
-      "label": "Audit of KW-Najeela-1123",
+      "label": "Audit of NorinB3",
       "mc": "on",
-      "key": "b08a45f39dbb1b24b8e3",
+      "key": "450868e898670fc106ab",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -16,11 +16,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 68,
+  "minutes": 70,
   "shards": 96,
   "mode": "audit",
-  "queued_from": "20261127-211500-audit-kw-najeela-1123.json",
-  "started": "2026-11-27T23:35:49Z",
+  "queued_from": "20261127-211501-audit-norinb3.json",
+  "started": "2026-11-28T00:46:05Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -425,7 +425,7 @@
     0
   ],
   "gpm": [
-    0.915
+    0.889
   ],
   "quota": [
     43
@@ -435,12 +435,12 @@
     12
   ],
   "batch": [
-    37
+    36
   ],
   "batches": [
-    320
+    329
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 186085000
+  "seedbase": 186099200
 }
