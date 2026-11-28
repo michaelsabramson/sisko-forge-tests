@@ -28,10 +28,10 @@ index 5b16081f..630cf7ed 100644
              // a creature for this attack commited
 diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
 new file mode 100644
-index 00000000..de0a1806
+index 00000000..74079949
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
-@@ -0,0 +1,223 @@
+@@ -0,0 +1,250 @@
 +package forge.ai;
 +
 +import java.util.ArrayList;
@@ -49,8 +49,9 @@ index 00000000..de0a1806
 + * Testing: a multiplayer attack planner (-Dsisko.smartCombat=all, or per player via AiController.smartCombat).
 + * Decides attacks the way a real Commander player tends to, in this order:
 + *  1. lethal on any opponent, if what is left of the table can't kill us on the swing back (always on the last one);
-+ *     when we're dead next turn whatever we hold back: kill the player who threatens us, else throw everything at
-+ *     them to shrink their attack, else take any kill there is;
++ *     when the threat's all-out swing would kill us and we are its easiest target: kill the threat, else throw
++ *     everything at it to shrink its attack, else take any kill there is;
++ *  a runaway leader (board power 20+, double anyone else's) gets every free attack first;
 + *  2. an open player (none of their blockers can block our spare attackers well): swing at them with the
 + *     creatures not needed at home;
 + *  3/4. otherwise only free attacks: a spare creature that no blocker of that player can kill in a block,
@@ -154,14 +155,13 @@ index 00000000..de0a1806
 +        }
 +        // doomed: even holding everything back, someone's swing next turn kills us. In order: kill the player who
 +        // threatens us, else throw everything at them to shrink their attack, else take whatever kill there is.
-+        if (!safe(me, me.getCreaturesInPlay(), opps)) {
-+            Player threat = null; int worst = -1;
-+            for (Player q : opps) {
-+                List<Card> att = new ArrayList<>();
-+                for (Card c : q.getCreaturesInPlay()) if (pow(c) > 0 && !c.hasKeyword(Keyword.DEFENDER)) att.add(c);
-+                int d = unblocked(att, me.getCreaturesInPlay());
-+                if (d > worst) { worst = d; threat = q; }
-+            }
++        // Doomed only if we are also the threat's easiest kill: its all-out swing leaves us lower than any other player it could hit.
++        Player threat = null; int worst = -1;
++        for (Player q : opps) {
++            int d = unblocked(attackersOf(q), me.getCreaturesInPlay());
++            if (d > worst) { worst = d; threat = q; }
++        }
++        if (threat != null && me.canLoseLife() && worst >= me.getLife() && easiestTarget(threat, me)) {
 +            if (threat != null && killable.contains(threat)) {
 +                note("doomed-kill-threat");
 +                for (Card c : attackersFor(able, threat)) combat.addAttacker(c, threat);
@@ -195,6 +195,21 @@ index 00000000..de0a1806
 +        }
 +        if (spare.isEmpty()) { note("hold"); return validOrUndo(me, combat); }
 +
++        // a runaway leader comes first: every spare creature with a free attack on them takes it
++        Player leader = null;
++        List<Player> byBoard = new ArrayList<>(opps);
++        byBoard.sort(Comparator.comparingInt(SmartCombat::boardPow).reversed());
++        if (byBoard.size() > 1 && boardPow(byBoard.get(0)) >= 20 && boardPow(byBoard.get(0)) >= 2 * Math.max(1, boardPow(byBoard.get(1)))) leader = byBoard.get(0);
++        if (leader != null) {
++            List<Card> lb = blockers(leader), sent = new ArrayList<>();
++            for (Card c : spare) if (free(c, leader, lb)) { combat.addAttacker(c, leader); sent.add(c); }
++            if (!sent.isEmpty()) note("leader");
++            spare.removeAll(sent);
++            if (spare.isEmpty()) return validOrUndo(me, combat);
++            opps.remove(leader);
++            if (opps.isEmpty()) return validOrUndo(me, combat);
++        }
++
 +        // 2. an open player: every spare attacker that can reach them attacks freely
 +        Player open = null; int openDmg = 0;
 +        for (Player o : opps) {
@@ -211,20 +226,32 @@ index 00000000..de0a1806
 +            return validOrUndo(me, combat);
 +        }
 +
-+        // 3/4. free attacks only, aimed at a runaway leader first, then the lowest life
-+        Player leader = null;
-+        List<Player> byBoard = new ArrayList<>(opps);
-+        byBoard.sort(Comparator.comparingInt(SmartCombat::boardPow).reversed());
-+        if (byBoard.size() > 1 && boardPow(byBoard.get(0)) >= 20 && boardPow(byBoard.get(0)) >= 2 * Math.max(1, boardPow(byBoard.get(1)))) leader = byBoard.get(0);
++        // 3/4. free attacks only, lowest life first (the leader was offered its free attacks above)
 +        List<Player> order = new ArrayList<>(opps);   // already lowest life first
-+        if (leader != null) { order.remove(leader); order.add(0, leader); }
-+        note(leader != null ? "free-leader" : "free");
++        note("free");
 +        for (Card c : spare) {
 +            for (Player o : order) {
 +                if (free(c, o, blockers(o))) { combat.addAttacker(c, o); break; }
 +            }
 +        }
 +        return validOrUndo(me, combat);
++    }
++
++    static List<Card> attackersOf(Player q) {
++        List<Card> att = new ArrayList<>();
++        for (Card c : q.getCreaturesInPlay()) if (pow(c) > 0 && !c.hasKeyword(Keyword.DEFENDER)) att.add(c);
++        return att;
++    }
++
++    /** would q's all-out swing leave me lower than any other player q could aim it at? */
++    static boolean easiestTarget(Player q, Player me) {
++        List<Card> att = attackersOf(q);
++        int mine = me.getLife() - unblocked(att, me.getCreaturesInPlay());
++        for (Player r : q.getGame().getPlayers()) {
++            if (r == me || r == q || r.hasLost() || !r.isOpponentOf(q)) continue;
++            if (r.getLife() - unblocked(att, r.getCreaturesInPlay()) < mine) return false;
++        }
++        return true;
 +    }
 +
 +    static List<Card> attackersFor(List<Card> able, Player o) {
