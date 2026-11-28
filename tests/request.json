@@ -1,13 +1,13 @@
 {
-  "name": "ranking_of_chatterfang_4",
-  "title": "Ranking of Chatterfang",
+  "name": "ranking_of_ironman_3",
+  "title": "Ranking of Ironman",
   "arms": [
     {
-      "deck": "Chatterfang",
+      "deck": "Ironman",
       "card": "@audit",
-      "label": "Audit of Chatterfang",
+      "label": "Audit of Ironman",
       "mc": "on",
-      "key": "89f455fb29359b725a29",
+      "key": "df644ada8d3de60dda7a",
       "prior_games": 0,
       "prior_wins": 0,
       "target_new": 16423,
@@ -16,11 +16,11 @@
   ],
   "compare": [],
   "band": 0,
-  "minutes": 108,
+  "minutes": 95,
   "shards": 96,
   "mode": "audit",
-  "queued_from": "20261127-220500-audit-chatterfang.json",
-  "started": "2026-11-28T01:39:12Z",
+  "queued_from": "20261127-220501-audit-ironman.json",
+  "started": "2026-11-28T02:58:47Z",
   "opponents": [
     "Edgar",
     "UrDragon",
@@ -425,7 +425,7 @@
     0
   ],
   "gpm": [
-    0.566
+    0.651
   ],
   "quota": [
     43
@@ -435,12 +435,12 @@
     12
   ],
   "batch": [
-    23
+    27
   ],
   "batches": [
-    514
+    438
   ],
   "capped": false,
   "allcached": false,
-  "seedbase": 186109800
+  "seedbase": 186125600
 }
