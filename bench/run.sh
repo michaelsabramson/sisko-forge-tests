@@ -19,6 +19,8 @@ for b in 0 1 2 3; do
   [ $b -eq 1 ] && X="${FLAG1:-}"
   [ $b -eq 2 ] && { CP="runner-classes:lib-cand/*"; X="${CAND_FLAGS:-}"; }
   [ $b -eq 3 ] && { CP="runner-classes:lib-cand/*"; X="$FLAG3"; }
+  # -Dbench.cand anywhere in a process's options: that process runs the candidate engine too (candidate vs candidate + more)
+  case "$X" in *-Dbench.cand*) CP="runner-classes:lib-cand/*";; esac
   SD=$SEED
   # combat diagnostics: four different-seed copies of the live engine and settings, full games, COMBAT lines on
   [ "${BENCH_MODE:-}" = combat ] && { CP="runner-classes:lib-base/*"; SD=$((SEED + b*100003)); X="-Dsisko.combatLog=true -Dfull=true -Dsisko.loopLimit=200 -Dsisko.comboShortcut=true -Dsisko.combos=decks/combos.txt.gz -Dsisko.payoffs=decks/payoffs.txt -Dsisko.runawayWipe=true -Dsisko.concedePower=2 -Dsisko.concedeRatio=3"; }

@@ -104,6 +104,8 @@ public class Run {
       // testing: -Dsisko.smartCombat=tracked switches the SmartCombat attack planner on for the tracked deck only (=all: the AI turns it on for everyone)
       if("tracked".equals(System.getProperty("sisko.smartCombat"))) for(Player pl:game.getPlayers()) if(pl.getController() instanceof PlayerControllerAi && trackedNames.contains(pl.getName())){
         try{ Object ai=((PlayerControllerAi)pl.getController()).getAi(); ai.getClass().getField("smartCombat").setBoolean(ai,true); }catch(Throwable x){} }
+      if("tracked".equals(System.getProperty("sisko.smartBlock"))) for(Player pl:game.getPlayers()) if(pl.getController() instanceof PlayerControllerAi && trackedNames.contains(pl.getName())){
+        try{ Object ai=((PlayerControllerAi)pl.getController()).getAi(); ai.getClass().getField("smartBlock").setBoolean(ai,true); }catch(Throwable x){} }
       /* -DroundCap=N: end the game as a draw once round N is over (a round = every player's turn). Unlike the
          real-time limit, every deck and AI setting gets the same amount of game, whatever its speed. */
       final boolean[] cut={false};

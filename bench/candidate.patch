@@ -1,18 +1,170 @@
+diff --git a/forge-ai/src/main/java/forge/ai/AiBlockController.java b/forge-ai/src/main/java/forge/ai/AiBlockController.java
+index a98cff4d..9c29e30b 100644
+--- a/forge-ai/src/main/java/forge/ai/AiBlockController.java
++++ b/forge-ai/src/main/java/forge/ai/AiBlockController.java
+@@ -177,7 +177,7 @@ public class AiBlockController {
+         }
+         CardLists.sortByPowerDesc(firstAttacker);
+ 
+-        if (!sortedAttackers.isEmpty() && !firstAttacker.isEmpty() && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++        if (!sortedAttackers.isEmpty() && !firstAttacker.isEmpty() && inDanger(combat)) {
+             // add creatures attacking the Player to the front of the list
+             sortedAttackers.addAll(0, firstAttacker);
+         } else {
+@@ -479,7 +479,7 @@ public class AiBlockController {
+                         // only one blocker can be killed
+                         || currentValue + addedValue - 50 <= evalAttackerValue
+                         // or attacker is worth more
+-                        || (lifeInDanger && ComputerUtilCombat.lifeInDanger(ai, combat)))
++                        || (lifeInDanger && inDanger(combat)))
+                         // or life is in danger
+                         && CombatUtil.canBlock(attacker, blocker, combat)) {
+                     // this is needed for attackers that can't be blocked by more than 1
+@@ -534,7 +534,7 @@ public class AiBlockController {
+                             // or attacker is worth more
+                             || (thirdBlocker.isToken() && absorbedDamage2 + absorbedDamage > netCombatDamage)
+                             // or third blocker is a token and no more than two blockers will die, one of which is the third blocker (token)
+-                            || (lifeInDanger && ComputerUtilCombat.lifeInDanger(ai, combat)))
++                            || (lifeInDanger && inDanger(combat)))
+                             // or life is in danger
+                             && CombatUtil.canBlock(attacker, secondBlocker, combat)
+                             && CombatUtil.canBlock(attacker, thirdBlocker, combat)) {
+@@ -627,7 +627,7 @@ public class AiBlockController {
+ 
+                 if (lifeInDanger && needsRefresh) {
+                     // is it very likely to end up in danger again if we weren't already?
+-                    lifeInDanger = ComputerUtilCombat.lifeInDanger(ai, combat);
++                    lifeInDanger = inDanger(combat);
+                 }
+ 
+                 // Randomly trade creatures with lower power and [hopefully] worse abilities, if enabled in profile
+@@ -660,7 +660,7 @@ public class AiBlockController {
+     // an attacker leaves the combat unchanged and the previous result still holds
+     private void makeChumpBlocks(final Combat combat, List<Card> attackers, boolean recheckDanger) {
+         AITimeoutTracker.check();
+-        if (recheckDanger && !ComputerUtilCombat.lifeInDanger(ai, combat)) {
++        if (recheckDanger && !inDanger(combat)) {
+             lifeInDanger = false;
+             return;
+         }
+@@ -777,7 +777,7 @@ public class AiBlockController {
+                 if (blocker.hasKeyword(Keyword.BANDING) || blocker.hasKeyword(Keyword.BANDSWITH)) {
+                     if (ComputerUtilCombat.getAttack(attacker) > ComputerUtilCombat.totalShieldDamage(attacker, combat.getBlockers(attacker))
+                             && ComputerUtilCombat.shieldDamage(attacker, blocker) > 0
+-                            && CombatUtil.canBlock(attacker, blocker, combat) && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++                            && CombatUtil.canBlock(attacker, blocker, combat) && inDanger(combat)) {
+                         combat.addBlocker(attacker, blocker);
+                         needsMoreChumpBlockers = false;
+                         break;
+@@ -795,7 +795,7 @@ public class AiBlockController {
+                     // enough and the new one would suck some of the damage
+                     if (ComputerUtilCombat.getAttack(attacker) > ComputerUtilCombat.totalShieldDamage(attacker, combat.getBlockers(attacker))
+                             && ComputerUtilCombat.shieldDamage(attacker, blocker) > 0
+-                            && CombatUtil.canBlock(attacker, blocker, combat) && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++                            && CombatUtil.canBlock(attacker, blocker, combat) && inDanger(combat)) {
+                         combat.addBlocker(attacker, blocker);
+                     }
+                 }
+@@ -1046,7 +1046,7 @@ public class AiBlockController {
+             }
+         }
+         attackersLeft = unblocked;
+-        lifeInDanger = ComputerUtilCombat.lifeInDanger(ai, combat);
++        lifeInDanger = inDanger(combat);
+         if (lifeInDanger && !unblocked.isEmpty()) {
+             makeChumpBlocks(combat, new ArrayList<>(unblocked));
+         }
+@@ -1158,7 +1158,7 @@ public class AiBlockController {
+ 
+         // When the AI holds some Fog effect, don't bother about lifeInDanger
+         if (!ComputerUtil.hasAFogEffect(ai, ai, checkingOther)) {
+-            lifeInDanger = ComputerUtilCombat.lifeInDanger(ai, combat);
++            lifeInDanger = inDanger(combat);
+             makeTradeBlocks(combat);
+ 
+             if (lifeInDanger) {
+@@ -1166,7 +1166,7 @@ public class AiBlockController {
+             }
+ 
+             // Reinforce blockers blocking attackers with trample if life is still in danger
+-            if (lifeInDanger && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++            if (lifeInDanger && inDanger(combat)) {
+                 reinforceBlockersAgainstTrample(combat);
+             } else {
+                 lifeInDanger = false;
+@@ -1179,7 +1179,7 @@ public class AiBlockController {
+ 
+             // TODO could be made more accurate if this would be inside each blocker choosing loop instead
+             if (removeUnpayableBlocks(combat) || lifeInDanger) {
+-                lifeInDanger = ComputerUtilCombat.lifeInDanger(ai, combat);
++                lifeInDanger = inDanger(combat);
+             }
+ 
+             // == 2. If the AI life would still be in danger make a safer approach ==
+@@ -1191,7 +1191,7 @@ public class AiBlockController {
+                 makeChumpBlocks(combat);
+ 
+                 // Reinforce blockers blocking attackers with trample if life is still in danger
+-                if (lifeInDanger && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++                if (lifeInDanger && inDanger(combat)) {
+                     reinforceBlockersAgainstTrample(combat);
+                 } else {
+                     lifeInDanger = false;
+@@ -1206,13 +1206,13 @@ public class AiBlockController {
+                 clearBlockers(combat, possibleBlockers);
+                 makeChumpBlocks(combat);
+ 
+-                if (lifeInDanger && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++                if (lifeInDanger && inDanger(combat)) {
+                     makeTradeBlocks(combat);
+                 } else {
+                     lifeInDanger = false;
+                 }
+ 
+-                if (lifeInDanger && ComputerUtilCombat.lifeInDanger(ai, combat)) {
++                if (lifeInDanger && inDanger(combat)) {
+                     reinforceBlockersAgainstTrample(combat);
+                 } else {
+                     lifeInDanger = false;
+@@ -1345,7 +1345,21 @@ public class AiBlockController {
+         return first;
+     }
+ 
++    /** testing (SmartBlock): "in danger" = this combat leaves us dead to the strongest other opponent's swing next turn;
++     *  Forge's own fixed life threshold otherwise */
++    private boolean inDanger(Combat combat) {
++        if (!SmartCombat.blocks(ai)) return ComputerUtilCombat.lifeInDanger(ai, combat);
++        if (ComputerUtilCombat.lifeInSeriousDanger(ai, combat)) return true;
++        return SmartCombat.deadToNextSwing(ai, ComputerUtilCombat.lifeThatWouldRemain(ai, combat), combat);
++    }
++
+     private boolean wouldLikeToRandomlyTrade(Card attacker, Card blocker, Combat combat) {
++        // testing (SmartBlock): always take a fair trade (the attacker is worth at least the blocker),
++        // unless losing the blocker leaves us dead to another opponent's swing next turn
++        if (SmartCombat.blocks(ai)) {
++            if (ComputerUtilCard.evaluateCreature(attacker, true, false) < ComputerUtilCard.evaluateCreature(blocker, true, false)) return false;
++            return !SmartCombat.blockerNeeded(ai, blocker, attacker.getController());
++        }
+         // Determines if the AI would like to randomly trade its blocker for the attacker in given combat
+         boolean enableRandomTrades = false;
+         boolean randomTradeIfBehindOnBoard = false;
 diff --git a/forge-ai/src/main/java/forge/ai/AiController.java b/forge-ai/src/main/java/forge/ai/AiController.java
-index 5b16081f..630cf7ed 100644
+index 5b16081f..6a60ac62 100644
 --- a/forge-ai/src/main/java/forge/ai/AiController.java
 +++ b/forge-ai/src/main/java/forge/ai/AiController.java
-@@ -1686,6 +1686,9 @@ public class AiController {
+@@ -1686,6 +1686,11 @@ public class AiController {
          }
      }
  
 +    /** testing: plan attacks with SmartCombat. -Dsisko.smartCombat=all switches it on for every AI player; the runner can set it per player. */
 +    public boolean smartCombat = "all".equals(System.getProperty("sisko.smartCombat"));
++    /** testing: SmartBlock rules in AiBlockController. -Dsisko.smartBlock=all for every AI player; the runner can set it per player. */
++    public boolean smartBlock = "all".equals(System.getProperty("sisko.smartBlock"));
 +
      public void declareAttackers(Player attacker, Combat combat) {
          if (attackOverride != null) {
              declareOverriddenAttackers(combat);
-@@ -1699,7 +1702,12 @@ public class AiController {
+@@ -1699,7 +1704,12 @@ public class AiController {
          Object limit = null;
          try {
              limit = AITimeoutTracker.arm(AITimeoutTracker.deadlineNanos(id, timeoutNanos), false);
@@ -28,10 +180,10 @@ index 5b16081f..630cf7ed 100644
              // a creature for this attack commited
 diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
 new file mode 100644
-index 00000000..74079949
+index 00000000..b3fd5b36
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
-@@ -0,0 +1,250 @@
+@@ -0,0 +1,283 @@
 +package forge.ai;
 +
 +import java.util.ArrayList;
@@ -58,6 +210,8 @@ index 00000000..74079949
 + *     aimed at a runaway leader first; everything else stays home.
 + * "Safe" = after attacking, the creatures left untapped at home (plus vigilance attackers) keep the strongest
 + * single opponent's all-out attack next turn below our life.
++ * Blocking (SmartBlock, hooked into AiBlockController): always take fair trades unless the blocker is needed against the
++ * next player's swing; chump only when this combat would leave us dead to that swing (Forge: a fixed life threshold).
 + * Returns false (Forge's own attack logic then runs) when the declaration would be illegal, e.g. must-attack creatures.
 + */
 +public final class SmartCombat {
@@ -235,6 +389,37 @@ index 00000000..74079949
 +            }
 +        }
 +        return validOrUndo(me, combat);
++    }
++
++    // ---- blocking (testing: -Dsisko.smartBlock=all, or per player via AiController.smartBlock) ----
++
++    static boolean blocks(Player p) {
++        return p.getController() instanceof PlayerControllerAi pc && pc.getAi().smartBlock;
++    }
++
++    /** the strongest single opponent's all-out swing next turn against all our creatures (they untap), other than skip */
++    static int nextSwing(Player me, Player skip, List<Card> ours) {
++        int worst = 0;
++        for (Player q : me.getGame().getPlayers()) {
++            if (q == me || q == skip || q.hasLost() || !q.isOpponentOf(me)) continue;
++            worst = Math.max(worst, unblocked(attackersOf(q), ours));
++        }
++        return worst;
++    }
++
++    /** would we be left dead to the next player's swing, with lifeAfter life once this combat is over? */
++    static boolean deadToNextSwing(Player me, int lifeAfter, Combat combat) {
++        if (!me.canLoseLife()) return false;
++        Player attacker = combat.getAttackingPlayer();
++        return lifeAfter <= nextSwing(me, attacker, me.getCreaturesInPlay());
++    }
++
++    /** is this blocker needed at home against the other opponents' swings (we'd be dead without it)? */
++    static boolean blockerNeeded(Player me, Card blocker, Player attackerCtrl) {
++        if (!me.canLoseLife()) return false;
++        List<Card> rest = new ArrayList<>(me.getCreaturesInPlay());
++        rest.remove(blocker);
++        return nextSwing(me, attackerCtrl, rest) >= me.getLife() && nextSwing(me, attackerCtrl, me.getCreaturesInPlay()) < me.getLife();
 +    }
 +
 +    static List<Card> attackersOf(Player q) {
