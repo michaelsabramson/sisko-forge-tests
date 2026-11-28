@@ -42,19 +42,19 @@
    14
   ],
   "par": [
-   0.55,
-   2.5,
-   6.92,
-   12.7,
-   17.71,
-   21.5,
-   23.76,
-   24.96,
-   25.59,
-   25.85
+   1.04,
+   3.27,
+   7.55,
+   12.81,
+   17.21,
+   20.34,
+   22.28,
+   23.41,
+   24.02,
+   24.31
   ],
-  "games": 9738,
-  "from": "full games of par_games_sisko_against_the_bracket_3_pool_played_to_the_end, par_games_iron_man_against_the_bracket_3_pool_played_to_the_end",
-  "note": "average opponent's share of games won by the end of each round; games cut off unfinished count as no winner"
+  "games": 22717,
+  "from": "pool-only full games: par_games_the_bracket_3_pool_against_itself_played_to_the_end",
+  "note": "average seat's share of games won by the end of each round at a table of pool decks; games cut off unfinished count as no winner"
  }
 }
