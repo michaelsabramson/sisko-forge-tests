@@ -477,7 +477,11 @@ async function viewHome(v) {
     for (const g of [...rows].sort((a, b) => (b.date || '').localeCompare(a.date || ''))) { const k = g.label + '|' + g.vs + '|' + !!g.direct; if (seen.has(k)) continue; seen.add(k); current.push(g); }
     const best = current.filter(g => !g.direct && !g.peek && g.mode === 'swap' && (!engineDate || (g.date || '') >= engineDate) && verdict(g)[0] === 'good').sort((a, b) => b.diff - a.diff)[0];
     const act = activeFor(n);
-    $('.dmeta', el).innerHTML = `${d ? esc(d.commander.join(' + ')) + '<br>' : ''}${rows.length ? `${new Set(rows.map(r => r.label)).size} cards tested${rows[0].date ? ' · last ' + esc(ago(rows[0].date)) : ''}` : 'No tests yet'}
+    // ranked: the latest finished Ranking of this deck (its win rate against an even 25% share); card tests come second
+    const rk = S.results.filter(r => r.audit?.deck === n && !r.peek && r.arms?.[0]?.games).sort((x, y) => (y.date || '').localeCompare(x.date || ''))[0];
+    const w = rk ? 100 * rk.arms[0].wins / rk.arms[0].games : null, nt = new Set(rows.map(r => r.label)).size;
+    $('.dmeta', el).innerHTML = `${d ? esc(d.commander.join(' + ')) + '<br>' : ''}${rk ? `Ranked ${rk.date ? esc(ago(rk.date)) : ''}` : 'Not ranked yet'}${nt ? ` · ${nt} card${nt > 1 ? 's' : ''} tested` : ''}
+      ${rk ? `<div style="margin-top:6px"><span class="pill ${w - 25 >= -1 ? 'good' : w - 25 <= -3 ? 'warn' : ''}">Wins ${w.toFixed(1)}%</span> <span class="small muted">${w >= 25 ? '+' : ''}${(w - 25).toFixed(1)} vs par</span></div>` : ''}
       ${best ? `<div style="margin-top:6px"><span class="pill good">${esc(best.label.split(',')[0])} for ${esc(best.vs.split(',')[0])}: +${best.diff.toFixed(1)}</span></div>` : ''}
       ${act.length ? `<div style="margin-top:6px"><span class="pill gold">${esc(act[0].state)}${act.length > 1 ? ` +${act.length - 1}` : ''}</span></div>` : ''}`;
   });
