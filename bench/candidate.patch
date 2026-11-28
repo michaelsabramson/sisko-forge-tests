@@ -210,10 +210,10 @@ index ab974487..0d52766a 100644
          for (Combo combo : combos(p)) {
 diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
 new file mode 100644
-index 00000000..ad2bd192
+index 00000000..b5df4cc3
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
-@@ -0,0 +1,312 @@
+@@ -0,0 +1,316 @@
 +package forge.ai;
 +
 +import java.util.ArrayList;
@@ -283,14 +283,18 @@ index 00000000..ad2bd192
 +    }
 +
 +    /** the strongest single opponent's all-out attack next turn, against what we keep untapped at home */
++    /** -Dsisko.crackback=two: guard against the two strongest opponents' swings together (default: the strongest one) */
++    static final boolean CRACK_TWO = "two".equals(System.getProperty("sisko.crackback"));
++    /** -Dsisko.doomed=false: no doomed rule (a player facing a lethal swing plays like anyone else) */
++    static final boolean DOOMED = !"false".equals(System.getProperty("sisko.doomed"));
++
 +    static boolean safe(Player me, List<Card> home, List<Player> opps) {
-+        int worst = 0;
++        int worst = 0, second = 0;
 +        for (Player q : opps) {
-+            List<Card> att = new ArrayList<>();
-+            for (Card c : q.getCreaturesInPlay()) if (pow(c) > 0 && !c.hasKeyword(Keyword.DEFENDER)) att.add(c);
-+            worst = Math.max(worst, unblocked(att, home));
++            int d = unblocked(attackersOf(q), home);
++            if (d > worst) { second = worst; worst = d; } else if (d > second) second = d;
 +        }
-+        return !me.canLoseLife() || worst < me.getLife();
++        return !me.canLoseLife() || (CRACK_TWO ? worst + second : worst) < me.getLife();
 +    }
 +
 +    static boolean canAttack(Card c, Player o) {
@@ -332,7 +336,7 @@ index 00000000..ad2bd192
 +            List<Card> home = new ArrayList<>();
 +            for (Card c : me.getCreaturesInPlay()) if (!a.contains(c) || c.hasKeyword(Keyword.VIGILANCE)) home.add(c);
 +            if (rest.isEmpty() || safe(me, home, rest)) {
-+                note("lethal");
++                note(me, "lethal");
 +                for (Card c : a) combat.addAttacker(c, o);
 +                return validOrUndo(me, combat);
 +            }
@@ -345,19 +349,19 @@ index 00000000..ad2bd192
 +            int d = unblocked(attackersOf(q), me.getCreaturesInPlay());
 +            if (d > worst) { worst = d; threat = q; }
 +        }
-+        if (threat != null && me.canLoseLife() && worst >= me.getLife() && easiestTarget(threat, me)) {
++        if (DOOMED && threat != null && me.canLoseLife() && worst >= me.getLife() && easiestTarget(threat, me)) {
 +            if (threat != null && killable.contains(threat)) {
-+                note("doomed-kill-threat");
++                note(me, "doomed-kill-threat");
 +                for (Card c : attackersFor(able, threat)) combat.addAttacker(c, threat);
 +                return validOrUndo(me, combat);
 +            }
 +            if (threat != null && !attackersFor(able, threat).isEmpty()) {
-+                note("doomed-attack-threat");
++                note(me, "doomed-attack-threat");
 +                for (Card c : attackersFor(able, threat)) combat.addAttacker(c, threat);
 +                return validOrUndo(me, combat);
 +            }
 +            if (!killable.isEmpty()) {
-+                note("doomed-kill-other");
++                note(me, "doomed-kill-other");
 +                Player o = killable.get(0);
 +                for (Card c : attackersFor(able, o)) combat.addAttacker(c, o);
 +                return validOrUndo(me, combat);
@@ -377,7 +381,7 @@ index 00000000..ad2bd192
 +        } else {
 +            for (Card c : able) if (!home.contains(c) || c.hasKeyword(Keyword.VIGILANCE)) spare.add(c);
 +        }
-+        if (spare.isEmpty()) { note("hold"); return validOrUndo(me, combat); }
++        if (spare.isEmpty()) { note(me, "hold"); return validOrUndo(me, combat); }
 +
 +        // a runaway leader comes first: every spare creature with a free attack on them takes it
 +        Player leader = null;
@@ -387,7 +391,7 @@ index 00000000..ad2bd192
 +        if (leader != null) {
 +            List<Card> lb = blockers(leader), sent = new ArrayList<>();
 +            for (Card c : spare) if (free(c, leader, lb)) { combat.addAttacker(c, leader); sent.add(c); }
-+            if (!sent.isEmpty()) note("leader");
++            if (!sent.isEmpty()) note(me, "leader");
 +            spare.removeAll(sent);
 +            if (spare.isEmpty()) return validOrUndo(me, combat);
 +            opps.remove(leader);
@@ -405,14 +409,14 @@ index 00000000..ad2bd192
 +            if (d > openDmg) { open = o; openDmg = d; }
 +        }
 +        if (open != null) {
-+            note("open");
++            note(me, "open");
 +            for (Card c : spare) if (canAttack(c, open)) combat.addAttacker(c, open);
 +            return validOrUndo(me, combat);
 +        }
 +
 +        // 3/4. free attacks only, lowest life first (the leader was offered its free attacks above)
 +        List<Player> order = new ArrayList<>(opps);   // already lowest life first
-+        note("free");
++        note(me, "free");
 +        for (Card c : spare) {
 +            for (Player o : order) {
 +                if (free(c, o, blockers(o))) { combat.addAttacker(c, o); break; }
@@ -505,7 +509,7 @@ index 00000000..ad2bd192
 +    }
 +
 +    static final boolean LOG = Boolean.getBoolean("sisko.combatLog");
-+    static void note(String kind) { if (LOG) System.out.println("SMART " + kind); }
++    static void note(Player me, String kind) { if (LOG) System.out.println("SMART " + kind + " p=" + me.getName().replace(' ', '_') + " t=" + me.getGame().getPhaseHandler().getTurn()); }
 +
 +    static List<Card> withVigilance(List<Card> home, List<Card> able) {
 +        List<Card> h = new ArrayList<>(home);

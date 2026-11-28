@@ -20,10 +20,15 @@ def parse_opps(s):
 
 def games(folder, proc="b"):
     for path in sorted(glob.glob(os.path.join(folder, "**", proc + "*_*.log"), recursive=True)):
-        cur = []
+        cur = []; dec = {}; tracked = None
         for line in open(path, errors="ignore"):
+            if line.startswith("POD ") and tracked is None:
+                tracked = line[4:].strip().strip("[]").split(",")[0].strip().replace(" ", "_")
             if line.startswith("SMART "):
                 SMART[line.split()[1]] += 1
+                kv = dict(x.split("=", 1) for x in line.split()[2:] if "=" in x)
+                if "p" in kv:
+                    dec[(kv["p"], int(kv["t"]))] = line.split()[1]
             if line.startswith("COMBAT "):
                 kv = dict(x.split("=", 1) for x in line.split()[1:] if "=" in x)
                 kv["opps"] = parse_opps(kv.get("opps", "-"))
@@ -35,17 +40,53 @@ def games(folder, proc="b"):
                 cur.append(kv)
             elif re.match(r"^G\d+ ", line):
                 m = re.search(r"winner=(\S+)", line)
-                yield cur, (m.group(1).replace(" ", "_") if m else None)
-                cur = []
+                yield cur, (m.group(1).replace(" ", "_") if m else None), tracked, dec
+                cur = []; dec = {}
 
 SMART = Counter()
+
+def tracked_deaths(turns, winner, tracked, dec, d):
+    """Why the tested deck lost: who knocked it out, and what it did on its last turn before that."""
+    if not tracked:
+        return
+    d["games"] += 1
+    if winner == tracked:
+        d["won"] += 1
+        return
+    kill = next((i for i, t in enumerate(turns) if tracked in t["dead"]), None)
+    own = [i for i, t in enumerate(turns) if t["p"] == tracked and (kill is None or i < kill)]
+    if kill is None and not own:
+        return
+    d["died"] += 1
+    if kill is None:
+        d["noCombatTurn"] += 1
+        return
+    k = turns[kill]; rnd = (k["t"] - 1) // 4 + 1
+    d["r" + ("1-6" if rnd <= 6 else "7-9" if rnd <= 9 else "10-12" if rnd <= 12 else "13+")] += 1
+    if not own:
+        return
+    last = turns[own[-1]]
+    opps = [o for o in last["opps"] if o["life"] > 0]
+    big = max(opps, key=lambda o: o["boardPow"])["name"] if opps else None
+    d["byBiggest" if k["p"] == big else "byOther"] += 1
+    if last["att"] > 0:
+        d["lastAttacked"] += 1; d["lastAttPow"] += 100 * last["attPow"] / max(1, last["ablePow"])
+        if k["p"] not in last["tgt"] and kill - own[-1] <= 3:
+            d["exposed"] += 1
+    else:
+        d["lastHeld"] += 1
+    kind = dec.get((tracked, last["t"]))
+    if kind:
+        d["kind" + kind] += 1
 
 def pct(a, b):
     return f"{100 * a / b:.1f}%" if b else "n/a"
 
 def main(folder, proc="b"):
     missed = Counter(); examples = []; c = Counter(); by_round = defaultdict(lambda: [0, 0]); dmg = []; ngames = 0
-    for turns, winner in games(folder, proc):
+    deaths = Counter()
+    for turns, winner, tracked, dec in games(folder, proc):
+        tracked_deaths(turns, winner, tracked, dec, deaths)
         ngames += 1
         for t in turns:
             rnd = (t["t"] - 1) // 4 + 1
@@ -116,6 +157,17 @@ def main(folder, proc="b"):
     print(f"- {c['attackers'] / n:.1f} attackers, {sum(dmg) / n:.1f} life dealt, {c['attDied'] / n:.2f} attackers died, {c['blocks'] / n:.2f} blocks, {c['blkDied'] / n:.2f} blockers died")
     if SMART:
         print("\n**New attack planner decisions**: " + ", ".join(f"{k} {v}" for k, v in SMART.most_common()))
+    if deaths:
+        n = deaths["games"]
+        print(f"\n**How the tested deck goes out** ({n} games: won {pct(deaths['won'], n)}, knocked out {pct(deaths['died'], n)})")
+        d = max(1, deaths["died"])
+        print(f"- killed by the opponent with the biggest board {pct(deaths['byBiggest'], d)}, by another {pct(deaths['byOther'], d)}; outside its opponents' combat (own turn, combo, drain) {pct(deaths['noCombatTurn'], d)}")
+        print(f"- on its last turn it had attacked: {pct(deaths['lastAttacked'], d)} (sending {deaths['lastAttPow'] / max(1, deaths['lastAttacked']):.0f}% of its power on average); held everything back: {pct(deaths['lastHeld'], d)}")
+        print(f"- killed in the round right after attacking, by a player it did not attack: {pct(deaths['exposed'], d)}")
+        print(f"- knocked out by round: " + ", ".join(f"{k} {deaths['r' + k]}" for k in ("1-6", "7-9", "10-12", "13+")))
+        ks = sorted((k[4:], v) for k, v in deaths.items() if k.startswith("kind"))
+        if ks:
+            print("- its last attack decision before going out: " + ", ".join(f"{k} {v}" for k, v in sorted(ks, key=lambda x: -x[1])))
     print("\n**Picking the eventual winner** (rounds 4-10, among a player's opponents)")
     print(f"- Forge's threat score {pct(c['predThreat'], c['predN'])} · biggest board {pct(c['predBoard'], c['predN'])} · highest life {pct(c['predLife'], c['predN'])} · random {pct(c['predRand'], c['predN'])}")
 
