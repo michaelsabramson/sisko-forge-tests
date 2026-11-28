@@ -210,10 +210,10 @@ index ab974487..0d52766a 100644
          for (Combo combo : combos(p)) {
 diff --git a/forge-ai/src/main/java/forge/ai/SmartCombat.java b/forge-ai/src/main/java/forge/ai/SmartCombat.java
 new file mode 100644
-index 00000000..b5df4cc3
+index 00000000..e62f5986
 --- /dev/null
 +++ b/forge-ai/src/main/java/forge/ai/SmartCombat.java
-@@ -0,0 +1,316 @@
+@@ -0,0 +1,330 @@
 +package forge.ai;
 +
 +import java.util.ArrayList;
@@ -288,6 +288,10 @@ index 00000000..b5df4cc3
 +    /** -Dsisko.doomed=false: no doomed rule (a player facing a lethal swing plays like anyone else) */
 +    static final boolean DOOMED = !"false".equals(System.getProperty("sisko.doomed"));
 +
++    /** -Dsisko.attackMode: smart (default: the full planner), lethal (cross-table lethal check, then Forge's own logic),
++     *  threat (the planner, with Forge's top threat getting the free attacks first instead of only a runaway leader) */
++    static final String MODE = System.getProperty("sisko.attackMode", "smart");
++
 +    static boolean safe(Player me, List<Card> home, List<Player> opps) {
 +        int worst = 0, second = 0;
 +        for (Player q : opps) {
@@ -349,6 +353,8 @@ index 00000000..b5df4cc3
 +            int d = unblocked(attackersOf(q), me.getCreaturesInPlay());
 +            if (d > worst) { worst = d; threat = q; }
 +        }
++        if ("lethal".equals(MODE)) return false;   // no kill on: Forge's own attack logic decides
++
 +        if (DOOMED && threat != null && me.canLoseLife() && worst >= me.getLife() && easiestTarget(threat, me)) {
 +            if (threat != null && killable.contains(threat)) {
 +                note(me, "doomed-kill-threat");
@@ -388,6 +394,14 @@ index 00000000..b5df4cc3
 +        List<Player> byBoard = new ArrayList<>(opps);
 +        byBoard.sort(Comparator.comparingInt(SmartCombat::boardPow).reversed());
 +        if (byBoard.size() > 1 && boardPow(byBoard.get(0)) >= 20 && boardPow(byBoard.get(0)) >= 2 * Math.max(1, boardPow(byBoard.get(1)))) leader = byBoard.get(0);
++        if ("threat".equals(MODE) && opps.size() > 1) {   // Forge's top threat (its board score) gets the free attacks first
++            int best = Integer.MIN_VALUE;
++            for (Player o : opps) {
++                int sc;
++                try { sc = ComputerUtil.evaluateBoardPosition(me, o); } catch (Throwable t) { sc = boardPow(o); }
++                if (sc > best) { best = sc; leader = o; }
++            }
++        }
 +        if (leader != null) {
 +            List<Card> lb = blockers(leader), sent = new ArrayList<>();
 +            for (Card c : spare) if (free(c, leader, lb)) { combat.addAttacker(c, leader); sent.add(c); }
